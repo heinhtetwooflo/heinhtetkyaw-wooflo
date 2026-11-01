@@ -201,6 +201,9 @@
 
   /* ---------- sticky notes ---------- */
   #layer{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+  #hold-trails{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+  #hold-trails line{stroke:rgba(247,246,244,.62);stroke-width:2;stroke-linecap:round;opacity:.72;transition:opacity .26s ease}
+  #hold-trails line.fading{opacity:0}
   #fill-preview{display:none;position:fixed;z-index:1700;pointer-events:none;border:1px dashed rgba(247,246,244,.62);background:rgba(247,246,244,.035)}
   .note{position:absolute;left:0;top:0}
   .note .paper{
@@ -298,7 +301,7 @@
 </div>
 <button id="clear-stickers" type="button" aria-label="Clear all stickers" title="Clear stickers"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M10 2.25v6.1M5.35 4.8a7.25 7.25 0 1 0 9.3 0"/></svg></button>
 <button id="fullscreen-toggle" type="button" aria-label="Enter fullscreen" title="Enter fullscreen"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M1.8 10s2.9-5.1 8.2-5.1 8.2 5.1 8.2 5.1-2.9 5.1-8.2 5.1S1.8 10 1.8 10Z"/><circle cx="10" cy="10" r="2.25"/></svg></button>
-<div id="layer"></div>
+<div id="layer"><svg id="hold-trails" aria-hidden="true"></svg></div>
 <div id="fill-preview" aria-hidden="true"></div>
 
 <div id="tab-hint" aria-hidden="true"><svg viewBox="0 0 46 32"><rect class="key" x=".7" y=".7" width="44.6" height="30.6" rx="8"/><path class="glyph" d="M12 16h17M24 10l6 6-6 6M35 9.5v13"/></svg></div>
@@ -905,6 +908,7 @@
   clearStickersButton.addEventListener('click', () => {
     stopScreenSaver();
     cancelHold();
+    clearHoldTrail();
     if (moveDrag) { cancelAnimationFrame(moveDrag.followFrame); clearHeld(moveDrag.note); }
     moveDrag = null; fillDrag = null;
     touchPoints.clear(); touchSeedNote = null; fillPreview.style.display = 'none';
@@ -1242,8 +1246,50 @@
   let touchSeedNote = null;
   let sx = 0, sy = 0, moved = false, onLogo = false, pendingTap = false, pendingDesktopSticker = false, activePointerId = null;
   let longPressTimer = 0, pressX = 0, pressY = 0, pickupTimer = 0, holdTimer = 0, chargeTimer = 0, burstRepeatTimer = 0, stopCharge = null, holdFired = false;
+  const holdTrailSvg = document.getElementById('hold-trails');
+  const holdTrailSegments = new Set();
+  let holdTrailPoint = null;
   let lastTap = null, tapCount = 0;
   const PICKUP_MS = 340, HOLD_MS = 620, CHARGE_MS = 180, DBL_MS = 380, MULTI_MS = 520, BURST_TAPS = 6;
+  const HOLD_TRAIL_MAX_SEGMENTS = 180;
+
+  function clearHoldTrail() {
+    for (const segment of holdTrailSegments) {
+      clearTimeout(segment.fadeTimer);
+      clearTimeout(segment.removeTimer);
+      segment.line.remove();
+    }
+    holdTrailSegments.clear();
+    holdTrailPoint = null;
+  }
+  function drawHoldTrailTo(x, y) {
+    if (!holdTrailPoint) {
+      holdTrailPoint = { x, y };
+      return;
+    }
+    if (Math.hypot(x - holdTrailPoint.x, y - holdTrailPoint.y) < 2) return;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', String(holdTrailPoint.x));
+    line.setAttribute('y1', String(holdTrailPoint.y));
+    line.setAttribute('x2', String(x));
+    line.setAttribute('y2', String(y));
+    holdTrailSvg.appendChild(line);
+    const segment = { line, fadeTimer: 0, removeTimer: 0 };
+    segment.fadeTimer = setTimeout(() => line.classList.add('fading'), LIFE);
+    segment.removeTimer = setTimeout(() => {
+      line.remove();
+      holdTrailSegments.delete(segment);
+    }, LIFE + 300);
+    holdTrailSegments.add(segment);
+    if (holdTrailSegments.size > HOLD_TRAIL_MAX_SEGMENTS) {
+      const oldest = holdTrailSegments.values().next().value;
+      clearTimeout(oldest.fadeTimer);
+      clearTimeout(oldest.removeTimer);
+      oldest.line.remove();
+      holdTrailSegments.delete(oldest);
+    }
+    holdTrailPoint = { x, y };
+  }
 
   /* ---------- hold feedback ---------- */
   const cursorMark = document.getElementById('cursor-mark');
@@ -1755,6 +1801,7 @@
     holdTimer = setTimeout(() => {
       holdFired = true; pendingTap = false; pendingDesktopSticker = false;
       endHoldRing(true);
+      holdTrailPoint = { x: sx, y: sy };
       if (stopCharge) { stopCharge(); stopCharge = null; }
       spawn(sx, sy, 0, { silent: true });
       burst(sx, sy);
@@ -1800,7 +1847,10 @@
     }
     if (!down) return;
     if (holdFired) {
-      if (e.pointerId === activePointerId) { sx = e.clientX; sy = e.clientY; }
+      if (e.pointerId === activePointerId) {
+        sx = e.clientX; sy = e.clientY;
+        drawHoldTrailTo(sx, sy);
+      }
       return;
     }
     const x = e.clientX, y = e.clientY;
@@ -1837,6 +1887,7 @@
 
   function release(e, cancelled) {
     if (!down) return;
+    if (holdFired) holdTrailPoint = null;
     down = false;
     activePointerId = null;
     cursorMark.classList.remove('dragging');
@@ -1973,6 +2024,7 @@
   });
   addEventListener('blur', () => {
     cancelLongPress();
+    holdTrailPoint = null;
     down = false; fillDrag = null; pendingDesktopSticker = false; touchPoints.clear(); touchSeedNote = null;
     if (moveDrag) { cancelAnimationFrame(moveDrag.followFrame); clearHeld(moveDrag.note); }
     moveDrag = null; fillPreview.style.display = 'none'; cursorMark.classList.remove('dragging'); cancelHold();
