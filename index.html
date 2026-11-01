@@ -202,8 +202,8 @@
   /* ---------- sticky notes ---------- */
   #layer{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
   #hold-trails{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
-  #hold-trails line{stroke:rgba(247,246,244,.62);stroke-width:2;stroke-linecap:round;opacity:.72;transition:opacity .26s ease}
-  #hold-trails line.fading{opacity:0}
+  #hold-trails path{fill:none;stroke:rgba(175,173,169,.72);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;opacity:.84;transition:opacity .26s ease}
+  #hold-trails path.fading{opacity:0}
   #fill-preview{display:none;position:fixed;z-index:1700;pointer-events:none;border:1px dashed rgba(247,246,244,.62);background:rgba(247,246,244,.035)}
   .note{position:absolute;left:0;top:0}
   .note .paper{
@@ -1248,7 +1248,7 @@
   let longPressTimer = 0, pressX = 0, pressY = 0, pickupTimer = 0, holdTimer = 0, chargeTimer = 0, burstRepeatTimer = 0, stopCharge = null, holdFired = false;
   const holdTrailSvg = document.getElementById('hold-trails');
   const holdTrailSegments = new Set();
-  let holdTrailPoint = null;
+  let holdTrailPoint = null, holdTrailPreviousPoint = null;
   let lastTap = null, tapCount = 0;
   const PICKUP_MS = 340, HOLD_MS = 620, CHARGE_MS = 180, DBL_MS = 380, MULTI_MS = 520, BURST_TAPS = 6;
   const HOLD_TRAIL_MAX_SEGMENTS = 180;
@@ -1257,27 +1257,19 @@
     for (const segment of holdTrailSegments) {
       clearTimeout(segment.fadeTimer);
       clearTimeout(segment.removeTimer);
-      segment.line.remove();
+      segment.path.remove();
     }
     holdTrailSegments.clear();
-    holdTrailPoint = null;
+    holdTrailPoint = holdTrailPreviousPoint = null;
   }
-  function drawHoldTrailTo(x, y) {
-    if (!holdTrailPoint) {
-      holdTrailPoint = { x, y };
-      return;
-    }
-    if (Math.hypot(x - holdTrailPoint.x, y - holdTrailPoint.y) < 2) return;
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', String(holdTrailPoint.x));
-    line.setAttribute('y1', String(holdTrailPoint.y));
-    line.setAttribute('x2', String(x));
-    line.setAttribute('y2', String(y));
-    holdTrailSvg.appendChild(line);
-    const segment = { line, fadeTimer: 0, removeTimer: 0 };
-    segment.fadeTimer = setTimeout(() => line.classList.add('fading'), LIFE);
+  function addHoldTrailSegment(pathData) {
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', pathData);
+    holdTrailSvg.appendChild(path);
+    const segment = { path, fadeTimer: 0, removeTimer: 0 };
+    segment.fadeTimer = setTimeout(() => path.classList.add('fading'), LIFE);
     segment.removeTimer = setTimeout(() => {
-      line.remove();
+      path.remove();
       holdTrailSegments.delete(segment);
     }, LIFE + 300);
     holdTrailSegments.add(segment);
@@ -1285,10 +1277,34 @@
       const oldest = holdTrailSegments.values().next().value;
       clearTimeout(oldest.fadeTimer);
       clearTimeout(oldest.removeTimer);
-      oldest.line.remove();
+      oldest.path.remove();
       holdTrailSegments.delete(oldest);
     }
-    holdTrailPoint = { x, y };
+  }
+  function drawHoldTrailTo(x, y) {
+    if (!holdTrailPoint) {
+      holdTrailPoint = { x, y };
+      return;
+    }
+    if (Math.hypot(x - holdTrailPoint.x, y - holdTrailPoint.y) < 2) return;
+    const nextPoint = { x, y };
+    const start = holdTrailPreviousPoint
+      ? { x: (holdTrailPreviousPoint.x + holdTrailPoint.x) / 2, y: (holdTrailPreviousPoint.y + holdTrailPoint.y) / 2 }
+      : holdTrailPoint;
+    const end = { x: (holdTrailPoint.x + x) / 2, y: (holdTrailPoint.y + y) / 2 };
+    addHoldTrailSegment(`M ${start.x} ${start.y} Q ${holdTrailPoint.x} ${holdTrailPoint.y} ${end.x} ${end.y}`);
+    holdTrailPreviousPoint = holdTrailPoint;
+    holdTrailPoint = nextPoint;
+  }
+  function finishHoldTrail() {
+    if (holdTrailPoint && holdTrailPreviousPoint) {
+      const end = {
+        x: (holdTrailPreviousPoint.x + holdTrailPoint.x) / 2,
+        y: (holdTrailPreviousPoint.y + holdTrailPoint.y) / 2
+      };
+      addHoldTrailSegment(`M ${end.x} ${end.y} Q ${holdTrailPoint.x} ${holdTrailPoint.y} ${holdTrailPoint.x} ${holdTrailPoint.y}`);
+    }
+    holdTrailPoint = holdTrailPreviousPoint = null;
   }
 
   /* ---------- hold feedback ---------- */
@@ -1887,7 +1903,7 @@
 
   function release(e, cancelled) {
     if (!down) return;
-    if (holdFired) holdTrailPoint = null;
+    if (holdFired) finishHoldTrail();
     down = false;
     activePointerId = null;
     cursorMark.classList.remove('dragging');
@@ -2024,7 +2040,7 @@
   });
   addEventListener('blur', () => {
     cancelLongPress();
-    holdTrailPoint = null;
+    finishHoldTrail();
     down = false; fillDrag = null; pendingDesktopSticker = false; touchPoints.clear(); touchSeedNote = null;
     if (moveDrag) { cancelAnimationFrame(moveDrag.followFrame); clearHeld(moveDrag.note); }
     moveDrag = null; fillPreview.style.display = 'none'; cursorMark.classList.remove('dragging'); cancelHold();
