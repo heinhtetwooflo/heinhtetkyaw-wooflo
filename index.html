@@ -328,8 +328,7 @@
     <p>hold a sticker still — peels it</p>
     <p>stickers stay while hockey mode is on</p>
 
-    <p class="gap">name — hover or tap to open</p>
-    <p>double-tap name — easter egg</p>
+    <p class="gap">name — hover to open; tap for the easter egg</p>
     <p>tap easter egg — this</p>
 
     <p class="gap">30:000:00 — 30-second loop that pops the egg, tap again to pause</p>
@@ -1947,12 +1946,8 @@
     const x = e.clientX, y = e.clientY;
     if (onLogo) {
       tapCount = 0;
-      if (lastTap && lastTap.logo && now - lastTap.t < DBL_MS) {
-        lastTap = null; showEgg();                       // double tap / double click
-      } else {
-        if (e.pointerType === 'touch') logo.classList.toggle('open');
-        lastTap = { t: now, x, y, logo: true };
-      }
+      lastTap = null;
+      showEgg();
     } else {
       if (pendingDesktopSticker) {
         let climb = 0;
