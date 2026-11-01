@@ -1248,10 +1248,10 @@
   let longPressTimer = 0, pressX = 0, pressY = 0, pickupTimer = 0, holdTimer = 0, chargeTimer = 0, burstRepeatTimer = 0, stopCharge = null, holdFired = false;
   const holdTrailSvg = document.getElementById('hold-trails');
   const holdTrailSegments = new Set();
-  let holdTrailPoint = null, holdTrailPreviousPoint = null;
+  let holdTrailPoint = null, holdTrailPoints = [], holdTrailActiveSegment = null;
   let lastTap = null, tapCount = 0;
   const PICKUP_MS = 340, HOLD_MS = 620, CHARGE_MS = 180, DBL_MS = 380, MULTI_MS = 520, BURST_TAPS = 6;
-  const HOLD_TRAIL_MAX_SEGMENTS = 180;
+  const HOLD_TRAIL_MAX_SEGMENTS = 180, HOLD_TRAIL_MAX_POINTS = 180;
 
   function clearHoldTrail() {
     for (const segment of holdTrailSegments) {
@@ -1260,18 +1260,14 @@
       segment.path.remove();
     }
     holdTrailSegments.clear();
-    holdTrailPoint = holdTrailPreviousPoint = null;
+    holdTrailActiveSegment = null;
+    holdTrailPoint = null;
+    holdTrailPoints = [];
   }
-  function addHoldTrailSegment(pathData) {
+  function createHoldTrailSegment() {
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', pathData);
     holdTrailSvg.appendChild(path);
     const segment = { path, fadeTimer: 0, removeTimer: 0 };
-    segment.fadeTimer = setTimeout(() => path.classList.add('fading'), LIFE);
-    segment.removeTimer = setTimeout(() => {
-      path.remove();
-      holdTrailSegments.delete(segment);
-    }, LIFE + 300);
     holdTrailSegments.add(segment);
     if (holdTrailSegments.size > HOLD_TRAIL_MAX_SEGMENTS) {
       const oldest = holdTrailSegments.values().next().value;
@@ -1280,6 +1276,31 @@
       oldest.path.remove();
       holdTrailSegments.delete(oldest);
     }
+    return segment;
+  }
+  function scheduleHoldTrailFade(segment) {
+    clearTimeout(segment.fadeTimer);
+    clearTimeout(segment.removeTimer);
+    segment.path.classList.remove('fading');
+    segment.fadeTimer = setTimeout(() => segment.path.classList.add('fading'), LIFE);
+    segment.removeTimer = setTimeout(() => {
+      segment.path.remove();
+      holdTrailSegments.delete(segment);
+    }, LIFE + 300);
+  }
+  function updateHoldTrailPath(includeEndpoint) {
+    if (!holdTrailActiveSegment || !holdTrailPoints.length) return;
+    const points = holdTrailPoints;
+    let pathData = `M ${points[0].x} ${points[0].y}`;
+    for (let i = 1; i < points.length; i++) {
+      const previous = points[i - 1], current = points[i];
+      pathData += ` Q ${previous.x} ${previous.y} ${(previous.x + current.x) / 2} ${(previous.y + current.y) / 2}`;
+    }
+    if (includeEndpoint && points.length > 1) {
+      const last = points[points.length - 1];
+      pathData += ` Q ${last.x} ${last.y} ${last.x} ${last.y}`;
+    }
+    holdTrailActiveSegment.path.setAttribute('d', pathData);
   }
   function drawHoldTrailTo(x, y) {
     if (!holdTrailPoint) {
@@ -1287,24 +1308,21 @@
       return;
     }
     if (Math.hypot(x - holdTrailPoint.x, y - holdTrailPoint.y) < 2) return;
-    const nextPoint = { x, y };
-    const start = holdTrailPreviousPoint
-      ? { x: (holdTrailPreviousPoint.x + holdTrailPoint.x) / 2, y: (holdTrailPreviousPoint.y + holdTrailPoint.y) / 2 }
-      : holdTrailPoint;
-    const end = { x: (holdTrailPoint.x + x) / 2, y: (holdTrailPoint.y + y) / 2 };
-    addHoldTrailSegment(`M ${start.x} ${start.y} Q ${holdTrailPoint.x} ${holdTrailPoint.y} ${end.x} ${end.y}`);
-    holdTrailPreviousPoint = holdTrailPoint;
-    holdTrailPoint = nextPoint;
+    if (!holdTrailActiveSegment) {
+      holdTrailPoints = [holdTrailPoint];
+      holdTrailActiveSegment = createHoldTrailSegment();
+    }
+    holdTrailPoint = { x, y };
+    holdTrailPoints.push(holdTrailPoint);
+    if (holdTrailPoints.length > HOLD_TRAIL_MAX_POINTS) holdTrailPoints.shift();
+    updateHoldTrailPath(true);
+    scheduleHoldTrailFade(holdTrailActiveSegment);
   }
   function finishHoldTrail() {
-    if (holdTrailPoint && holdTrailPreviousPoint) {
-      const end = {
-        x: (holdTrailPreviousPoint.x + holdTrailPoint.x) / 2,
-        y: (holdTrailPreviousPoint.y + holdTrailPoint.y) / 2
-      };
-      addHoldTrailSegment(`M ${end.x} ${end.y} Q ${holdTrailPoint.x} ${holdTrailPoint.y} ${holdTrailPoint.x} ${holdTrailPoint.y}`);
-    }
-    holdTrailPoint = holdTrailPreviousPoint = null;
+    updateHoldTrailPath(true);
+    holdTrailPoint = null;
+    holdTrailPoints = [];
+    holdTrailActiveSegment = null;
   }
 
   /* ---------- hold feedback ---------- */
