@@ -204,6 +204,8 @@
   #hold-trails{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
   #hold-trails path{fill:none;stroke:rgba(175,173,169,.72);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;opacity:.84;transition:opacity .26s ease}
   #hold-trails path.fading{opacity:0}
+  #hold-trails circle{fill:rgba(175,173,169,.92);opacity:.9;transition:opacity .26s ease}
+  #hold-trails circle.fading{opacity:0}
   #fill-preview{display:none;position:fixed;z-index:1700;pointer-events:none;border:1px dashed rgba(247,246,244,.62);background:rgba(247,246,244,.035)}
   .note{position:absolute;left:0;top:0}
   .note .paper{
@@ -1247,60 +1249,67 @@
   let sx = 0, sy = 0, moved = false, onLogo = false, pendingTap = false, pendingDesktopSticker = false, activePointerId = null;
   let longPressTimer = 0, pressX = 0, pressY = 0, pickupTimer = 0, holdTimer = 0, chargeTimer = 0, burstRepeatTimer = 0, stopCharge = null, holdFired = false;
   const holdTrailSvg = document.getElementById('hold-trails');
-  const holdTrailSegments = new Set();
+  const holdTrailElements = new Set();
   let holdTrailPoint = null, holdTrailPoints = [], holdTrailActiveSegment = null;
   let lastTap = null, tapCount = 0;
   const PICKUP_MS = 340, HOLD_MS = 620, CHARGE_MS = 180, DBL_MS = 380, MULTI_MS = 520, BURST_TAPS = 6;
-  const HOLD_TRAIL_MAX_SEGMENTS = 180, HOLD_TRAIL_MAX_POINTS = 180;
+  const HOLD_TRAIL_MAX_ELEMENTS = 180, HOLD_TRAIL_MAX_POINTS = 180;
 
   function clearHoldTrail() {
-    for (const segment of holdTrailSegments) {
-      clearTimeout(segment.fadeTimer);
-      clearTimeout(segment.removeTimer);
-      segment.path.remove();
+    for (const item of holdTrailElements) {
+      clearTimeout(item.fadeTimer);
+      clearTimeout(item.removeTimer);
+      item.element.remove();
     }
-    holdTrailSegments.clear();
+    holdTrailElements.clear();
     holdTrailActiveSegment = null;
     holdTrailPoint = null;
     holdTrailPoints = [];
   }
-  function createHoldTrailSegment() {
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    holdTrailSvg.appendChild(path);
-    const segment = { path, fadeTimer: 0, removeTimer: 0 };
-    holdTrailSegments.add(segment);
-    if (holdTrailSegments.size > HOLD_TRAIL_MAX_SEGMENTS) {
-      const oldest = holdTrailSegments.values().next().value;
+  function createHoldTrailElement(tagName) {
+    const element = document.createElementNS('http://www.w3.org/2000/svg', tagName);
+    holdTrailSvg.appendChild(element);
+    const item = { element, fadeTimer: 0, removeTimer: 0 };
+    holdTrailElements.add(item);
+    if (holdTrailElements.size > HOLD_TRAIL_MAX_ELEMENTS) {
+      const oldest = holdTrailElements.values().next().value;
       clearTimeout(oldest.fadeTimer);
       clearTimeout(oldest.removeTimer);
-      oldest.path.remove();
-      holdTrailSegments.delete(oldest);
+      oldest.element.remove();
+      holdTrailElements.delete(oldest);
     }
-    return segment;
+    return item;
   }
-  function scheduleHoldTrailFade(segment) {
-    clearTimeout(segment.fadeTimer);
-    clearTimeout(segment.removeTimer);
-    segment.path.classList.remove('fading');
-    segment.fadeTimer = setTimeout(() => segment.path.classList.add('fading'), LIFE);
-    segment.removeTimer = setTimeout(() => {
-      segment.path.remove();
-      holdTrailSegments.delete(segment);
+  function scheduleHoldTrailFade(item) {
+    clearTimeout(item.fadeTimer);
+    clearTimeout(item.removeTimer);
+    item.element.classList.remove('fading');
+    item.fadeTimer = setTimeout(() => item.element.classList.add('fading'), LIFE);
+    item.removeTimer = setTimeout(() => {
+      item.element.remove();
+      holdTrailElements.delete(item);
     }, LIFE + 300);
   }
-  function updateHoldTrailPath(includeEndpoint) {
+  function updateHoldTrailPath() {
     if (!holdTrailActiveSegment || !holdTrailPoints.length) return;
     const points = holdTrailPoints;
     let pathData = `M ${points[0].x} ${points[0].y}`;
-    for (let i = 1; i < points.length; i++) {
-      const previous = points[i - 1], current = points[i];
-      pathData += ` Q ${previous.x} ${previous.y} ${(previous.x + current.x) / 2} ${(previous.y + current.y) / 2}`;
+    for (let i = 0; i < points.length - 1; i++) {
+      const start = points[i], end = points[i + 1];
+      const previous = points[i > 0 ? i - 1 : i];
+      const next = points[Math.min(i + 2, points.length - 1)];
+      const control1 = { x: start.x + (end.x - previous.x) / 6, y: start.y + (end.y - previous.y) / 6 };
+      const control2 = { x: end.x - (next.x - start.x) / 6, y: end.y - (next.y - start.y) / 6 };
+      pathData += ` C ${control1.x} ${control1.y} ${control2.x} ${control2.y} ${end.x} ${end.y}`;
     }
-    if (includeEndpoint && points.length > 1) {
-      const last = points[points.length - 1];
-      pathData += ` Q ${last.x} ${last.y} ${last.x} ${last.y}`;
-    }
-    holdTrailActiveSegment.path.setAttribute('d', pathData);
+    holdTrailActiveSegment.element.setAttribute('d', pathData);
+  }
+  function markHoldBurst(x, y) {
+    const marker = createHoldTrailElement('circle');
+    marker.element.setAttribute('cx', String(x));
+    marker.element.setAttribute('cy', String(y));
+    marker.element.setAttribute('r', '4');
+    scheduleHoldTrailFade(marker);
   }
   function drawHoldTrailTo(x, y) {
     if (!holdTrailPoint) {
@@ -1308,18 +1317,18 @@
       return;
     }
     if (Math.hypot(x - holdTrailPoint.x, y - holdTrailPoint.y) < 2) return;
-    if (!holdTrailActiveSegment) {
+    if (!holdTrailActiveSegment || !holdTrailActiveSegment.element.isConnected) {
       holdTrailPoints = [holdTrailPoint];
-      holdTrailActiveSegment = createHoldTrailSegment();
+      holdTrailActiveSegment = createHoldTrailElement('path');
     }
     holdTrailPoint = { x, y };
     holdTrailPoints.push(holdTrailPoint);
     if (holdTrailPoints.length > HOLD_TRAIL_MAX_POINTS) holdTrailPoints.shift();
-    updateHoldTrailPath(true);
+    updateHoldTrailPath();
     scheduleHoldTrailFade(holdTrailActiveSegment);
   }
   function finishHoldTrail() {
-    updateHoldTrailPath(true);
+    updateHoldTrailPath();
     holdTrailPoint = null;
     holdTrailPoints = [];
     holdTrailActiveSegment = null;
@@ -1838,9 +1847,13 @@
       holdTrailPoint = { x: sx, y: sy };
       if (stopCharge) { stopCharge(); stopCharge = null; }
       spawn(sx, sy, 0, { silent: true });
+      markHoldBurst(sx, sy);
       burst(sx, sy);
       burstRepeatTimer = setInterval(() => {
-        if (down && holdFired) burst(sx, sy);
+        if (down && holdFired) {
+          markHoldBurst(sx, sy);
+          burst(sx, sy);
+        }
         else { clearInterval(burstRepeatTimer); burstRepeatTimer = 0; }
       }, 720);
     }, HOLD_MS);
