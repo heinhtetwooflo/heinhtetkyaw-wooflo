@@ -239,10 +239,10 @@
     position:fixed;inset:0;z-index:3000;display:none;align-items:center;justify-content:center;
     pointer-events:none;
   }
-  #egg.show{display:flex;pointer-events:auto;cursor:pointer}
+  #egg.show{display:flex;pointer-events:none}
   #egg .bob{display:block}
   #egg img{
-    display:block;width:min(36vw,30vh);height:auto;pointer-events:none;-webkit-user-drag:none;
+    display:block;width:min(36vw,30vh);height:auto;pointer-events:auto;cursor:pointer;-webkit-user-drag:none;
     filter:drop-shadow(0 22px 34px rgba(0,0,0,.55));
   }
   @media (max-width:600px){#egg img{width:min(42vw,34vh)}}
@@ -1193,7 +1193,8 @@
   guide.addEventListener('click', () => { if (performance.now() - guideOpenedAt > 400) closeGuide(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && guideOpen) closeGuide(); });
   // the click a phone synthesises after the double tap lands on the egg: ignore it
-  const eggTap = () => {
+  const eggTap = e => {
+    if (e.target !== eggImg) return;
     if (guideOpen || performance.now() - eggShownAt <= 220) return;   // ignore the click a phone synthesises right after the double tap
     ensureAudio(); sfx.crack();
     hideEgg(true); openGuide();      // the egg's own sound keeps playing to the end
