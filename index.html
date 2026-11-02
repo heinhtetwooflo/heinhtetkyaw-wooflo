@@ -328,7 +328,7 @@
     <p>hold a sticker still — peels it</p>
     <p>stickers stay while hockey mode is on</p>
 
-    <p class="gap">name — hover to open; tap for the easter egg</p>
+    <p class="gap">name — hover to open; on mobile, tap to open and double-tap for the easter egg</p>
     <p>tap easter egg — this</p>
 
     <p class="gap">30:000:00 — 30-second loop that pops the egg, tap again to pause</p>
@@ -1251,7 +1251,7 @@
   const holdTrailSvg = document.getElementById('hold-trails');
   const holdTrailElements = new Set();
   let holdTrailPoint = null, holdTrailPoints = [], holdTrailActiveSegment = null;
-  let lastTap = null, tapCount = 0;
+  let lastTap = null, lastLogoTap = 0, tapCount = 0;
   const PICKUP_MS = 340, HOLD_MS = 620, CHARGE_MS = 180, DBL_MS = 380, MULTI_MS = 520, BURST_TAPS = 6;
   const HOLD_TRAIL_MAX_ELEMENTS = 180, HOLD_TRAIL_MAX_POINTS = 180;
 
@@ -1807,7 +1807,10 @@
     pendingDesktopSticker = e.pointerType !== 'touch' && !onLogo;
     if (!onLogo) pulseCursor();
     beginHoldRing(sx, sy);
-    if (e.pointerType === 'touch' && !onLogo) logo.classList.remove('open');
+    if (e.pointerType === 'touch' && !onLogo) {
+      lastLogoTap = 0;
+      logo.classList.remove('open');
+    }
 
     // each quick tap on the same spot climbs the scale, building toward the burst
     let climb = 0;
@@ -1947,7 +1950,18 @@
     if (onLogo) {
       tapCount = 0;
       lastTap = null;
-      showEgg();
+      if (e.pointerType === 'touch') {
+        if (lastLogoTap && now - lastLogoTap < DBL_MS) {
+          lastLogoTap = 0;
+          showEgg();
+        } else {
+          lastLogoTap = now;
+          logo.classList.add('open');
+        }
+      } else {
+        lastLogoTap = 0;
+        showEgg();
+      }
     } else {
       if (pendingDesktopSticker) {
         let climb = 0;
