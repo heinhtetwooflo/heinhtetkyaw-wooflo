@@ -1954,8 +1954,13 @@
         lastLogoTap = 0;
         showEgg();
       } else {
-        lastLogoTap = now;
-        logo.classList.add('open');
+        if (e.pointerType === 'touch' && logo.classList.contains('open')) {
+          lastLogoTap = 0;
+          logo.classList.remove('open');
+        } else {
+          lastLogoTap = now;
+          logo.classList.add('open');
+        }
       }
     } else {
       if (pendingDesktopSticker) {
