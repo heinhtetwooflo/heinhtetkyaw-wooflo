@@ -196,17 +196,16 @@
     .logo.open .sep .dot{transform:none;transition-delay:0s}
     #top-nav{top:calc(12px + env(safe-area-inset-top,0px));gap:32px}
     #top-nav a{font-size:15px;padding:10px 0}
-    #top-controls{left:calc(16px + env(safe-area-inset-left,0px));bottom:calc(40px + env(safe-area-inset-bottom,0px));height:44px}
+    #top-controls{top:calc(56px + env(safe-area-inset-top,0px));left:50%;bottom:auto;height:44px;transform:translateX(-50%)}
     #options-toggle{margin:0 0 0 7px}
-    #options-menu{bottom:calc(100% + 4px)}
-    footer{left:112px;right:64px;bottom:calc(45px + env(safe-area-inset-bottom,0px));gap:clamp(6px,2vw,10px);padding:0}
+    #options-menu{top:calc(100% + 4px);bottom:auto;left:50%;transform:translateX(-50%)}
+    footer{left:0;right:0;bottom:calc(45px + env(safe-area-inset-bottom,0px));justify-content:center;flex-wrap:nowrap;gap:clamp(16px,7vw,26px);padding:0 12px}
     #sticker-size-control{width:120px;height:32px}
     #clear-stickers{top:calc(12px + env(safe-area-inset-top,0px));right:calc(16px + env(safe-area-inset-right,0px));width:44px;height:44px}
-    #fullscreen-toggle{left:auto;right:calc(12px + env(safe-area-inset-right,0px));top:auto;bottom:calc(40px + env(safe-area-inset-bottom,0px));width:44px;height:44px;transform:none}
+    #fullscreen-toggle{left:calc(16px + env(safe-area-inset-left,0px));right:auto;top:calc(12px + env(safe-area-inset-top,0px));bottom:auto;width:44px;height:44px;transform:none}
     footer a{font-size:12px;padding:10px 0}
   }
   @media (max-width:360px){
-    footer{gap:2px}
     footer a{font-size:10px}
   }
 
