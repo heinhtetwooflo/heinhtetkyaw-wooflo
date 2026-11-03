@@ -32,6 +32,10 @@
   button{font:inherit;color:inherit;background:none;border:0}
   :focus-visible{outline:1px solid var(--ink);outline-offset:4px}
 
+  #back-home{position:relative;z-index:1;display:inline-flex;align-items:center;min-width:44px;min-height:44px;margin:0 0 .25em -12px;padding:0 12px;color:var(--ink);text-decoration:none;font-size:.9em;opacity:.72;cursor:none;touch-action:manipulation;transition:opacity .2s ease}
+  #back-home:hover,#back-home:focus-visible{opacity:1}
+  #back-home:focus-visible{outline:1px solid var(--ink);outline-offset:4px}
+
   main{height:100%;display:grid;grid-template-rows:minmax(0,1fr) auto;gap:var(--pad);padding:var(--pad) calc(var(--pad)*1.4)}
 
   /* ---------- top: photo, bio, facts ---------- */
@@ -45,6 +49,12 @@
   .bio{min-height:0;align-self:start;line-height:1.4}
   .bio p+p,.bio h1+p{margin-top:.7em}
   .bio h1{font-size:inherit;font-weight:700}
+  .brand-preview{position:relative;white-space:normal}
+  .brand-trigger{display:inline;padding:0;color:inherit;font:inherit;line-height:inherit;text-align:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:2px;cursor:none;touch-action:manipulation}
+  .brand-trigger:focus-visible{outline:1px solid currentColor;outline-offset:2px}
+  .brand-card{position:absolute;top:calc(100% + 10px);left:50%;z-index:20;display:grid;place-items:center;width:clamp(170px,28vw,250px);min-height:72px;padding:14px;background:#1d1d1b;border:1px solid rgba(247,246,244,.14);opacity:0;visibility:hidden;transform:translate(-50%,4px);transition:opacity .16s ease,transform .16s ease,visibility 0s .16s;pointer-events:none}
+  .brand-card img{display:block;width:100%;height:auto;max-height:86px;object-fit:contain}
+  .brand-preview:hover .brand-card,.brand-preview:focus-within .brand-trigger:focus-visible+.brand-card,.brand-preview.open .brand-card{opacity:1;visibility:visible;transform:translate(-50%,0);transition-delay:0s}
 
   .facts{align-self:start;list-style:none;line-height:1.6;justify-self:end;text-align:left;padding-right:.5vw}
 
@@ -63,7 +73,7 @@
     opacity:0;visibility:hidden;transform:translateX(-8px);transition:opacity .24s ease,transform .3s var(--ease),visibility 0s .3s}
   .row.open .folder{opacity:1;visibility:visible;transform:none;transition:opacity .24s ease,transform .3s var(--ease)}
 
-  .arrow{position:relative;z-index:2;height:100%;min-height:52px;width:clamp(48px,4.2vw,64px);flex:none;display:grid;place-items:center;opacity:.78;touch-action:manipulation;cursor:pointer;transition:opacity .2s ease,transform .2s var(--ease)}
+  .arrow{position:relative;z-index:2;height:100%;min-height:52px;width:clamp(48px,4.2vw,64px);flex:none;display:grid;place-items:center;opacity:.78;touch-action:manipulation;cursor:none;transition:opacity .2s ease,transform .2s var(--ease)}
   .arrow svg{width:58%;height:clamp(40px,8vh,72px);fill:none;stroke:var(--ink);stroke-width:1.2;stroke-linecap:square;vector-effect:non-scaling-stroke;overflow:visible;pointer-events:none;transition:transform .2s var(--ease)}
   .arrow svg *{vector-effect:non-scaling-stroke}
   .arrow:hover{opacity:1}
@@ -78,14 +88,13 @@
   .track img{height:calc(100% - 2.6em);width:100%;object-fit:contain;display:block;-webkit-user-drag:none;user-select:none}
   .track figcaption{width:100%;text-align:center;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-  /* ---------- cursor (same mark as index) ---------- */
+  /* ---------- cursor ---------- */
   #cursor-mark{position:fixed;left:-40px;top:-40px;width:28px;height:28px;z-index:4000;pointer-events:none;opacity:0;mix-blend-mode:difference;transition:opacity .12s ease}
   #cursor-mark.visible{opacity:1}
-  #cursor-mark svg{display:block;width:100%;height:100%;fill:none;stroke:#fff;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round}
-  #cursor-mark .marks-closed{opacity:0;transition:opacity .12s ease}
-  #cursor-mark.dragging .marks-open{opacity:0}
-  #cursor-mark.dragging .marks-closed{opacity:1}
+  #cursor-mark svg{display:none}
+  #cursor-mark::after{content:"";position:absolute;left:50%;top:50%;width:7px;height:7px;border-radius:50%;background:#fff;transform:translate(-50%,-50%)}
   @media (pointer:coarse){#cursor-mark{display:none}}
+  @media (pointer:fine){a,button{cursor:none}}
 
   /* ---------- narrow screens: the only place the page may scroll ---------- */
   @media (max-width:860px){
@@ -120,12 +129,13 @@
     </div>
 
     <div class="bio">
-      <h1>This is Hein Htet Kyaw (a.k.a) Woo Flo.</h1>
+      <a id="back-home" href="./index.html" aria-label="Back to home">← Back</a>
+      <h1>This is Hein Htet Kyaw    a.k.a    Woo Flo</h1>
       <p>Being the son of a furniture designer, he was exposed to MS Paint from childhood, drawing random earth and planets, Power Rangers helmets and, ofc, simple brown chairs. With a new tablet shared with his sibling, he got his first taste of mobile apps, sticking to PicsArt, PixelLab and KineMaster before moving on to professional tools. His first Photoshop version was CS6, which he played around with after finishing high school. He then started basic drawing classes and design courses, both local and international, via online learning thanks to COVID.</p>
       <p>His first type crushes were Devil Breeze and ITC Avant Garde, rooted in the late-2010s Imagine Dragons wordmark.</p>
       <p>He loves playing around with typography and layouts but is still struggling while dancing with colors.</p>
       <p>Currently in a walk-around-and-find-out state, rooted in design and its intersection with tech, business and art.</p>
-      <p>If you are reading this in 2026 or 2027, he’s pretty sure to be working his ass off in the final year of his B.Sc (Hons), with one capstone and assignments in line, while working for a non-profit, youth-led organization focused on art and design and helping out here and there at an F&amp;B tech startup. But if you are reading this from way beyond 2027, you are probably witnessing him learning and designing things he loves.</p>
+      <p>If you are reading this in 2026 or 2027, he’s pretty sure to be working his ass off in the final year of his B.Sc (Hons), with one capstone and assignments in line, while working for a <span class="brand-preview"><button class="brand-trigger" type="button" aria-expanded="false">non-profit, youth-led organization</button><span class="brand-card"><img src="./TMI/Logos/allyours.svg" alt="Allyours logo"></span></span> focused on art and design and helping out here and there at an <span class="brand-preview"><button class="brand-trigger" type="button" aria-expanded="false">F&amp;B tech startup</button><span class="brand-card"><img src="./TMI/Logos/orderflow.svg" alt="Orderflow logo"></span></span>. But if you are reading this from way beyond 2027, you are probably witnessing him learning and designing things he loves.</p>
     </div>
 
     <ul class="facts">
@@ -148,6 +158,35 @@
 <script>
 (function(){
   var src = function(p){ return "./TMI/" + p.replace(/\.png$/i, ".webp").split("/").map(encodeURIComponent).join("/"); };
+
+  var brandPreviews = document.querySelectorAll(".brand-preview");
+  brandPreviews.forEach(function(preview){
+    var trigger = preview.querySelector(".brand-trigger");
+    trigger.addEventListener("click", function(){
+      var open = !preview.classList.contains("open");
+      brandPreviews.forEach(function(item){
+        item.classList.remove("open");
+        item.querySelector(".brand-trigger").setAttribute("aria-expanded", "false");
+      });
+      preview.classList.toggle("open", open);
+      trigger.setAttribute("aria-expanded", String(open));
+    });
+  });
+  document.addEventListener("click", function(e){
+    if (e.target.closest(".brand-preview")) return;
+    brandPreviews.forEach(function(preview){
+      preview.classList.remove("open");
+      preview.querySelector(".brand-trigger").setAttribute("aria-expanded", "false");
+    });
+  });
+  document.addEventListener("keydown", function(e){
+    if (e.key !== "Escape") return;
+    brandPreviews.forEach(function(preview){
+      preview.classList.remove("open");
+      preview.querySelector(".brand-trigger").setAttribute("aria-expanded", "false");
+    });
+    if (document.activeElement.classList.contains("brand-trigger")) document.activeElement.blur();
+  });
 
   /* ---------- profile: fixed main image; on hover the others flip too fast to focus on ---------- */
   var photo = document.getElementById("photo"), flip = document.getElementById("flip");
@@ -230,10 +269,11 @@
     for (var copy = 0; copy < 5; copy++){
       files.forEach(function(f){
         var fig = document.createElement("figure"), im = new Image(), cap = document.createElement("figcaption");
-        fig.title = f;
-        im.alt = ""; im.title = f; im.draggable = false; im.loading = "lazy"; im.decoding = "async"; im.src = src("Movies and Song/" + f); im.onload = edges;
-        cap.textContent = f.replace(/\.png$/i, "");
-        cap.title = f;
+        var label = f.replace(/\.(?:png|webp|jpe?g)$/i, "");
+        fig.title = label;
+        im.alt = ""; im.title = label; im.draggable = false; im.loading = "lazy"; im.decoding = "async"; im.src = src("Movies and Song/" + f); im.onload = edges;
+        cap.textContent = label;
+        cap.title = label;
         fig.appendChild(im); fig.appendChild(cap); track.appendChild(fig);
       });
     }
@@ -283,7 +323,8 @@
   var cur = document.getElementById("cursor-mark");
   window.addEventListener("pointermove", function(e){
     if (e.pointerType === "touch") return;
-    cur.style.transform = "translate(" + (e.clientX - 14) + "px," + (e.clientY - 14) + "px)";
+    cur.style.left = (e.clientX - 14) + "px";
+    cur.style.top = (e.clientY - 14) + "px";
     cur.classList.add("visible");
   });
   document.addEventListener("pointerleave", function(){ cur.classList.remove("visible"); });
