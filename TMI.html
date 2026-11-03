@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#141413">
+<title>heinhtetkyaw.wooflo</title>
+<link rel="icon" type="image/png" href="./favicon.png">
+<style>
+  @font-face{font-family:"NHD";font-weight:700;font-style:normal;font-display:swap;src:url("./assets/nhd-700.woff2") format("woff2")}
+  @font-face{font-family:"NHD";font-weight:500;font-style:normal;font-display:swap;src:url("./assets/nhd-500.woff2") format("woff2")}
+
+  :root{
+    --bg:#141413;
+    --ink:#f7f6f4;
+    --font:"NHD","Neue Haas Grotesk Display Pro","Neue Haas Grotesk Text Pro","Neue Haas Grotesk",Inter,system-ui,sans-serif;
+    --ease:cubic-bezier(.3,.7,.15,1);
+    --pad:clamp(16px,3.2vh,40px);
+    --drive-h:clamp(160px,20vh,188px);
+    --fs:clamp(11px,1.45vh,16px);
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--bg);color:var(--ink);font-family:var(--font);font-weight:500;font-size:var(--fs);
+    overflow:hidden;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;
+    padding:env(safe-area-inset-top,0) env(safe-area-inset-right,0) env(safe-area-inset-bottom,0) env(safe-area-inset-left,0);
+  }
+  @media (pointer:fine){body,button{cursor:none}}
+  button{font:inherit;color:inherit;background:none;border:0}
+  :focus-visible{outline:1px solid var(--ink);outline-offset:4px}
+
+  main{height:100%;display:grid;grid-template-rows:minmax(0,1fr) auto;gap:var(--pad);padding:var(--pad) calc(var(--pad)*1.4)}
+
+  /* ---------- top: photo, bio, facts ---------- */
+  .top{min-height:0;display:grid;grid-template-columns:auto minmax(0,64ch) minmax(0,1fr);gap:calc(var(--pad)*1.6);align-items:start}
+
+  .photo{position:relative;width:min(16vw,200px);min-width:140px;height:auto;aspect-ratio:4/5;align-self:start;overflow:hidden;background:#1d1d1b;touch-action:manipulation}
+  .photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;-webkit-user-drag:none;user-select:none}
+  .photo .flip{visibility:hidden}
+  .photo.on .flip{visibility:visible}
+
+  .bio{min-height:0;align-self:start;line-height:1.4}
+  .bio p+p,.bio h1+p{margin-top:.7em}
+  .bio h1{font-size:inherit;font-weight:700}
+
+  .facts{align-self:start;list-style:none;line-height:1.6;justify-self:end;text-align:left;padding-right:.5vw}
+
+  /* ---------- drives ---------- */
+  .drives{display:grid;gap:var(--pad)}
+  .row{height:var(--drive-h);display:grid;grid-template-columns:minmax(150px,calc(var(--drive-h)*1.35)) minmax(0,1fr);align-items:center;gap:calc(var(--pad)*1.2)}
+
+  .drive-pair{position:relative;height:100%;min-width:0}
+  .drive{position:absolute;inset:0;height:100%;width:100%;display:flex;align-items:center;justify-content:center;min-width:0;touch-action:manipulation}
+  .drive:hover,.drive:focus-visible{z-index:4}
+  .drive img{max-width:100%;max-height:86%;object-fit:contain;display:block;transition:transform .45s var(--ease),filter .45s var(--ease);-webkit-user-drag:none;user-select:none}
+  .drive:hover img,.drive:focus-visible img{transform:translateY(-4px) scale(1.02);filter:brightness(1.06)}
+  .drive:active img{transform:scale(.98)}
+
+  .folder{height:100%;min-width:0;min-height:0;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:calc(var(--pad)*.6);
+    opacity:0;visibility:hidden;transform:translateX(-8px);transition:opacity .24s ease,transform .3s var(--ease),visibility 0s .3s}
+  .row.open .folder{opacity:1;visibility:visible;transform:none;transition:opacity .24s ease,transform .3s var(--ease)}
+
+  .arrow{position:relative;z-index:2;height:100%;min-height:52px;width:clamp(48px,4.2vw,64px);flex:none;display:grid;place-items:center;opacity:.78;touch-action:manipulation;cursor:pointer;transition:opacity .2s ease,transform .2s var(--ease)}
+  .arrow svg{width:58%;height:clamp(40px,8vh,72px);fill:none;stroke:var(--ink);stroke-width:1.2;stroke-linecap:square;vector-effect:non-scaling-stroke;overflow:visible;pointer-events:none;transition:transform .2s var(--ease)}
+  .arrow svg *{vector-effect:non-scaling-stroke}
+  .arrow:hover{opacity:1}
+  .arrow.prev:hover svg{transform:translateX(-4px)}
+  .arrow.next:hover svg{transform:translateX(4px)}
+  .arrow:active{transform:scale(.92)}
+  .arrow[disabled]{opacity:.18}
+
+  .track{height:100%;display:flex;align-items:center;gap:calc(var(--pad)*.75);overflow-x:auto;overflow-y:hidden;scrollbar-width:none;overscroll-behavior:contain;touch-action:pan-x}
+  .track::-webkit-scrollbar{display:none}
+  .track figure{position:relative;flex:0 0 clamp(76px,8vw,100px);height:100%;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8em}
+  .track img{height:calc(100% - 2.6em);width:100%;object-fit:contain;display:block;-webkit-user-drag:none;user-select:none}
+  .track figcaption{width:100%;text-align:center;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  /* ---------- cursor (same mark as index) ---------- */
+  #cursor-mark{position:fixed;left:-40px;top:-40px;width:28px;height:28px;z-index:4000;pointer-events:none;opacity:0;mix-blend-mode:difference;transition:opacity .12s ease}
+  #cursor-mark.visible{opacity:1}
+  #cursor-mark svg{display:block;width:100%;height:100%;fill:none;stroke:#fff;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round}
+  #cursor-mark .marks-closed{opacity:0;transition:opacity .12s ease}
+  #cursor-mark.dragging .marks-open{opacity:0}
+  #cursor-mark.dragging .marks-closed{opacity:1}
+  @media (pointer:coarse){#cursor-mark{display:none}}
+
+  /* ---------- narrow screens: the only place the page may scroll ---------- */
+  @media (max-width:860px){
+    :root{--fs:15px;--drive-h:128px}
+    body{overflow:auto}
+    main{height:auto;display:block}
+    .top{display:flex;flex-direction:column;gap:20px;margin-bottom:28px}
+    .photo{height:auto;width:min(52vw,220px);min-width:0}
+    .facts{align-self:start;justify-self:start}
+    .row{grid-template-columns:minmax(72px,104px) minmax(0,1fr);height:auto;min-height:var(--drive-h);gap:10px;margin-bottom:20px}
+    .drive-pair{height:var(--drive-h)}
+    .drive{height:100%}
+    .folder{height:var(--drive-h);max-height:0;overflow:hidden;grid-template-columns:48px minmax(0,1fr) 48px;gap:2px;transition:max-height .25s ease,opacity .2s ease,transform .25s var(--ease),visibility 0s .25s}
+    .row.open .folder{max-height:var(--drive-h);transition:max-height .25s ease,opacity .2s ease,transform .25s var(--ease)}
+    .arrow{width:48px;min-height:48px}
+    .arrow svg{width:55%;height:48px}
+  }
+  @media (min-width:861px) and (max-height:650px){
+    body{overflow:auto}
+    main{height:auto;min-height:100%;display:block}
+    .top{margin-bottom:var(--pad)}
+  }
+  @media (prefers-reduced-motion:reduce){.drive img,.folder,.arrow,.arrow svg{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <section class="top">
+    <div class="photo" id="photo" aria-label="Hein Htet Kyaw Woo Flo">
+      <img src="./TMI/Profile/Main%20Profile.png" alt="Hein Htet Kyaw Woo Flo">
+      <img class="flip" id="flip" alt="" aria-hidden="true">
+    </div>
+
+    <div class="bio">
+      <h1>Meet Hein Htet Kyaw Woo Flo.</h1>
+      <p>Son of a furniture designer, so ofc his drawings were never going to be normal. Think MS Paint, random Earth drawings, Power Rangers helmets and, naturally, very simple brown chairs.</p>
+      <p>Then came a tablet he shared with his sibling, and suddenly it was PicsArt, PixelLab and KineMaster. After high school, he finally met Photoshop CS6 and played around with it like a kid in a candy store. Then COVID happened, and he went all in on drawing classes and design courses, local and international, all from his screen.</p>
+      <p>Type crushes: Devil Breeze and ITC Avant Garde, thanks to an Imagine Dragons wordmark from the late 2010s. Yes, really.</p>
+      <p>He loves playing with typography and layouts. Colors? Still dancing with them, and still stepping on their toes.</p>
+      <p>Current status: walk around and find out, rooted in design and where it meets tech, business and art.</p>
+      <p>If you’re reading this in 2026 or 2027: he’s most likely working his ass off in the final year of his B.Sc (Hons), juggling a capstone and a pile of assignments. On the side, he works with a youth-led non-profit focused on art and design, and helps out an F&amp;B tech startup here and there.</p>
+      <p>If you’re reading this way beyond 2027: you’re probably watching him learn and design things he loves. Hopefully with better color skills.</p>
+    </div>
+
+    <ul class="facts">
+      <li>Gato person (none ever fostered, yet)</li>
+      <li>Top-tier avocado enjoyer</li>
+      <li>Multi-tab opener</li>
+      <li>Chrome and glow fetish</li>
+      <li>Attention to details (spelling not included)</li>
+    </ul>
+  </section>
+
+  <section class="drives" id="drives"></section>
+</main>
+
+<div id="cursor-mark" aria-hidden="true"><svg viewBox="0 0 20 20">
+  <path class="marks-open" d="M1 6V1h5M14 1h5v5M19 14v5h-5M6 19H1v-5"/>
+  <path class="marks-closed" d="M4 7V4h3M13 4h3v3M16 13v3h-3M7 16H4v-3"/>
+</svg></div>
+
+<script>
+(function(){
+  var src = function(p){ return "./TMI/" + p.split("/").map(encodeURIComponent).join("/"); };
+
+  /* ---------- profile: fixed main image; on hover the others flip too fast to focus on ---------- */
+  var photo = document.getElementById("photo"), flip = document.getElementById("flip");
+  var profiles = [];
+  for (var i = 2; i <= 14; i++) profiles.push(src("Profile/profile " + i + ".png"));
+  var cache = [], timer = null, n = 0, hovering = false;
+  function preload(){ if (cache.length) return; profiles.forEach(function(p){ var im = new Image(); im.src = p; cache.push(im); }); }
+  function start(){
+    preload();
+    if (timer) return;
+    photo.classList.add("on");
+    timer = setInterval(function(){ flip.src = profiles[n++ % profiles.length]; }, 70);
+  }
+  function stop(){ clearInterval(timer); timer = null; if (!hovering) photo.classList.remove("on"); }
+  function scheduleGlitch(){
+    setTimeout(function(){
+      if (!hovering){
+        start();
+        setTimeout(function(){ if (!hovering) stop(); }, 260 + Math.random() * 360);
+      }
+      scheduleGlitch();
+    }, 10000 + Math.random() * 5000);
+  }
+  photo.addEventListener("pointerenter", function(){ hovering = true; start(); });
+  photo.addEventListener("pointerleave", function(){ hovering = false; stop(); });
+  photo.addEventListener("pointercancel", function(){ hovering = false; stop(); });
+  setTimeout(preload, 600);
+  scheduleGlitch();
+
+  /* ---------- drives ---------- */
+  var files = [
+    "BIBI - Restless.mp3.png","Hot Fuzz.png","How To With John Wilson.png","Imagine Dragons - Polaroid.mp3.png",
+    "Journey Don't Stop Believin'.mp3.png","Jurassic Park.png","Lorde - Royals.mp3.png","Mötley Crüe - Home Sweet Home.mp3.png",
+    "Nathan For You.png","Prince and The Revolution - Purple Rain.mp3.png","Rocky.png","Sanjay and Craig.png",
+    "Supertramp - Shadow Song.mp3.png","Ted Lasso.png","The Karate Kid.png","The Sopranos.png",
+    "Ye-In - Now I Know (Bronze Remix).mp3.png"
+  ];
+  var drives = [
+    { file: "One Touch 1TB.png", name: "One Touch 1TB", className: "one-touch" }
+  ];
+  var chev = {
+    prev: '<svg viewBox="0 0 40 80" preserveAspectRatio="none"><polyline points="38,2 2,40 38,78"/></svg>',
+    next: '<svg viewBox="0 0 40 80" preserveAspectRatio="none"><polyline points="2,2 38,40 2,78"/></svg>'
+  };
+  var host = document.getElementById("drives");
+  var row = document.createElement("div");
+  row.className = "row";
+  row.innerHTML =
+    '<div class="drive-pair"></div>' +
+    '<div class="folder" role="region" aria-label="Movies and Song">' +
+      '<button class="arrow prev" type="button" aria-label="Previous">' + chev.prev + '</button>' +
+      '<div class="track"></div>' +
+      '<button class="arrow next" type="button" aria-label="Next">' + chev.next + '</button>' +
+    '</div>';
+  host.appendChild(row);
+
+  var pair = row.querySelector(".drive-pair"), track = row.querySelector(".track");
+  var prev = row.querySelector(".prev"), next = row.querySelector(".next");
+  var driveButtons = [], built = false, centered = false, cycleWidth = 0;
+
+  function measureCycle(){
+    var figures = track.querySelectorAll("figure");
+    if (figures.length > files.length){
+      cycleWidth = figures[files.length].getBoundingClientRect().left - figures[0].getBoundingClientRect().left;
+      if (!centered && cycleWidth > 0){ track.scrollLeft = cycleWidth * 2; centered = true; }
+    }
+  }
+  function loopScroll(){
+    measureCycle();
+    if (!cycleWidth) return;
+    if (track.scrollLeft < cycleWidth) track.scrollLeft += cycleWidth;
+    else if (track.scrollLeft >= cycleWidth * 4) track.scrollLeft -= cycleWidth;
+  }
+  function edges(){
+    prev.disabled = false;
+    next.disabled = false;
+    measureCycle();
+  }
+  function build(){
+    if (built) return; built = true;
+    for (var copy = 0; copy < 5; copy++){
+      files.forEach(function(f){
+        var fig = document.createElement("figure"), im = new Image(), cap = document.createElement("figcaption");
+        fig.title = f;
+        im.alt = ""; im.title = f; im.draggable = false; im.src = src("Movies and Song/" + f); im.onload = edges;
+        cap.textContent = f.replace(/\.png$/i, "");
+        cap.title = f;
+        fig.appendChild(im); fig.appendChild(cap); track.appendChild(fig);
+      });
+    }
+  }
+  drives.forEach(function(d){
+    var btn = document.createElement("button");
+    btn.className = "drive drive-" + d.className;
+    btn.type = "button";
+    btn.setAttribute("aria-expanded", "false");
+    btn.setAttribute("aria-label", d.name);
+    btn.innerHTML = '<img alt="" src="' + src("Drive/" + d.file) + '">';
+    pair.appendChild(btn);
+    driveButtons.push(btn);
+    btn.addEventListener("click", function(){
+      var open = !row.classList.contains("open");
+      row.classList.toggle("open", open);
+      driveButtons.forEach(function(item){
+        item.classList.toggle("selected", open && item === btn);
+        item.setAttribute("aria-expanded", open);
+      });
+      if (open){ build(); setTimeout(edges, 520); }
+    });
+  });
+  function go(dir){
+    measureCycle();
+    track.scrollLeft += dir * track.clientWidth * .8;
+    loopScroll();
+    edges();
+  }
+  prev.addEventListener("click", function(){ go(-1); });
+  next.addEventListener("click", function(){ go(1); });
+  track.addEventListener("scroll", function(){ loopScroll(); edges(); }, { passive: true });
+  window.addEventListener("resize", function(){ cycleWidth = 0; measureCycle(); edges(); });
+
+  /* wheel scrolls the folder sideways */
+  track.addEventListener("wheel", function(e){
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)){ track.scrollLeft += e.deltaY; e.preventDefault(); }
+  }, { passive: false });
+
+  /* drag to scroll with a mouse */
+  var down = false, sx = 0, sl = 0;
+  track.addEventListener("pointerdown", function(e){ if (e.pointerType !== "mouse") return; down = true; sx = e.clientX; sl = track.scrollLeft; });
+  window.addEventListener("pointermove", function(e){ if (down) track.scrollLeft = sl - (e.clientX - sx); });
+  window.addEventListener("pointerup", function(){ down = false; });
+
+  /* ---------- cursor mark ---------- */
+  var cur = document.getElementById("cursor-mark");
+  window.addEventListener("pointermove", function(e){
+    if (e.pointerType === "touch") return;
+    cur.style.transform = "translate(" + (e.clientX - 14) + "px," + (e.clientY - 14) + "px)";
+    cur.classList.add("visible");
+  });
+  document.addEventListener("pointerleave", function(){ cur.classList.remove("visible"); });
+  window.addEventListener("pointerdown", function(){ cur.classList.add("dragging"); });
+  window.addEventListener("pointerup", function(){ cur.classList.remove("dragging"); });
+})();
+</script>
+</body>
+</html>
