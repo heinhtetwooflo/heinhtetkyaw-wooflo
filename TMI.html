@@ -115,7 +115,7 @@
 <main>
   <section class="top">
     <div class="photo" id="photo" aria-label="Hein Htet Kyaw Woo Flo">
-      <img src="./TMI/Profile/Main%20Profile.png" alt="Hein Htet Kyaw Woo Flo">
+      <img src="./TMI/Profile/Main%20Profile.webp" alt="Hein Htet Kyaw Woo Flo" fetchpriority="high" decoding="async">
       <img class="flip" id="flip" alt="" aria-hidden="true">
     </div>
 
@@ -147,14 +147,14 @@
 
 <script>
 (function(){
-  var src = function(p){ return "./TMI/" + p.split("/").map(encodeURIComponent).join("/"); };
+  var src = function(p){ return "./TMI/" + p.replace(/\.png$/i, ".webp").split("/").map(encodeURIComponent).join("/"); };
 
   /* ---------- profile: fixed main image; on hover the others flip too fast to focus on ---------- */
   var photo = document.getElementById("photo"), flip = document.getElementById("flip");
   var profiles = [];
   for (var i = 2; i <= 14; i++) profiles.push(src("Profile/profile " + i + ".png"));
   var cache = [], timer = null, n = 0, hovering = false;
-  function preload(){ if (cache.length) return; profiles.forEach(function(p){ var im = new Image(); im.src = p; cache.push(im); }); }
+  function preload(){ if (cache.length) return; profiles.forEach(function(p){ var im = new Image(); im.decoding = "async"; im.src = p; cache.push(im); }); }
   function start(){
     preload();
     if (timer) return;
@@ -174,7 +174,6 @@
   photo.addEventListener("pointerenter", function(){ hovering = true; start(); });
   photo.addEventListener("pointerleave", function(){ hovering = false; stop(); });
   photo.addEventListener("pointercancel", function(){ hovering = false; stop(); });
-  setTimeout(preload, 600);
   scheduleGlitch();
 
   /* ---------- drives ---------- */
@@ -232,7 +231,7 @@
       files.forEach(function(f){
         var fig = document.createElement("figure"), im = new Image(), cap = document.createElement("figcaption");
         fig.title = f;
-        im.alt = ""; im.title = f; im.draggable = false; im.src = src("Movies and Song/" + f); im.onload = edges;
+        im.alt = ""; im.title = f; im.draggable = false; im.loading = "lazy"; im.decoding = "async"; im.src = src("Movies and Song/" + f); im.onload = edges;
         cap.textContent = f.replace(/\.png$/i, "");
         cap.title = f;
         fig.appendChild(im); fig.appendChild(cap); track.appendChild(fig);
