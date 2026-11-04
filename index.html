@@ -132,14 +132,15 @@
   @media (max-width:600px){
     #top-nav{top:calc(12px + env(safe-area-inset-top,0px));gap:32px}
     #top-nav a{font-size:15px;padding:10px 0}
-    #mobile-control-group{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:44px 128px 44px;column-gap:12px;align-items:center;width:max-content;transform:translateX(-50%);z-index:2600}
-    #top-controls{position:relative;top:auto;left:auto;bottom:auto;width:128px;height:44px;justify-content:center;gap:8px;transform:none}
+    #mobile-control-group{display:contents}
+    #top-controls{position:fixed;top:auto;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));width:128px;height:44px;justify-content:center;gap:8px;transform:translateX(-50%)}
     #timer{display:flex;align-items:center;justify-content:center;width:60px;height:44px;flex:none;text-align:center}
     #options-toggle{width:60px;height:44px;margin:0;padding:0;flex:none}
     #options-menu{top:auto;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%)}
+    #mobile-utility-controls{display:flex;gap:12px;min-height:44px}
     footer{left:0;right:0;bottom:calc(140px + env(safe-area-inset-bottom,0px));justify-content:center;flex-wrap:nowrap;gap:clamp(16px,7vw,26px);padding:0 12px}
     #sticker-size-control{width:120px;height:32px}
-    #clear-stickers,#fullscreen-toggle{position:relative;top:auto;right:auto;bottom:auto;left:auto;width:44px;height:44px;transform:none}
+    #mobile-utility-controls #clear-stickers,#mobile-utility-controls #fullscreen-toggle{position:relative;top:auto;right:auto;bottom:auto;left:auto;width:44px;height:44px;transform:none}
     footer a{font-size:12px;padding:10px 0}
   }
   @media (max-width:360px){
@@ -255,6 +256,7 @@
   <div id="options-menu" aria-hidden="true">
     <div class="option-row"><button id="screen-saver-toggle" class="circle-choice" type="button" role="switch" aria-checked="false" aria-label="Start screen saver" title="Start screen saver"><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path class="saver-play" d="M3 1.5 10 6l-7 4.5z"/><path class="saver-stop" d="M3 3h6v6H3z"/></svg></button><button id="ice-toggle" class="circle-choice" type="button" role="switch" aria-checked="false" aria-label="Ice hockey mode: sliding pucks" title="Ice hockey mode"><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><ellipse cx="6" cy="4.6" rx="4.6" ry="2"/><path d="M1.4 4.6v2.8c0 1.1 2 2 4.6 2s4.6-.9 4.6-2V4.6"/></svg></button><div id="sound-options" class="choice-group" role="radiogroup" aria-label="Sound effect set"><button class="circle-choice sound-choice" type="button" role="radio" data-mode="glassy" aria-checked="true" aria-label="A: glass sound set">A</button><button class="circle-choice sound-choice" type="button" role="radio" data-mode="alien" aria-checked="false" aria-label="B: alien sound set">B</button><button class="circle-choice sound-choice" type="button" role="radio" data-mode="wood" aria-checked="false" aria-label="C: wooden marimba sound set">C</button></div></div>
     <div class="option-row"><div id="sticker-size-control" class="choice-group" role="radiogroup" data-level="0" aria-label="Sticker scale"><button class="circle-choice size-choice" type="button" role="radio" data-scale-level="0" aria-checked="true" aria-label="Small">S</button><button class="circle-choice size-choice" type="button" role="radio" data-scale-level="1" aria-checked="false" aria-label="Medium">M</button><button class="circle-choice size-choice" type="button" role="radio" data-scale-level="2" aria-checked="false" aria-label="Large">L</button><button class="circle-choice size-choice" type="button" role="radio" data-scale-level="3" aria-checked="false" aria-label="Extra large">XL</button></div></div>
+    <div class="option-row" id="mobile-utility-controls"></div>
   </div>
 </div>
 <button id="clear-stickers" type="button" aria-label="Clear all stickers" title="Clear stickers"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M10 2.25v6.1M5.35 4.8a7.25 7.25 0 1 0 9.3 0"/></svg></button>
