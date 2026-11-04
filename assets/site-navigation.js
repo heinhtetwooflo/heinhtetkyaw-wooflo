@@ -7,19 +7,6 @@
   let navigationPending = false;
   const isHome = homePaths.has(window.location.pathname);
 
-  if (isHome) {
-    let returningHome = false;
-    try {
-      returningHome = sessionStorage.getItem('hwf-return-home') === '1';
-      sessionStorage.removeItem('hwf-return-home');
-    } catch {}
-
-    if (returningHome && !reducedMotion.matches) {
-      document.body.classList.add('nav-home-entering');
-      window.setTimeout(() => document.body.classList.remove('nav-home-entering'), 1000);
-    }
-  }
-
   let pressTimer = 0;
   let pressPointerId = null;
   let pressStartX = 0;
@@ -91,12 +78,7 @@
     const headingHome = homePaths.has(destination.pathname);
     if (leavingHome === headingHome) return;
 
-    if (headingHome) {
-      if (!reducedMotion.matches) {
-        try { sessionStorage.setItem('hwf-return-home', '1'); } catch {}
-      }
-      return;
-    }
+    if (headingHome) return;
 
     if (navigationPending) {
       event.preventDefault();
