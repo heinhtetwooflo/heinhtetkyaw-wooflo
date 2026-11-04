@@ -110,13 +110,15 @@
     .top{display:flex;flex-direction:column;gap:20px;margin-bottom:28px}
     .photo{height:auto;width:min(52vw,220px);min-width:0}
     .facts{align-self:start;justify-self:start}
-    .row{grid-template-columns:minmax(72px,104px) minmax(0,1fr);height:auto;min-height:var(--drive-h);gap:10px;margin-bottom:20px}
-    .drive-pair{height:var(--drive-h)}
+    .row{grid-template-columns:minmax(0,1fr);height:auto;min-height:0;gap:8px;margin-bottom:20px}
+    .drive-pair{height:96px}
     .drive{height:100%}
-    .folder{height:var(--drive-h);max-height:0;overflow:hidden;grid-template-columns:48px minmax(0,1fr) 48px;gap:2px;transition:max-height .25s ease,opacity .2s ease,transform .25s var(--ease),visibility 0s .25s}
-    .row.open .folder{max-height:var(--drive-h);transition:max-height .25s ease,opacity .2s ease,transform .25s var(--ease)}
-    .arrow{width:48px;min-height:48px}
+    .folder{height:156px;max-height:0;overflow:hidden;grid-template-columns:38px minmax(0,1fr) 38px;gap:0;transition:max-height .25s ease,opacity .2s ease,transform .25s var(--ease),visibility 0s .25s}
+    .row.open .folder{max-height:156px;transition:max-height .25s ease,opacity .2s ease,transform .25s var(--ease)}
+    .arrow{width:38px;min-height:48px}
     .arrow svg{width:55%;height:48px}
+    .track{gap:10px}
+    .track figure{flex-basis:clamp(84px,24vw,112px)}
     #top-nav{top:calc(12px + env(safe-area-inset-top,0px));gap:32px}
     #top-nav a{font-size:15px;padding:10px 0}
   }
@@ -235,6 +237,22 @@
   var pair = row.querySelector(".drive-pair"), track = row.querySelector(".track");
   var prev = row.querySelector(".prev"), next = row.querySelector(".next");
   var driveButtons = [], built = false, centered = false, cycleWidth = 0;
+  var AudioContextType = window.AudioContext || window.webkitAudioContext;
+  var driveAudio = null;
+  function playDriveSfx(){
+    if (!AudioContextType) return;
+    if (!driveAudio) driveAudio = new AudioContextType();
+    var now = driveAudio.currentTime;
+    var body = driveAudio.createOscillator(), click = driveAudio.createOscillator();
+    var bodyGain = driveAudio.createGain(), clickGain = driveAudio.createGain();
+    body.type = "sine"; body.frequency.setValueAtTime(190, now); body.frequency.exponentialRampToValueAtTime(70, now + .13);
+    click.type = "triangle"; click.frequency.setValueAtTime(840, now); click.frequency.exponentialRampToValueAtTime(280, now + .035);
+    bodyGain.gain.setValueAtTime(.0001, now); bodyGain.gain.exponentialRampToValueAtTime(.2, now + .008); bodyGain.gain.exponentialRampToValueAtTime(.0001, now + .14);
+    clickGain.gain.setValueAtTime(.0001, now); clickGain.gain.exponentialRampToValueAtTime(.07, now + .003); clickGain.gain.exponentialRampToValueAtTime(.0001, now + .04);
+    body.connect(bodyGain); bodyGain.connect(driveAudio.destination);
+    click.connect(clickGain); clickGain.connect(driveAudio.destination);
+    body.start(now); body.stop(now + .15); click.start(now); click.stop(now + .045);
+  }
 
   function measureCycle(){
     var figures = track.querySelectorAll("figure");
@@ -278,6 +296,7 @@
     pair.appendChild(btn);
     driveButtons.push(btn);
     btn.addEventListener("click", function(){
+      playDriveSfx();
       var open = !row.classList.contains("open");
       row.classList.toggle("open", open);
       driveButtons.forEach(function(item){
