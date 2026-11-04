@@ -892,7 +892,7 @@
   let down = false, px = 0, py = 0, carry = 0;
   const touchPoints = new Map();
   let touchSeedNote = null;
-  let sx = 0, sy = 0, moved = false, onLogo = false, pendingTap = false, pendingDesktopSticker = false, activePointerId = null;
+  let sx = 0, sy = 0, moved = false, onLogo = false, onLogoButton = false, pendingTap = false, pendingDesktopSticker = false, activePointerId = null;
   let longPressTimer = 0, pressX = 0, pressY = 0, pickupTimer = 0, holdTimer = 0, chargeTimer = 0, burstRepeatTimer = 0, stopCharge = null, holdFired = false;
   const holdTrailSvg = document.getElementById('hold-trails');
   const holdTrailElements = new Set();
@@ -1448,7 +1448,8 @@
     down = true; moved = false; holdFired = false;
     activePointerId = e.pointerId;
     px = sx = e.clientX; py = sy = e.clientY; carry = 0;
-    onLogo = !!e.target.closest('#logo, #figure');
+    onLogoButton = !!e.target.closest('#logo');
+    onLogo = onLogoButton || !!e.target.closest('#figure');
     pendingTap = onLogo;
     pendingDesktopSticker = e.pointerType !== 'touch' && !onLogo;
     if (!onLogo) pulseCursor();
@@ -1600,13 +1601,8 @@
         lastLogoTap = 0;
         showEgg();
       } else {
-        if (e.pointerType === 'touch' && logo.classList.contains('open')) {
-          lastLogoTap = 0;
-          logo.classList.remove('open');
-        } else {
-          lastLogoTap = now;
-          logo.classList.add('open');
-        }
+        lastLogoTap = now;
+        if (onLogoButton && e.pointerType !== 'touch') logo.classList.add('open');
       }
     } else {
       if (pendingDesktopSticker) {
