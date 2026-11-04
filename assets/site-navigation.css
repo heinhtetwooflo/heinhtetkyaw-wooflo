@@ -31,9 +31,9 @@
 .logo .cs>*{grid-area:1/1;transition:opacity .3s ease}
 .logo .cs .g{opacity:1}
 .logo .cs .t{opacity:0}
-.logo.open .cs,.logo-compact:hover .cs,.logo-compact:focus-visible .cs{width:var(--wo);margin-left:0}
-.logo.open .cs .g,.logo-compact:hover .cs .g,.logo-compact:focus-visible .cs .g{opacity:0;transition-delay:0s}
-.logo.open .cs .t,.logo-compact:hover .cs .t,.logo-compact:focus-visible .cs .t{opacity:1;transition-delay:.12s}
+.logo.open .cs,.logo-compact:hover .cs,.logo-compact:active .cs,.logo-compact:focus-visible .cs{width:var(--wo);margin-left:0}
+.logo.open .cs .g,.logo-compact:hover .cs .g,.logo-compact:active .cs .g,.logo-compact:focus-visible .cs .g{opacity:0;transition-delay:0s}
+.logo.open .cs .t,.logo-compact:hover .cs .t,.logo-compact:active .cs .t,.logo-compact:focus-visible .cs .t{opacity:1;transition-delay:.12s}
 .logo .ch{--wc:.6378em;--wo:.53em}
 .logo .cw{--wc:.9737em;--wo:.743em;margin-left:-.0289em}
 .logo .cf{--wc:.5508em;--wo:.309em;margin-left:-.022em}
@@ -45,19 +45,19 @@
   min-width:0;overflow:hidden;white-space:nowrap;padding:.4em .22em;margin:-.4em -.22em;
   opacity:0;transform:translateX(-.12em);transition:opacity .35s ease,transform .55s var(--ease);
 }
-.logo.open .seg,.logo-compact:hover .seg,.logo-compact:focus-visible .seg{grid-template-columns:1fr}
-.logo.open .seg>span,.logo-compact:hover .seg>span,.logo-compact:focus-visible .seg>span{opacity:1;transform:none}
-.logo.open .seg:nth-of-type(2)>span,.logo-compact:hover .seg:nth-of-type(2)>span,.logo-compact:focus-visible .seg:nth-of-type(2)>span{transition-delay:.06s}
-.logo.open .seg:nth-of-type(3)>span,.logo-compact:hover .seg:nth-of-type(3)>span,.logo-compact:focus-visible .seg:nth-of-type(3)>span{transition-delay:.12s}
+.logo.open .seg,.logo-compact:hover .seg,.logo-compact:active .seg,.logo-compact:focus-visible .seg{grid-template-columns:1fr}
+.logo.open .seg>span,.logo-compact:hover .seg>span,.logo-compact:active .seg>span,.logo-compact:focus-visible .seg>span{opacity:1;transform:none}
+.logo.open .seg:nth-of-type(2)>span,.logo-compact:hover .seg:nth-of-type(2)>span,.logo-compact:active .seg:nth-of-type(2)>span,.logo-compact:focus-visible .seg:nth-of-type(2)>span{transition-delay:.06s}
+.logo.open .seg:nth-of-type(3)>span,.logo-compact:hover .seg:nth-of-type(3)>span,.logo-compact:active .seg:nth-of-type(3)>span,.logo-compact:focus-visible .seg:nth-of-type(3)>span{transition-delay:.12s}
 .logo.nav-leaving .cs,.logo.nav-leaving .seg,.logo.nav-leaving .sep,
 .logo.nav-leaving .cs>*,.logo.nav-leaving .seg>span,.logo.nav-leaving .sep i{transition:none!important}
 .sep{display:inline-grid;align-items:baseline;margin-left:.0553em;transition:margin .5s var(--ease)}
-.logo.open .sep,.logo-compact:hover .sep,.logo-compact:focus-visible .sep{margin-left:0;margin-right:-.07em}
+.logo.open .sep,.logo-compact:hover .sep,.logo-compact:active .sep,.logo-compact:focus-visible .sep{margin-left:0;margin-right:-.07em}
 .sep i{grid-area:1/1;font-style:normal;transition:opacity .3s ease,transform .5s var(--ease)}
 .sep .dash{opacity:1}
 .sep .dot{opacity:0;transform:translateY(-.28em)}
-.logo.open .sep .dash,.logo-compact:hover .sep .dash,.logo-compact:focus-visible .sep .dash{opacity:0;transform:translateY(.3em) scaleX(.35)}
-.logo.open .sep .dot,.logo-compact:hover .sep .dot,.logo-compact:focus-visible .sep .dot{opacity:1;transform:none;transition-delay:.08s}
+.logo.open .sep .dash,.logo-compact:hover .sep .dash,.logo-compact:active .sep .dash,.logo-compact:focus-visible .sep .dash{opacity:0;transform:translateY(.3em) scaleX(.35)}
+.logo.open .sep .dot,.logo-compact:hover .sep .dot,.logo-compact:active .sep .dot,.logo-compact:focus-visible .sep .dot{opacity:1;transform:none;transition-delay:.08s}
 .logo:focus-visible{outline:1px solid currentColor;outline-offset:3px}
 
 #top-nav{position:fixed;top:calc(20px + env(safe-area-inset-top,0px));left:50%;z-index:2500;display:flex;align-items:center;gap:clamp(20px,4vw,48px);transform:translateX(-50%)}
@@ -82,11 +82,12 @@
   .logo .seg>span{transform:none;transition:opacity .12s linear}
   .logo.open .seg:nth-of-type(2)>span,.logo.open .seg:nth-of-type(3)>span,
   .logo-compact:hover .seg:nth-of-type(2)>span,.logo-compact:hover .seg:nth-of-type(3)>span,
+  .logo-compact:active .seg:nth-of-type(2)>span,.logo-compact:active .seg:nth-of-type(3)>span,
   .logo-compact:focus-visible .seg:nth-of-type(2)>span,.logo-compact:focus-visible .seg:nth-of-type(3)>span{transition-delay:0s}
   .logo .sep{transition:margin .2s ease-out}
   .logo .sep i{transform:none;transition:opacity .12s linear}
-  .logo.open .sep .dash,.logo-compact:hover .sep .dash,.logo-compact:focus-visible .sep .dash{transform:none}
-  .logo.open .sep .dot,.logo-compact:hover .sep .dot,.logo-compact:focus-visible .sep .dot{transform:none;transition-delay:0s}
+  .logo.open .sep .dash,.logo-compact:hover .sep .dash,.logo-compact:active .sep .dash,.logo-compact:focus-visible .sep .dash{transform:none}
+  .logo.open .sep .dot,.logo-compact:hover .sep .dot,.logo-compact:active .sep .dot,.logo-compact:focus-visible .sep .dot{transform:none;transition-delay:0s}
   .logo-compact{--logo-size:14px;top:calc(19px + env(safe-area-inset-top,0px))}
   #top-nav{top:calc(12px + env(safe-area-inset-top,0px));gap:clamp(10px,4vw,24px)}
   #top-nav a{font-size:15px;padding:10px 0}
