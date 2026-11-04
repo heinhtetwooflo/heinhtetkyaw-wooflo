@@ -16,7 +16,7 @@
 
     if (returningHome && !reducedMotion.matches) {
       document.body.classList.add('nav-home-entering');
-      window.setTimeout(() => document.body.classList.remove('nav-home-entering'), 520);
+      window.setTimeout(() => document.body.classList.remove('nav-home-entering'), 1000);
     }
   }
 

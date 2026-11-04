@@ -21,8 +21,20 @@
 }
 .logo-compact.logo-on-light{color:#4D4D4D}
 .logo-compact.logo-on-light .g{filter:none}
-@keyframes home-page-arrival{from{opacity:0}to{opacity:1}}
-body.nav-home-entering{animation:home-page-arrival .48s ease-out both}
+@property --home-reveal-radius{
+  syntax:"<length>";inherits:false;initial-value:0px;
+}
+@keyframes home-page-reveal{
+  from{--home-reveal-radius:45vw}
+  to{--home-reveal-radius:160vmax}
+}
+body.nav-home-entering::after{
+  content:"";position:fixed;inset:0;z-index:9999;pointer-events:none;background:var(--bg);
+  --home-reveal-radius:45vw;
+  -webkit-mask-image:radial-gradient(circle at center,transparent 0,transparent calc(var(--home-reveal-radius) - 18px),#000 var(--home-reveal-radius));
+  mask-image:radial-gradient(circle at center,transparent 0,transparent calc(var(--home-reveal-radius) - 18px),#000 var(--home-reveal-radius));
+  animation:home-page-reveal .92s cubic-bezier(.2,.75,.2,1) both;
+}
 .logo .g{display:block;height:.715em;filter:brightness(0) invert(1)}
 .logo .cs{display:inline-grid;align-items:baseline;width:var(--wc);transition:width .55s var(--ease),margin .5s var(--ease)}
 .logo .cs>*{grid-area:1/1;transition:opacity .3s ease}
@@ -111,5 +123,5 @@ body.nav-home-entering{animation:home-page-arrival .48s ease-out both}
 
 @media (prefers-reduced-motion:reduce){
   .logo,.logo * ,#top-nav a{transition:none!important}
-  body.nav-home-entering{animation:none!important}
+  body.nav-home-entering::after{animation:none!important;display:none}
 }
