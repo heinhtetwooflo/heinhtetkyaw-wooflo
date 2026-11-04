@@ -42,7 +42,6 @@ body.nav-return-cover::after{
 html.nav-home-return body.nav-home-reveal::after{
   animation:nav-home-reveal .5s cubic-bezier(.2,.7,.25,1) forwards;
 }
-@keyframes nav-home-reveal{to{transform:translateY(100%)}}
 body.nav-page-cover::after{
   background:var(--nav-page-target,var(--bg,#141413));
   transform:scaleY(0);transform-origin:top;
@@ -57,7 +56,8 @@ html.nav-page-arrival::after{
 html.nav-page-arrival.nav-page-revealing::after{
   animation:nav-page-reveal .34s cubic-bezier(.4,0,.2,1) forwards;
 }
-@keyframes nav-page-reveal{to{transform:translateY(100%)}}
+@keyframes nav-home-reveal{to{opacity:0}}
+@keyframes nav-page-reveal{to{opacity:0}}
 html.nav-transition-active .logo{
   color:#f7f6f4!important;mix-blend-mode:difference!important;
 }
