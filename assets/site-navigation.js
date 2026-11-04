@@ -15,8 +15,8 @@
     } catch {}
 
     if (returningHome && !reducedMotion.matches) {
-      logo.classList.add('nav-home-arriving');
-      window.setTimeout(() => logo.classList.remove('nav-home-arriving'), 700);
+      document.body.classList.add('nav-home-entering');
+      window.setTimeout(() => document.body.classList.remove('nav-home-entering'), 520);
     }
   }
 

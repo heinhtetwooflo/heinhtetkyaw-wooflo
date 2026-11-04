@@ -21,11 +21,8 @@
 }
 .logo-compact.logo-on-light{color:#4D4D4D}
 .logo-compact.logo-on-light .g{filter:none}
-@keyframes home-logo-arrival{
-  from{opacity:0;transform:translate(-50%,-50%) scale(.12)}
-  to{opacity:1;transform:translate(-50%,-50%) scale(1)}
-}
-.logo-home.nav-home-arriving{animation:home-logo-arrival .62s cubic-bezier(.2,.8,.25,1) both}
+@keyframes home-page-arrival{from{opacity:0}to{opacity:1}}
+body.nav-home-entering{animation:home-page-arrival .48s ease-out both}
 .logo .g{display:block;height:.715em;filter:brightness(0) invert(1)}
 .logo .cs{display:inline-grid;align-items:baseline;width:var(--wc);transition:width .55s var(--ease),margin .5s var(--ease)}
 .logo .cs>*{grid-area:1/1;transition:opacity .3s ease}
@@ -114,4 +111,5 @@
 
 @media (prefers-reduced-motion:reduce){
   .logo,.logo * ,#top-nav a{transition:none!important}
+  body.nav-home-entering{animation:none!important}
 }
