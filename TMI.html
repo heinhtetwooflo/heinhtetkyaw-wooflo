@@ -22,6 +22,7 @@
     color-scheme:dark;
   }
   *{box-sizing:border-box;margin:0;padding:0}
+  img{-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none;-webkit-user-select:none}
   html,body{height:100%}
   body{
     background:var(--bg);color:var(--ink);font-family:var(--font);font-weight:500;font-size:var(--fs);
@@ -137,8 +138,8 @@
 <main>
   <section class="top">
     <div class="photo" id="photo" aria-label="Hein Htet Kyaw Woo Flo">
-      <img src="./TMI/Profile/Main%20Profile.webp" alt="Hein Htet Kyaw Woo Flo" fetchpriority="high" decoding="async">
-      <img class="flip" id="flip" alt="" aria-hidden="true">
+      <img src="./TMI/Profile/Main%20Profile.webp" alt="Hein Htet Kyaw Woo Flo" fetchpriority="high" decoding="async" draggable="false">
+      <img class="flip" id="flip" alt="" aria-hidden="true" draggable="false">
     </div>
 
     <div class="bio">
@@ -148,7 +149,7 @@
       <p>His first type crushes were Devil Breeze and ITC Avant Garde, rooted in the late-2010s Imagine Dragons wordmark.</p>
       <p>He loves playing around with typography and layouts but is still struggling while dancing with colors.</p>
       <p>Currently in a walk-around-and-find-out state, rooted in design and its intersection with tech, business and art.</p>
-      <p>If you are reading this in 2026 or 2027, he’s pretty sure to be working his ass off in the final year of his B.Sc (Hons), with one capstone and assignments in line, while working for a <span class="brand-preview"><button class="brand-trigger" type="button" aria-expanded="false">non-profit, youth-led organization</button><span class="brand-card"><img src="./TMI/Logos/allyours.svg" alt="Allyours logo"></span></span> focused on art and design and helping out here and there at an <span class="brand-preview"><button class="brand-trigger" type="button" aria-expanded="false">F&amp;B tech startup</button><span class="brand-card"><img src="./TMI/Logos/orderflow.svg" alt="Orderflow logo"></span></span>. But if you are reading this from way beyond 2027, you are probably witnessing him learning and designing things he loves.</p>
+      <p>If you are reading this in 2026 or 2027, he’s pretty sure to be working his ass off in the final year of his B.Sc (Hons), with one capstone and assignments in line, while working for a <span class="brand-preview"><button class="brand-trigger" type="button" aria-expanded="false">non-profit, youth-led organization</button><span class="brand-card"><img src="./TMI/Logos/allyours.svg" alt="Allyours logo" draggable="false"></span></span> focused on art and design and helping out here and there at an <span class="brand-preview"><button class="brand-trigger" type="button" aria-expanded="false">F&amp;B tech startup</button><span class="brand-card"><img src="./TMI/Logos/orderflow.svg" alt="Orderflow logo" draggable="false"></span></span>. But if you are reading this from way beyond 2027, you are probably witnessing him learning and designing things he loves.</p>
     </div>
 
     <ul class="facts">
@@ -171,6 +172,13 @@
 <script>
 (function(){
   var src = function(p){ return "./TMI/" + p.replace(/\.png$/i, ".webp").split("/").map(encodeURIComponent).join("/"); };
+
+  document.addEventListener("contextmenu", function(e){
+    if (e.target.closest("img")) e.preventDefault();
+  });
+  document.addEventListener("dragstart", function(e){
+    if (e.target.closest("img")) e.preventDefault();
+  });
 
   var brandPreviews = document.querySelectorAll(".brand-preview");
   brandPreviews.forEach(function(preview){
@@ -297,7 +305,7 @@
     btn.type = "button";
     btn.setAttribute("aria-expanded", "false");
     btn.setAttribute("aria-label", d.name);
-    btn.innerHTML = '<img alt="" src="' + src("Drive/" + d.file) + '">';
+    btn.innerHTML = '<img alt="" draggable="false" src="' + src("Drive/" + d.file) + '">';
     pair.appendChild(btn);
     driveButtons.push(btn);
     btn.addEventListener("click", function(){
