@@ -56,7 +56,6 @@
     display:block;width:min(64vw,40vh,340px);height:auto;overflow:visible;
     touch-action:manipulation;cursor:pointer;
   }
-  @media (pointer:fine){#figure{cursor:none}}
   #figure .zone{fill:transparent}
   #figure .face-shift,#figure .brain-shift{transform-box:fill-box;transform-origin:center;transition:transform .65s var(--spring)}
   #figure.lift-brain .brain-shift{transform:translateY(-40px) rotate(-3deg)}
@@ -85,7 +84,7 @@
   .circle-choice{border-color:rgba(20,20,19,.52)}
   #fill-preview{border-color:rgba(20,20,19,.62);background:rgba(20,20,19,.035)}
   #cursor-mark svg{stroke:var(--ink)}
-  #cursor-mark.over-logo::after{width:10px;height:10px;border:1px solid var(--ink);box-shadow:0 0 0 1px var(--bg)}
+  #cursor-mark.over-logo{opacity:0}
   #hold-ring .hold-progress{fill:var(--ink)}
 
   @media (prefers-reduced-motion:reduce){
