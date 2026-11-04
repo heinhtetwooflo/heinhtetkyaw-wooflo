@@ -3,6 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>
+  try {
+    const pageArrival = sessionStorage.getItem('hwf-page-arrival') || '';
+    const separator = pageArrival.lastIndexOf('|');
+    const arrivalPath = pageArrival.slice(0, separator);
+    const arrivalTime = Number(pageArrival.slice(separator + 1));
+    const currentPath = location.pathname.replace(/\/+$/, '') || '/';
+    if (arrivalPath === currentPath && arrivalTime > 0 && Date.now() - arrivalTime < 30000 &&
+        !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.classList.add('nav-page-arrival');
+    }
+    sessionStorage.removeItem('hwf-page-arrival');
+  } catch {}
+</script>
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#141413">
 <title>heinhtetkyaw.wooflo</title>

@@ -28,6 +28,25 @@
   let navigationPending = false;
   const isHome = homePaths.has(window.location.pathname);
 
+  if (document.documentElement.classList.contains('nav-page-arrival')) {
+    const finishReveal = event => {
+      if (event.animationName !== 'nav-page-reveal') return;
+      document.documentElement.classList.remove('nav-page-revealing');
+      document.documentElement.classList.remove('nav-page-arrival');
+    };
+
+    document.documentElement.addEventListener('animationend', finishReveal);
+    const revealPage = () => {
+      if (reducedMotion.matches) {
+        document.documentElement.classList.remove('nav-page-arrival');
+        return;
+      }
+      window.requestAnimationFrame(() => document.documentElement.classList.add('nav-page-revealing'));
+    };
+    if (document.readyState === 'complete') revealPage();
+    else window.addEventListener('load', revealPage, { once: true });
+  }
+
   if (isHome && document.documentElement.classList.contains('nav-home-return')) {
     const finishReveal = event => {
       if (event.animationName !== 'nav-home-reveal') return;
@@ -114,9 +133,13 @@
     const destination = new URL(link.href, window.location.href);
     if (destination.origin !== window.location.origin) return;
 
+    const currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
+    const destinationPath = destination.pathname.replace(/\/+$/, '') || '/';
+    if (currentPath === destinationPath) return;
+
     const leavingHome = isHome;
-    const headingHome = homePaths.has(destination.pathname);
-    if (leavingHome === headingHome) return;
+    const headingHome = homePaths.has(destinationPath);
+    if (leavingHome && headingHome) return;
 
     if (headingHome) {
       if (reducedMotion.matches) return;
@@ -135,6 +158,30 @@
       logo.classList.add('nav-returning');
       document.body.classList.add('nav-return-cover');
       window.setTimeout(() => window.location.assign(destination.href), 460);
+      return;
+    }
+
+    if (!leavingHome) {
+      if (reducedMotion.matches) {
+        window.location.assign(destination.href);
+        return;
+      }
+
+      event.preventDefault();
+      if (navigationPending) return;
+
+      try {
+        window.sessionStorage.setItem('hwf-page-arrival', `${destinationPath}|${Date.now()}`);
+      } catch {
+        window.location.assign(destination.href);
+        return;
+      }
+
+      navigationPending = true;
+      const targetColor = destinationPath === '/work' ? '#ffffff' : '#141413';
+      document.documentElement.style.setProperty('--nav-page-target', targetColor);
+      document.body.classList.add('nav-page-cover');
+      window.setTimeout(() => window.location.assign(destination.href), 240);
       return;
     }
 
