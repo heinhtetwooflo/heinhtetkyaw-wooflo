@@ -9,6 +9,7 @@
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preload" href="/assets/nhd-500.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/nhd-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/work-interactions.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -19,6 +20,7 @@
   :root{
     --bg:#ffffff;
     --ink:#141413;
+    --mute:#141413;
     color-scheme:light;
     --font:"NHD","Neue Haas Grotesk Display Pro","Neue Haas Grotesk Text Pro","Neue Haas Grotesk",Inter,system-ui,sans-serif;
     --ease:cubic-bezier(.3,.7,.15,1);
@@ -51,7 +53,7 @@
 
   /* ---------- figure ---------- */
   #figure{
-    display:block;width:min(70vw,44vh,380px);height:auto;overflow:visible;
+    display:block;width:min(64vw,40vh,340px);height:auto;overflow:visible;
     touch-action:manipulation;cursor:pointer;
   }
   #figure .zone{fill:transparent}
@@ -66,11 +68,12 @@
 
   h1{
     margin-top:clamp(20px,4.5vh,40px);
-    font-weight:700;font-size:clamp(28px,5.6vw,60px);letter-spacing:-.04em;line-height:1.02;
+    color:#4D4D4D;font-weight:700;font-size:clamp(28px,5.6vw,60px);letter-spacing:-.04em;line-height:1.02;
   }
 
   /* ---------- easter egg (same as home) ---------- */
   #egg{position:fixed;inset:0;z-index:3000;display:none;align-items:center;justify-content:center;pointer-events:none;outline:none}
+  #egg{inset:auto;width:0;height:0}
   #egg.show{display:flex;pointer-events:none}
   #egg .bob{display:block}
   #egg img{
@@ -78,6 +81,12 @@
     filter:drop-shadow(0 22px 34px rgba(0,0,0,.28));
   }
   @media (max-width:600px){#egg img{width:min(42vw,34vh)}}
+  .circle-choice{border-color:rgba(20,20,19,.52)}
+  #fill-preview{border-color:rgba(20,20,19,.62);background:rgba(20,20,19,.035)}
+  #cursor-mark svg{stroke:var(--ink)}
+  #cursor-mark::after{background:var(--ink)}
+  #hold-ring .hold-progress{fill:var(--ink)}
+  #guide{color:#f7f6f4}
 
   @media (prefers-reduced-motion:reduce){
     #figure .brain-bob{animation:none;transform:translateY(-12px)}
@@ -112,95 +121,39 @@
   <h1>under construction<br>due to procrastination</h1>
 </main>
 
+<div id="cursor-mark" aria-hidden="true"><svg viewBox="0 0 20 20">
+  <path class="marks-open" d="M1 6V1h5M14 1h5v5M19 14v5h-5M6 19H1v-5"/>
+  <path class="marks-closed" d="M4 7V4h3M13 4h3v3M16 13v3h-3M7 16H4v-3"/>
+</svg></div>
+<div id="hold-ring" aria-hidden="true"><svg viewBox="0 0 16 16"><rect class="hold-progress" x="2" y="2" width="12" height="12"/></svg></div>
+
+<div id="top-controls">
+  <button id="timer" type="button" aria-label="Start the looping 30-second countdown and timed pop-up" aria-pressed="false">30:000:00</button>
+  <button id="options-toggle" type="button" aria-label="Open sound and sticker settings" aria-expanded="false" aria-controls="options-menu"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path class="dropdown-caret" d="M4 7h12l-6 6z"/></svg></button>
+  <div id="options-menu" aria-hidden="true">
+    <div class="option-row"><button id="screen-saver-toggle" class="circle-choice" type="button" role="switch" aria-checked="false" aria-label="Start screen saver" title="Start screen saver"><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path class="saver-play" d="M3 1.5 10 6l-7 4.5z"/><path class="saver-stop" d="M3 3h6v6H3z"/></svg></button><button id="ice-toggle" class="circle-choice" type="button" role="switch" aria-checked="false" aria-label="Ice hockey mode: sliding pucks" title="Ice hockey mode"><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><ellipse cx="6" cy="4.6" rx="4.6" ry="2"/><path d="M1.4 4.6v2.8c0 1.1 2 2 4.6 2s4.6-.9 4.6-2V4.6"/></svg></button><div id="sound-options" class="choice-group" role="radiogroup" aria-label="Sound effect set"><button class="circle-choice sound-choice" type="button" role="radio" data-mode="glassy" aria-checked="true" aria-label="A: glass sound set">A</button><button class="circle-choice sound-choice" type="button" role="radio" data-mode="alien" aria-checked="false" aria-label="B: alien sound set">B</button><button class="circle-choice sound-choice" type="button" role="radio" data-mode="wood" aria-checked="false" aria-label="C: wooden marimba sound set">C</button></div></div>
+    <div class="option-row"><div id="sticker-size-control" class="choice-group" role="radiogroup" data-level="0" aria-label="Sticker scale"><button class="circle-choice size-choice" type="button" role="radio" data-scale-level="0" aria-checked="true" aria-label="Small">S</button><button class="circle-choice size-choice" type="button" role="radio" data-scale-level="1" aria-checked="false" aria-label="Medium">M</button><button class="circle-choice size-choice" type="button" role="radio" data-scale-level="2" aria-checked="false" aria-label="Large">L</button><button class="circle-choice size-choice" type="button" role="radio" data-scale-level="3" aria-checked="false" aria-label="Extra large">XL</button></div></div>
+  </div>
+</div>
+<button id="clear-stickers" type="button" aria-label="Clear all stickers" title="Clear stickers"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M10 2.25v6.1M5.35 4.8a7.25 7.25 0 1 0 9.3 0"/></svg></button>
+<button id="fullscreen-toggle" type="button" aria-label="Enter fullscreen" title="Enter fullscreen"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M1.8 10s2.9-5.1 8.2-5.1 8.2 5.1 8.2 5.1-2.9 5.1-8.2 5.1S1.8 10 1.8 10Z"/><circle cx="10" cy="10" r="2.25"/></svg></button>
+<div id="layer"><svg id="hold-trails" aria-hidden="true"></svg></div>
+<div id="fill-preview" aria-hidden="true"></div>
+<div id="tab-hint" aria-hidden="true"><svg viewBox="0 0 46 32"><rect class="key" x=".7" y=".7" width="44.6" height="30.6" rx="8"/><path class="glyph" d="M12 16h17M24 10l6 6-6 6M35 9.5v13"/></svg></div>
 <div id="egg" aria-hidden="true"><span class="bob"><img id="eggimg" alt=""></span></div>
 
-<script>
-(() => {
-  const HEAD_URI = "/assets/egg-head.webp";
-  const SND_URI  = "/assets/site-sound.mp3";
-  const EGG_MS = 1280, DBL_MS = 500;
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+<div id="guide" role="dialog" aria-modal="true" aria-label="Guide" aria-hidden="true" tabindex="-1">
+  <div class="text">
+    <p>Click or tap to stamp a sticker; drag to paint.</p>
+    <p>Tap six times for a burst; hold to keep bursting.</p>
+    <p>Right-click drag or use two fingers to fill an area.</p>
+    <p>Hold a sticker to move it; stickers peel away after a few seconds.</p>
+    <p>Press Tab to toggle hockey mode; stickers slide, bounce, collide and spin.</p>
+    <p>Double-tap the head for the easter egg.</p>
+    <p>Use the timer, settings, sticker size, clear and fullscreen controls to customize the page.</p>
+  </div>
+</div>
 
-  /* ---------- hover: pull the brain and face further apart ---------- */
-  const fig = document.getElementById('figure');
-  const zones = [['zone-brain', 'lift-brain'], ['zone-face', 'drop-face']];
-  let touchTimer = 0;
-  zones.forEach(([id, cls]) => {
-    const z = document.getElementById(id);
-    z.addEventListener('pointerenter', e => {
-      clearTimeout(touchTimer);
-      fig.classList.add(cls);
-      if (e.pointerType === 'touch') touchTimer = setTimeout(() => fig.classList.remove(cls), 1400);
-    });
-    z.addEventListener('pointerleave', e => { if (e.pointerType !== 'touch') fig.classList.remove(cls); });
-    z.addEventListener('pointercancel', () => fig.classList.remove(cls));
-  });
-
-  /* ---------- easter egg: double-tap / double-click the figure ---------- */
-  const egg = document.getElementById('egg');
-  const eggImg = document.getElementById('eggimg');
-  const eggBob = egg.querySelector('.bob');
-  eggImg.src = HEAD_URI;
-  const eggAudio = new Audio(SND_URI); eggAudio.preload = 'auto';
-  let eggOpen = false, eggTimer = 0, eggBobAnim = null, eggShownAt = 0, lastTap = 0;
-
-  function showEgg() {
-    if (eggOpen) return;
-    eggOpen = true;
-    egg.classList.add('show'); egg.setAttribute('aria-hidden', 'false');
-    eggShownAt = performance.now();
-    let playing = false;
-    try {
-      eggAudio.currentTime = 0;
-      const pr = eggAudio.play(); playing = true;
-      if (pr && pr.catch) pr.catch(() => { clearTimeout(eggTimer); eggTimer = setTimeout(() => hideEgg(), 1600); });
-    } catch (_) {}
-    if (!reduce) {
-      eggImg.animate([
-        { transform: 'scale(.15) rotate(-10deg)', opacity: 0 },
-        { transform: 'scale(1.1) rotate(2deg)', opacity: 1, offset: .6 },
-        { transform: 'scale(.97) rotate(-1deg)', offset: .82 },
-        { transform: 'scale(1) rotate(0deg)' }
-      ], { duration: 420, easing: 'cubic-bezier(.3,.7,.2,1)' });
-      eggBobAnim = eggBob.animate([
-        { transform: 'translateY(0) scale(1)' },
-        { transform: 'translateY(-6px) scale(1.025)' },
-        { transform: 'translateY(0) scale(1)' }
-      ], { duration: 340, iterations: Infinity, easing: 'ease-in-out', delay: 420 });
-    }
-    clearTimeout(eggTimer);
-    eggTimer = setTimeout(() => hideEgg(), playing ? 8000 : 1600);   // safety net; 'ended' closes it
-  }
-  function hideEgg() {
-    if (!eggOpen) return;
-    eggOpen = false; clearTimeout(eggTimer);
-    try { eggAudio.pause(); } catch (_) {}
-    if (eggBobAnim) eggBobAnim.cancel();
-    const done = () => { egg.classList.remove('show'); egg.setAttribute('aria-hidden', 'true'); };
-    if (reduce) return done();
-    eggImg.animate([
-      { transform: 'scale(1)', opacity: 1 },
-      { transform: 'scale(1.06)', opacity: 1, offset: .5 },
-      { transform: 'scale(.2) rotate(8deg)', opacity: 0 }
-    ], { duration: 260, easing: 'cubic-bezier(.3,.7,.2,1)', fill: 'forwards' }).onfinish = () => { done(); eggImg.getAnimations().forEach(a => a.cancel()); };
-  }
-
-  fig.addEventListener('pointerup', () => {
-    const now = performance.now();
-    if (lastTap && now - lastTap < DBL_MS) { lastTap = 0; showEgg(); }
-    else lastTap = now;
-  });
-  eggAudio.addEventListener('playing', () => {
-    if (!eggOpen) return;
-    clearTimeout(eggTimer); eggTimer = setTimeout(() => hideEgg(), EGG_MS + 800);
-  });
-  eggAudio.addEventListener('ended', hideEgg);
-  eggImg.addEventListener('click', () => {
-    if (performance.now() - eggShownAt <= 220) return;   // ignore the click a phone synthesises after the double tap
-    hideEgg();
-  });
-  addEventListener('keydown', e => { if (e.key === 'Escape') hideEgg(); });
-})();
-</script>
+<script src="/assets/work-interactions.js"></script>
 </body>
 </html>
