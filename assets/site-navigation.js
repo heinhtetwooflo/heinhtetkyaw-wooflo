@@ -13,13 +13,10 @@
     if (arrivalTime > 0 && Date.now() - arrivalTime < 30000 && !reducedMotion.matches) {
       logo.classList.add('nav-arriving-home');
       const startArrival = () => window.requestAnimationFrame(() => {
-        window.requestAnimationFrame(() => logo.classList.remove('nav-arriving-home'));
+        logo.classList.remove('nav-arriving-home');
       });
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', startArrival, { once: true });
-      } else {
-        startArrival();
-      }
+      if (document.readyState === 'complete') startArrival();
+      else window.addEventListener('load', startArrival, { once: true });
     }
   }
 

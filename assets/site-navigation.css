@@ -58,6 +58,7 @@
 .sep .dot{opacity:0;transform:translateY(-.28em)}
 .logo.open .sep .dash,.logo-compact:hover .sep .dash,.logo-compact:focus-visible .sep .dash{opacity:0;transform:translateY(.3em) scaleX(.35)}
 .logo.open .sep .dot,.logo-compact:hover .sep .dot,.logo-compact:focus-visible .sep .dot{opacity:1;transform:none;transition-delay:.08s}
+.logo.nav-arriving-home{pointer-events:none}
 .logo:focus-visible{outline:1px solid currentColor;outline-offset:3px}
 
 #top-nav{position:fixed;top:calc(20px + env(safe-area-inset-top,0px));left:50%;z-index:2500;display:flex;align-items:center;gap:clamp(20px,4vw,48px);transform:translateX(-50%)}
