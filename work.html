@@ -3,37 +3,204 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#141413">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#ffffff">
 <title>Work — heinhtetkyaw.wooflo</title>
-<link rel="icon" type="image/png" href="./favicon.png">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preload" href="/assets/nhd-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/nhd-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  @font-face{font-family:"NHD";font-weight:700;font-style:normal;font-display:swap;src:url("./assets/nhd-700.woff2") format("woff2")}
-  @font-face{font-family:"NHD";font-weight:500;font-style:normal;font-display:swap;src:url("./assets/nhd-500.woff2") format("woff2")}
-  :root{--bg:#141413;--ink:#f7f6f4;--font:"NHD","Neue Haas Grotesk Display Pro","Neue Haas Grotesk Text Pro","Neue Haas Grotesk",Inter,system-ui,sans-serif}
+  @font-face{font-family:"NHD";font-weight:700;font-style:normal;font-display:swap;src:url("/assets/nhd-700.woff2") format("woff2")}
+  @font-face{font-family:"NHD";font-weight:500;font-style:normal;font-display:swap;src:url("/assets/nhd-500.woff2") format("woff2")}
+
+  :root{
+    --bg:#ffffff;
+    --ink:#141413;
+    color-scheme:light;
+    --font:"NHD","Neue Haas Grotesk Display Pro","Neue Haas Grotesk Text Pro","Neue Haas Grotesk",Inter,system-ui,sans-serif;
+    --ease:cubic-bezier(.3,.7,.15,1);
+    --spring:cubic-bezier(.2,1.35,.35,1);
+  }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
-  body{display:grid;place-items:center;background:var(--bg);color:var(--ink);font-family:var(--font);font-weight:500;-webkit-font-smoothing:antialiased}
-  nav{position:fixed;top:calc(20px + env(safe-area-inset-top,0px));left:50%;display:flex;gap:clamp(28px,5vw,56px);transform:translateX(-50%)}
-  a{position:relative;color:inherit;text-decoration:none;font-size:16px;letter-spacing:-.01em;padding:6px 0}
-  a::after{content:"";position:absolute;left:0;right:0;bottom:3px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .4s ease}
-  a:hover::after,a:focus-visible::after{transform:scaleX(1)}
-  a:focus-visible{outline:1px solid currentColor;outline-offset:4px}
-  main{text-align:center}
-  h1{font-size:clamp(24px,4vw,40px);font-weight:500;letter-spacing:-.04em}
-  p{margin-top:12px;opacity:.5}
-  @media(max-width:600px){nav{top:calc(12px + env(safe-area-inset-top,0px));gap:32px}nav a{font-size:15px;padding:10px 0}}
-  @media(prefers-reduced-motion:reduce){a::after{transition:none}}
+  body{
+    background:var(--bg);color:var(--ink);font-family:var(--font);font-weight:500;font-size:clamp(11px,1.45vh,16px);
+    overflow:hidden;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
+    -webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;
+    padding:env(safe-area-inset-top,0) env(safe-area-inset-right,0) env(safe-area-inset-bottom,0) env(safe-area-inset-left,0);
+  }
+
+  /* ---------- nav (same as home) ---------- */
+  #top-nav{position:fixed;top:calc(20px + env(safe-area-inset-top,0px));left:50%;z-index:2500;display:flex;gap:clamp(28px,5vw,56px);transform:translateX(-50%)}
+  #top-nav a{position:relative;color:var(--ink);font-family:var(--font);font-weight:500;text-decoration:none;font-size:16px;letter-spacing:-.01em;padding:6px 0}
+  #top-nav a::after{content:"";position:absolute;left:0;right:0;bottom:3px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease)}
+  #top-nav a:hover::after,#top-nav a:focus-visible::after{transform:scaleX(1)}
+  #top-nav a:focus-visible{outline:none}
+  @media (max-width:600px){
+    #top-nav{top:calc(12px + env(safe-area-inset-top,0px));gap:32px}
+    #top-nav a{font-size:15px;padding:10px 0}
+  }
+
+  main{
+    height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    position:relative;text-align:center;
+  }
+
+  /* ---------- figure ---------- */
+  #figure{
+    display:block;width:min(70vw,44vh,380px);height:auto;overflow:visible;
+    touch-action:manipulation;cursor:pointer;
+  }
+  #figure .zone{fill:transparent}
+  #figure .face-shift,#figure .brain-shift{transform-box:fill-box;transform-origin:center;transition:transform .65s var(--spring)}
+  #figure.lift-brain .brain-shift{transform:translateY(-40px) rotate(-3deg)}
+  #figure.drop-face  .face-shift {transform:translateY(28px)}
+  #figure .brain-bob{transform-box:fill-box;transform-origin:center;animation:bob 2.8s ease-in-out infinite alternate}
+  @keyframes bob{
+    from{transform:translateY(-2px) rotate(-1.2deg)}
+    to  {transform:translateY(-28px) rotate(1.2deg)}
+  }
+
+  h1{
+    margin-top:clamp(20px,4.5vh,40px);
+    font-weight:700;font-size:clamp(28px,5.6vw,60px);letter-spacing:-.04em;line-height:1.02;
+  }
+
+  /* ---------- easter egg (same as home) ---------- */
+  #egg{position:fixed;inset:0;z-index:3000;display:none;align-items:center;justify-content:center;pointer-events:none;outline:none}
+  #egg.show{display:flex;pointer-events:none}
+  #egg .bob{display:block}
+  #egg img{
+    display:block;width:min(36vw,30vh);height:auto;pointer-events:auto;cursor:pointer;-webkit-user-drag:none;
+    filter:drop-shadow(0 22px 34px rgba(0,0,0,.28));
+  }
+  @media (max-width:600px){#egg img{width:min(42vw,34vh)}}
+
+  @media (prefers-reduced-motion:reduce){
+    #figure .brain-bob{animation:none;transform:translateY(-12px)}
+    #figure .face-shift,#figure .brain-shift{transition-duration:.01s}
+  }
 </style>
 </head>
 <body>
-<nav aria-label="Pages">
+
+<nav id="top-nav" aria-label="Pages">
   <a href="/">Home</a>
   <a href="/TMI">TMI</a>
 </nav>
+
 <main>
-  <h1>Work</h1>
-  <p>Coming soon.</p>
+  <svg id="figure" viewBox="0 -64 570 674" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A head with its brain floating above it. Double-tap for a surprise.">
+    <g class="face-shift">
+<path d="M284.767 413.664C274.336 413.664 265.123 417.481 255.391 421.538C243.921 426.314 230.911 431.709 212.826 431.709V461.685C222.878 461.685 231.731 460.426 239.584 458.567C245.02 463.643 263.804 479.61 284.767 479.61C305.73 479.61 324.514 463.643 329.95 458.567C337.803 460.406 346.656 461.685 356.708 461.685V431.709C338.623 431.709 325.613 426.314 314.143 421.538C304.411 417.501 295.198 413.664 284.767 413.664ZM273.876 446.397C278.112 444.778 281.829 443.639 284.767 443.639C287.705 443.639 291.421 444.778 295.658 446.397C291.941 448.296 288.104 449.634 284.767 449.634C281.43 449.634 277.593 448.296 273.876 446.397Z" fill="#4D4D4D"/>
+<path d="M515.557 238.668C515.517 224.699 515.297 209.911 514.138 194.844H484.103C484.902 204.596 485.282 214.408 485.441 224.12C468.395 201.318 436.582 197.841 410.663 197.841C382.946 197.841 354.269 197.841 331.728 205.355C314.862 210.97 302.692 220.643 295.478 233.812H274.035C266.821 220.643 254.651 210.97 237.785 205.355C215.244 197.841 186.587 197.841 158.85 197.841C132.932 197.841 101.098 201.298 84.0717 224.12C84.2516 214.408 84.6113 204.616 85.4106 194.844H55.3754C54.2163 209.911 53.9965 224.699 53.9565 238.668C27.2185 246.501 -0.019043 265.006 -0.019043 302.755C-0.019043 340.504 16.7272 378.932 42.6259 397.597C54.7958 406.37 68.3247 410.886 82.593 411.186C94.0635 441.84 114.387 472.815 141.504 499.953C185.069 543.517 238.625 569.535 284.747 569.535C330.869 569.535 384.405 543.517 427.989 499.953C455.106 472.835 475.43 441.84 486.9 411.186C501.168 410.886 514.697 406.35 526.867 397.577C552.766 378.912 569.512 341.683 569.512 302.755C569.512 263.827 542.275 246.501 515.537 238.668H515.557ZM410.663 227.817C463.34 227.817 467.616 245.462 467.616 266.785C467.616 294.941 458.703 323.738 392.678 323.738C366.759 323.738 317.739 311.827 317.739 266.785C317.739 231.653 347.495 227.817 410.663 227.817ZM281.769 266.785C281.769 265.765 281.709 264.786 281.669 263.787H287.844C287.804 264.786 287.744 265.765 287.744 266.785C287.744 296.14 301.013 319.961 326.133 335.688C327.831 336.747 329.59 337.746 331.368 338.725H305.729C305.729 350.296 296.317 359.708 284.747 359.708C273.176 359.708 263.764 350.296 263.764 338.725H238.005C239.784 337.746 241.542 336.747 243.241 335.708C268.44 319.961 281.769 296.12 281.769 266.785ZM158.87 227.817C222.038 227.817 251.794 231.653 251.794 266.785C251.794 311.827 202.774 323.738 176.855 323.738C110.83 323.738 101.917 294.941 101.917 266.785C101.917 245.462 106.194 227.817 158.87 227.817ZM509.362 373.257C504.985 376.414 500.369 378.633 495.513 379.911C496.872 372.038 497.591 364.284 497.591 356.711H467.616C467.616 395.059 444.875 440.681 406.806 478.75C368.737 516.819 323.115 539.56 284.767 539.56C246.418 539.56 200.796 516.819 162.727 478.75C124.658 440.681 101.917 395.059 101.917 356.711H71.9417C71.9417 364.264 72.6611 372.038 74.02 379.911C69.164 378.633 64.5478 376.414 60.1714 373.277C42.1063 360.268 29.9763 331.931 29.9763 302.755C29.9763 276.836 55.0756 268.163 71.9817 265.266C71.9817 265.785 71.9417 266.265 71.9417 266.785C71.9417 297.479 82.3731 320.48 102.956 335.188C120.402 347.658 144.582 353.713 176.855 353.713C184.769 353.713 192.702 352.974 200.456 351.595C205.472 363.405 217.202 371.698 230.811 371.698C235.427 371.698 239.824 370.739 243.82 369.02C253.113 381.55 268 389.683 284.767 389.683C301.533 389.683 316.421 381.55 325.713 369.02C329.71 370.739 334.106 371.698 338.722 371.698C352.331 371.698 364.041 363.405 369.077 351.615C376.831 352.994 384.764 353.713 392.678 353.713C424.951 353.713 449.131 347.658 466.577 335.188C487.14 320.5 497.591 297.479 497.591 266.785C497.591 266.265 497.551 265.765 497.551 265.266C514.458 268.183 539.557 276.856 539.557 302.755C539.557 331.911 527.427 360.248 509.362 373.257Z" fill="#4D4D4D"/>
+<path d="M176.856 284.767C186.788 284.767 194.841 276.714 194.841 266.782H230.811C230.811 256.85 206.651 248.797 176.856 248.797C147.06 248.797 122.9 256.85 122.9 266.782H158.871C158.871 276.714 166.924 284.767 176.856 284.767Z" fill="#4D4D4D"/>
+<path d="M392.676 284.767C402.607 284.767 410.661 276.714 410.661 266.782H446.631C446.631 256.85 422.471 248.797 392.676 248.797C362.88 248.797 338.72 256.85 338.72 266.782H374.69C374.69 276.714 382.744 284.767 392.676 284.767Z" fill="#4D4D4D"/>
+<path d="M194.84 441.636V415.657C213.325 415.657 226.534 410.182 238.185 405.366C247.737 401.409 256.749 397.672 266.781 397.672V423.65C261.925 423.65 255.83 426.168 248.116 429.366C234.907 434.841 218.481 441.636 194.84 441.636Z" fill="#4D4D4D" fill-opacity="0.2"/>
+<path d="M374.693 441.636C351.033 441.636 334.606 434.821 321.417 429.366C313.703 426.168 307.628 423.65 302.752 423.65V397.672C312.784 397.672 321.797 401.409 331.349 405.366C342.999 410.202 356.208 415.657 374.693 415.657V441.636Z" fill="#4D4D4D" fill-opacity="0.2"/>
+    </g>
+    <g class="brain-shift"><g class="brain-bob">
+<path d="M65.2267 167.642C69.6631 170.7 74.3992 171.879 79.3751 171.879C87.988 171.879 97.3403 168.321 107.012 164.624C117.744 160.528 129.914 155.872 140.884 155.872C143.922 155.872 147.479 156.231 151.336 156.771C177.934 190.743 241.122 191.842 248.796 191.842C264.962 191.842 276.673 186.127 284.766 178.013C292.859 186.147 304.57 191.842 320.736 191.842C328.41 191.842 391.578 190.763 418.196 156.771C422.073 156.231 425.61 155.872 428.648 155.872C439.619 155.872 451.789 160.508 462.52 164.624C472.192 168.321 481.524 171.899 490.157 171.879C495.133 171.879 499.889 170.68 504.305 167.642C515.576 159.868 515.576 145.58 515.576 140.884C515.576 118.942 497.451 81.7527 461.361 73.5794C461.521 72.0407 461.621 70.502 461.621 68.9433C461.621 56.6933 456.125 44.2036 446.513 34.6515C435.862 24.0602 421.214 18.0052 406.306 18.1051C403.748 18.1051 401.37 18.245 399.052 18.4248C377.989 0 356.327 0 338.722 0C314.382 0 296.297 7.4139 284.766 18.205C273.236 7.4139 255.15 0 230.81 0C213.205 0 191.543 0 170.48 18.4248C168.182 18.245 165.784 18.1251 163.226 18.1051H162.926C148.119 18.1051 133.59 24.1201 122.999 34.6515C113.407 44.2036 107.892 56.6933 107.892 68.9433C107.892 70.502 107.992 72.0407 108.151 73.5794C72.0611 81.7527 53.936 118.942 53.936 140.884C53.936 145.58 53.936 159.868 65.2068 167.642H65.2267ZM338.722 29.9753C347.954 29.9753 355.808 29.9953 363.202 32.0736C360.004 34.7514 357.286 37.5091 354.728 40.127C346.875 48.1604 341.18 53.9756 320.736 53.9756V83.9509C348.414 83.9509 359.704 95.2416 359.704 122.919H389.68C389.68 98.5589 382.306 80.214 368.357 68.6035C371.255 66.1056 373.773 63.5277 376.151 61.1097C383.765 53.3361 388.78 48.2003 406.466 48.1004H406.606C413.54 48.1004 420.394 50.9381 425.39 55.914C429.307 59.8108 431.665 64.6868 431.665 68.9632C431.665 78.7752 420.494 89.946 410.682 89.946V119.921C424.791 119.921 438.5 112.727 448.132 101.996C474.31 103.055 485.621 131.692 485.621 140.904V141.044C481.984 139.985 477.128 138.126 473.231 136.628C460.741 131.851 445.174 125.916 428.668 125.916C418.756 125.916 407.605 128.055 395.795 130.313C376.75 133.95 353.07 138.466 343.278 130.393C338.282 126.256 335.744 117.703 335.744 104.954H305.769C305.769 127.055 311.964 143.382 324.174 153.494C328.05 156.711 332.287 159.109 336.743 160.868C330.229 161.607 324.573 161.907 320.756 161.907C302.212 161.907 299.894 147.139 299.774 140.924V50.9581C299.774 40.5266 313.163 29.9753 338.742 29.9753H338.722ZM83.9314 140.884C83.9314 131.672 95.242 103.015 121.42 101.976C131.053 112.707 144.741 119.901 158.87 119.901V89.926C149.058 89.926 137.887 78.7552 137.887 68.9433C137.887 64.6868 140.225 59.8108 144.162 55.894C149.158 50.9181 156.012 48.0804 162.946 48.0804H163.086C180.772 48.1803 185.788 53.3161 193.401 61.0897C195.779 63.5077 198.297 66.0856 201.195 68.5835C187.246 80.214 179.872 98.5589 179.872 122.899H209.848C209.848 95.2216 221.138 83.9309 248.816 83.9309V53.9556C228.372 53.9556 222.697 48.1404 214.824 40.107C212.266 37.5091 209.548 34.7314 206.351 32.0536C213.745 29.9753 221.598 29.9553 230.83 29.9553C256.409 29.9553 269.798 40.5067 269.798 50.9381V140.724C269.678 147.079 267.36 161.847 248.836 161.847C244.999 161.847 239.363 161.547 232.829 160.808C237.305 159.049 241.522 156.651 245.398 153.434C257.608 143.342 263.803 126.995 263.803 104.894H233.828C233.828 117.643 231.29 126.196 226.294 130.333C216.502 138.426 192.822 133.89 173.777 130.253C161.967 127.995 150.816 125.856 140.904 125.856C124.398 125.856 108.851 131.792 96.3411 136.568C92.4244 138.066 87.5883 139.905 83.9513 140.984V140.844L83.9314 140.884Z" fill="#4D4D4D"/>
+    </g></g>
+    <rect class="zone" id="zone-brain" x="-30" y="-64" width="630" height="257"/>
+    <rect class="zone" id="zone-face"  x="-30" y="193" width="630" height="417"/>
+  </svg>
+
+  <h1>under construction<br>due to procrastination</h1>
 </main>
+
+<div id="egg" aria-hidden="true"><span class="bob"><img id="eggimg" alt=""></span></div>
+
+<script>
+(() => {
+  const HEAD_URI = "/assets/egg-head.webp";
+  const SND_URI  = "/assets/site-sound.mp3";
+  const EGG_MS = 1280, DBL_MS = 500;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- hover: pull the brain and face further apart ---------- */
+  const fig = document.getElementById('figure');
+  const zones = [['zone-brain', 'lift-brain'], ['zone-face', 'drop-face']];
+  let touchTimer = 0;
+  zones.forEach(([id, cls]) => {
+    const z = document.getElementById(id);
+    z.addEventListener('pointerenter', e => {
+      clearTimeout(touchTimer);
+      fig.classList.add(cls);
+      if (e.pointerType === 'touch') touchTimer = setTimeout(() => fig.classList.remove(cls), 1400);
+    });
+    z.addEventListener('pointerleave', e => { if (e.pointerType !== 'touch') fig.classList.remove(cls); });
+    z.addEventListener('pointercancel', () => fig.classList.remove(cls));
+  });
+
+  /* ---------- easter egg: double-tap / double-click the figure ---------- */
+  const egg = document.getElementById('egg');
+  const eggImg = document.getElementById('eggimg');
+  const eggBob = egg.querySelector('.bob');
+  eggImg.src = HEAD_URI;
+  const eggAudio = new Audio(SND_URI); eggAudio.preload = 'auto';
+  let eggOpen = false, eggTimer = 0, eggBobAnim = null, eggShownAt = 0, lastTap = 0;
+
+  function showEgg() {
+    if (eggOpen) return;
+    eggOpen = true;
+    egg.classList.add('show'); egg.setAttribute('aria-hidden', 'false');
+    eggShownAt = performance.now();
+    let playing = false;
+    try {
+      eggAudio.currentTime = 0;
+      const pr = eggAudio.play(); playing = true;
+      if (pr && pr.catch) pr.catch(() => { clearTimeout(eggTimer); eggTimer = setTimeout(() => hideEgg(), 1600); });
+    } catch (_) {}
+    if (!reduce) {
+      eggImg.animate([
+        { transform: 'scale(.15) rotate(-10deg)', opacity: 0 },
+        { transform: 'scale(1.1) rotate(2deg)', opacity: 1, offset: .6 },
+        { transform: 'scale(.97) rotate(-1deg)', offset: .82 },
+        { transform: 'scale(1) rotate(0deg)' }
+      ], { duration: 420, easing: 'cubic-bezier(.3,.7,.2,1)' });
+      eggBobAnim = eggBob.animate([
+        { transform: 'translateY(0) scale(1)' },
+        { transform: 'translateY(-6px) scale(1.025)' },
+        { transform: 'translateY(0) scale(1)' }
+      ], { duration: 340, iterations: Infinity, easing: 'ease-in-out', delay: 420 });
+    }
+    clearTimeout(eggTimer);
+    eggTimer = setTimeout(() => hideEgg(), playing ? 8000 : 1600);   // safety net; 'ended' closes it
+  }
+  function hideEgg() {
+    if (!eggOpen) return;
+    eggOpen = false; clearTimeout(eggTimer);
+    try { eggAudio.pause(); } catch (_) {}
+    if (eggBobAnim) eggBobAnim.cancel();
+    const done = () => { egg.classList.remove('show'); egg.setAttribute('aria-hidden', 'true'); };
+    if (reduce) return done();
+    eggImg.animate([
+      { transform: 'scale(1)', opacity: 1 },
+      { transform: 'scale(1.06)', opacity: 1, offset: .5 },
+      { transform: 'scale(.2) rotate(8deg)', opacity: 0 }
+    ], { duration: 260, easing: 'cubic-bezier(.3,.7,.2,1)', fill: 'forwards' }).onfinish = () => { done(); eggImg.getAnimations().forEach(a => a.cancel()); };
+  }
+
+  fig.addEventListener('pointerup', () => {
+    const now = performance.now();
+    if (lastTap && now - lastTap < DBL_MS) { lastTap = 0; showEgg(); }
+    else lastTap = now;
+  });
+  eggAudio.addEventListener('playing', () => {
+    if (!eggOpen) return;
+    clearTimeout(eggTimer); eggTimer = setTimeout(() => hideEgg(), EGG_MS + 800);
+  });
+  eggAudio.addEventListener('ended', hideEgg);
+  eggImg.addEventListener('click', () => {
+    if (performance.now() - eggShownAt <= 220) return;   // ignore the click a phone synthesises after the double tap
+    hideEgg();
+  });
+  addEventListener('keydown', e => { if (e.key === 'Escape') hideEgg(); });
+})();
+</script>
 </body>
 </html>
