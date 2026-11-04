@@ -839,34 +839,10 @@
       { transform: 'scale(.2) rotate(8deg)', opacity: 0 }
     ], { duration: 260, easing: 'cubic-bezier(.3,.7,.2,1)', fill: 'forwards' }).onfinish = () => { done(); eggImg.getAnimations().forEach(a => a.cancel()); };
   }
-  // guide: opened by tapping the egg
-  const guide = document.getElementById('guide');
-  let guideOpen = false, guideOpenedAt = 0;
-  function openGuide() {
-    if (guideOpen) return;
-    guideOpen = true; guideOpenedAt = performance.now();
-    guide.classList.add('show'); guide.setAttribute('aria-hidden', 'false');
-    guide.scrollTop = 0;
-    if (!reduce) guide.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 180, easing: 'ease-out' });
-    guide.focus({ preventScroll: true });
-  }
-  function closeGuide() {
-    if (!guideOpen) return;
-    guideOpen = false;
-    const done = () => { guide.classList.remove('show'); guide.setAttribute('aria-hidden', 'true'); };
-    if (reduce) return done();
-    guide.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 140, easing: 'ease-in', fill: 'forwards' })
-      .onfinish = () => { done(); guide.getAnimations().forEach(a => a.cancel()); };
-  }
-  // on phones the click that follows the egg tap lands on the guide itself; it must not close it
-  guide.addEventListener('click', () => { if (performance.now() - guideOpenedAt > 400) closeGuide(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && guideOpen) closeGuide(); });
-  // the click a phone synthesises after the double tap lands on the egg: ignore it
   const eggTap = e => {
     if (e.target !== eggImg) return;
-    if (guideOpen || performance.now() - eggShownAt <= 220) return;   // ignore the click a phone synthesises right after the double tap
-    ensureAudio(); sfx.crack();
-    hideEgg(true); openGuide();      // the egg's own sound keeps playing to the end
+    if (performance.now() - eggShownAt <= 220) return;
+    hideEgg();
   };
   egg.addEventListener('pointerup', eggTap);
   egg.addEventListener('click', eggTap);
@@ -1109,7 +1085,7 @@
   iceToggle.addEventListener('click', toggleIceMode);
   document.addEventListener('keydown', e => {
     if (e.key !== 'Tab' || e.shiftKey || e.ctrlKey || e.altKey || e.metaKey) return;
-    if (optionsMenu.classList.contains('open') || guideOpen) return;     // keep normal Tab navigation while a menu/guide is open
+    if (optionsMenu.classList.contains('open')) return;
     e.preventDefault();
     if (!e.repeat) { toggleIceMode(); showTabHint(); }
   });
@@ -1389,7 +1365,7 @@
       if (e.pointerType === 'touch') return;
       cursorMark.style.left = `${e.clientX - 14}px`;
       cursorMark.style.top = `${e.clientY - 14}px`;
-      cursorMark.classList.toggle('visible', !e.target.closest('#top-nav a, footer a, #top-controls, #egg, #guide, #clear-stickers, #fullscreen-toggle'));
+      cursorMark.classList.toggle('visible', !e.target.closest('#top-nav a, footer a, #top-controls, #egg, #clear-stickers, #fullscreen-toggle'));
     }, { passive: true });
     addEventListener('pointerleave', () => cursorMark.classList.remove('visible'));
   }
@@ -1420,7 +1396,7 @@
   }
 
   addEventListener('pointerdown', e => {
-    if (e.target.closest('#top-nav a, footer a, #top-controls, #egg, #guide, #clear-stickers, #fullscreen-toggle')) return;
+    if (e.target.closest('#top-nav a, footer a, #top-controls, #egg, #clear-stickers, #fullscreen-toggle')) return;
     if ((iceMode || e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) && e.button === 0) {   // hockey mode: plain press grabs
       const note = noteAtPoint(e.clientX, e.clientY);
       if (note) {
@@ -1747,7 +1723,7 @@
     release(e, true);
   });
   addEventListener('contextmenu', e => {
-    if (!e.target.closest('#top-nav a, footer a, #top-controls, #egg, #guide, #clear-stickers, #fullscreen-toggle')) e.preventDefault();
+    if (!e.target.closest('#top-nav a, footer a, #top-controls, #egg, #clear-stickers, #fullscreen-toggle')) e.preventDefault();
   });
   addEventListener('blur', () => {
     cancelLongPress();
