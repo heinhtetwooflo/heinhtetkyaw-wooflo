@@ -19,7 +19,22 @@
     const leavingHome = isHome;
     const headingHome = homePaths.has(destination.pathname);
     if (leavingHome === headingHome) return;
-    if (headingHome) return;
+
+    if (headingHome) {
+      if (navigationPending) {
+        event.preventDefault();
+        return;
+      }
+
+      if (reducedMotion.matches) return;
+
+      event.preventDefault();
+      navigationPending = true;
+      logo.classList.remove('open');
+      logo.classList.add('nav-returning');
+      window.setTimeout(() => window.location.assign(destination.href), 600);
+      return;
+    }
 
     if (navigationPending) {
       event.preventDefault();
