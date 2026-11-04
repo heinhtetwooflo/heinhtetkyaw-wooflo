@@ -58,11 +58,9 @@
   .bio p+p,.bio h1+p{margin-top:.7em}
   .bio h1{font-size:inherit;font-weight:700}
   .brand-preview{position:relative;white-space:normal}
-  .brand-trigger{display:inline;padding:0;color:inherit;font:inherit;line-height:inherit;text-align:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:2px;cursor:none;touch-action:manipulation}
-  .brand-trigger:focus-visible{outline:1px solid currentColor;outline-offset:2px}
   .brand-card{position:absolute;top:calc(100% + 10px);left:50%;z-index:20;display:grid;place-items:center;width:clamp(170px,28vw,250px);min-height:72px;padding:14px;background:#1d1d1b;border:1px solid rgba(247,246,244,.14);opacity:0;visibility:hidden;transform:translate(-50%,4px);transition:opacity .16s ease,transform .16s ease,visibility 0s .16s;pointer-events:none}
   .brand-card img{display:block;width:100%;height:auto;max-height:86px;object-fit:contain}
-  .brand-preview:hover .brand-card,.brand-preview:focus-within .brand-trigger:focus-visible+.brand-card,.brand-preview.open .brand-card{opacity:1;visibility:visible;transform:translate(-50%,0);transition-delay:0s}
+  .brand-preview:hover .brand-card{opacity:1;visibility:visible;transform:translate(-50%,0);transition-delay:0s}
 
   .facts{align-self:start;list-style:none;line-height:1.6;justify-self:end;text-align:left;padding-right:.5vw}
 
@@ -149,7 +147,7 @@
       <p>His first type crushes were Devil Breeze and ITC Avant Garde, rooted in the late-2010s Imagine Dragons wordmark.</p>
       <p>He loves playing around with typography and layouts but is still struggling while dancing with colors.</p>
       <p>Currently in a walk-around-and-find-out state, rooted in design and its intersection with tech, business and art.</p>
-      <p>If you are reading this in 2026 or 2027, he’s pretty sure to be working his ass off in the final year of his B.Sc (Hons), with one capstone and assignments in line, while working for a <span class="brand-preview"><button class="brand-trigger" type="button" aria-expanded="false">non-profit, youth-led organization</button><span class="brand-card"><img src="./TMI/Logos/allyours.svg" alt="Allyours logo" draggable="false"></span></span> focused on art and design and helping out here and there at an <span class="brand-preview"><button class="brand-trigger" type="button" aria-expanded="false">F&amp;B tech startup</button><span class="brand-card"><img src="./TMI/Logos/orderflow.svg" alt="Orderflow logo" draggable="false"></span></span>. But if you are reading this from way beyond 2027, you are probably witnessing him learning and designing things he loves.</p>
+      <p>If you are reading this in 2026 or 2027, he’s pretty sure to be working his ass off in the final year of his B.Sc (Hons), with one capstone and assignments in line, while working for a <span class="brand-preview">non-profit, youth-led organization<span class="brand-card"><img src="./TMI/Logos/allyours.svg" alt="Allyours logo" draggable="false"></span></span> focused on art and design and helping out here and there at an <span class="brand-preview">F&amp;B tech startup<span class="brand-card"><img src="./TMI/Logos/orderflow.svg" alt="Orderflow logo" draggable="false"></span></span>. But if you are reading this from way beyond 2027, you are probably witnessing him learning and designing things he loves.</p>
     </div>
 
     <ul class="facts">
@@ -178,35 +176,6 @@
   });
   document.addEventListener("dragstart", function(e){
     if (e.target.closest("img")) e.preventDefault();
-  });
-
-  var brandPreviews = document.querySelectorAll(".brand-preview");
-  brandPreviews.forEach(function(preview){
-    var trigger = preview.querySelector(".brand-trigger");
-    trigger.addEventListener("click", function(){
-      var open = !preview.classList.contains("open");
-      brandPreviews.forEach(function(item){
-        item.classList.remove("open");
-        item.querySelector(".brand-trigger").setAttribute("aria-expanded", "false");
-      });
-      preview.classList.toggle("open", open);
-      trigger.setAttribute("aria-expanded", String(open));
-    });
-  });
-  document.addEventListener("click", function(e){
-    if (e.target.closest(".brand-preview")) return;
-    brandPreviews.forEach(function(preview){
-      preview.classList.remove("open");
-      preview.querySelector(".brand-trigger").setAttribute("aria-expanded", "false");
-    });
-  });
-  document.addEventListener("keydown", function(e){
-    if (e.key !== "Escape") return;
-    brandPreviews.forEach(function(preview){
-      preview.classList.remove("open");
-      preview.querySelector(".brand-trigger").setAttribute("aria-expanded", "false");
-    });
-    if (document.activeElement.classList.contains("brand-trigger")) document.activeElement.blur();
   });
 
   /* ---------- profile: fixed main image; on hover the others flip too fast to focus on ---------- */
