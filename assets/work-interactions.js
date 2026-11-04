@@ -1365,7 +1365,7 @@
       if (e.pointerType === 'touch') return;
       cursorMark.style.left = `${e.clientX - 14}px`;
       cursorMark.style.top = `${e.clientY - 14}px`;
-      cursorMark.classList.toggle('visible', !e.target.closest('#top-nav a, footer a, #top-controls, #egg, #clear-stickers, #fullscreen-toggle'));
+      cursorMark.classList.toggle('visible', !e.target.closest('#logo, #top-nav a, footer a, #top-controls, #egg, #clear-stickers, #fullscreen-toggle'));
     }, { passive: true });
     addEventListener('pointerleave', () => cursorMark.classList.remove('visible'));
   }
@@ -1396,7 +1396,7 @@
   }
 
   addEventListener('pointerdown', e => {
-    if (e.target.closest('#top-nav a, footer a, #top-controls, #egg, #clear-stickers, #fullscreen-toggle')) return;
+    if (e.target.closest('#logo, #top-nav a, footer a, #top-controls, #egg, #clear-stickers, #fullscreen-toggle')) return;
     if ((iceMode || e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) && e.button === 0) {   // hockey mode: plain press grabs
       const note = noteAtPoint(e.clientX, e.clientY);
       if (note) {
@@ -1723,7 +1723,7 @@
     release(e, true);
   });
   addEventListener('contextmenu', e => {
-    if (!e.target.closest('#top-nav a, footer a, #top-controls, #egg, #clear-stickers, #fullscreen-toggle')) e.preventDefault();
+    if (!e.target.closest('#logo, #top-nav a, footer a, #top-controls, #egg, #clear-stickers, #fullscreen-toggle')) e.preventDefault();
   });
   addEventListener('blur', () => {
     cancelLongPress();

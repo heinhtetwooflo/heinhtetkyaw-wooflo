@@ -33,10 +33,6 @@
   button{font:inherit;color:inherit;background:none;border:0}
   :focus-visible{outline:1px solid var(--ink);outline-offset:4px}
 
-  #back-home{position:relative;z-index:1;display:inline-flex;align-items:center;min-width:44px;min-height:44px;margin:0 0 .25em -12px;padding:0 12px;color:var(--ink);text-decoration:none;font-size:.9em;opacity:.72;cursor:none;touch-action:manipulation;transition:opacity .2s ease}
-  #back-home:hover,#back-home:focus-visible{opacity:1}
-  #back-home:focus-visible{outline:1px solid var(--ink);outline-offset:4px}
-
   #top-nav{position:fixed;top:calc(20px + env(safe-area-inset-top,0px));left:50%;z-index:2500;display:flex;gap:clamp(28px,5vw,56px);transform:translateX(-50%)}
   #top-nav a{position:relative;color:var(--ink);font-family:var(--font);font-weight:500;text-decoration:none;font-size:16px;letter-spacing:-.01em;padding:6px 0}
   #top-nav a::after{content:"";position:absolute;left:0;right:0;bottom:3px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease)}
@@ -129,10 +125,20 @@
   }
   @media (prefers-reduced-motion:reduce){.drive img,.folder,.arrow,.arrow svg{transition:none}}
 </style>
+<link rel="stylesheet" href="/assets/site-navigation.css">
 </head>
 <body>
+<a class="logo logo-compact" id="logo" href="/" aria-label="Home: heinhtetkyaw.wooflo">
+  <span class="cs ch" aria-hidden="true"><svg class="g" viewBox="0 0 212.772 238.313"><use href="/H-WF.svg#glyph-h"/></svg><span class="t">h</span></span>
+  <span class="seg" aria-hidden="true"><span>einhtetkyaw</span></span>
+  <span class="sep" aria-hidden="true"><i class="dash"><svg class="g" viewBox="229.151 0 84.236 238.313"><use href="/H-WF.svg#glyph-dash"/></svg><span class="t">-</span></i><i class="dot">.</i></span>
+  <span class="cs cw" aria-hidden="true"><svg class="g" viewBox="302.644 0 324.806 238.313"><use href="/H-WF.svg#glyph-w"/></svg><span class="t">w</span></span>
+  <span class="seg" aria-hidden="true"><span>oo</span></span>
+  <span class="cs cf" aria-hidden="true"><svg class="g" viewBox="623.3 0 183.746 238.313"><use href="/H-WF.svg#glyph-f"/></svg><span class="t">f</span></span>
+  <span class="seg" aria-hidden="true"><span>lo</span></span>
+</a>
 <nav id="top-nav" aria-label="Pages">
-  <a href="/">Home</a>
+  <a href="/TMI" aria-current="page">TMI</a>
   <a href="/work">Work</a>
 </nav>
 <main>
@@ -143,7 +149,6 @@
     </div>
 
     <div class="bio">
-      <a id="back-home" href="/" aria-label="Back to home">← Back</a>
       <h1>This is Hein Htet Kyaw    a.k.a    Woo Flo</h1>
       <p>Being the son of a furniture designer, he was exposed to MS Paint from childhood, drawing random earth and planets, Power Rangers helmets and, ofc, simple brown chairs. With a new tablet shared with his sibling, he got his first taste of mobile apps, sticking to PicsArt, PixelLab and KineMaster before moving on to professional tools. His first Photoshop version was CS6, which he played around with after finishing high school. He then started basic drawing classes and design courses, both local and international, via online learning thanks to COVID.</p>
       <p>His first type crushes were Devil Breeze and ITC Avant Garde, rooted in the late-2010s Imagine Dragons wordmark.</p>
