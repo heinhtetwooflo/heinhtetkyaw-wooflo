@@ -5,6 +5,17 @@
   const homePaths = new Set(['/', '/index.html']);
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let navigationPending = false;
+  const isHome = homePaths.has(window.location.pathname);
+
+  if (isHome && window.sessionStorage.getItem('home-logo-arrival') === '1') {
+    window.sessionStorage.removeItem('home-logo-arrival');
+    if (!reducedMotion.matches) {
+      logo.animate([
+        { transform: 'translate(-50%, -50%) scale(.84)', opacity: .8 },
+        { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 }
+      ], { duration: 360, easing: 'cubic-bezier(.2,.7,.25,1)' });
+    }
+  }
 
   document.addEventListener('click', event => {
     const link = event.target.closest('a[href]');
@@ -15,9 +26,14 @@
     const destination = new URL(link.href, window.location.href);
     if (destination.origin !== window.location.origin) return;
 
-    const leavingHome = homePaths.has(window.location.pathname);
+    const leavingHome = isHome;
     const headingHome = homePaths.has(destination.pathname);
     if (leavingHome === headingHome) return;
+    if (headingHome) {
+      window.sessionStorage.setItem('home-logo-arrival', '1');
+      return;
+    }
+
     if (navigationPending) {
       event.preventDefault();
       return;
@@ -31,8 +47,7 @@
 
     navigationPending = true;
     logo.classList.remove('open');
-    logo.classList.add(leavingHome ? 'nav-leaving' : 'nav-leaving-home');
-    logo.blur();
-    window.setTimeout(() => window.location.assign(destination.href), leavingHome ? 620 : 440);
+    logo.classList.add('nav-leaving');
+    window.setTimeout(() => window.location.assign(destination.href), 440);
   });
 })();
