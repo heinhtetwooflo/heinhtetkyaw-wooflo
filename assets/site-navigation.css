@@ -16,18 +16,24 @@
   line-height:1;white-space:nowrap;text-decoration:none;
   padding:.4em .45em;cursor:none;transform-origin:center;
   view-transition-name:site-brand;
-  transition:left .58s var(--ease),top .58s var(--ease),font-size .58s var(--ease),transform .58s var(--ease);
+  transition:left .58s var(--ease),top .58s var(--ease),font-size .58s var(--ease),letter-spacing .58s var(--ease),transform .58s var(--ease);
 }
 .logo>*{flex-shrink:0}
 .logo-home{--logo-size:var(--fs);left:50%;top:50%;transform:translate(-50%,-50%)}
-.logo-home.open{font-size:min(var(--fs),9.4vw)}
-.logo-home.nav-leaving{left:calc(16px + env(safe-area-inset-left,0px));top:calc(12px + env(safe-area-inset-top,0px));font-size:16px;transform:none}
+.logo-home.open{font-size:min(var(--fs),10vw);letter-spacing:-.02em}
+.logo-home.nav-leaving{
+  left:calc(16px + env(safe-area-inset-left,0px));top:calc(21px + env(safe-area-inset-top,0px));
+  font-size:16px;padding:.3em .35em;transform:none;
+}
 .logo-compact{
   --logo-size:16px;left:calc(16px + env(safe-area-inset-left,0px));
-  top:calc(12px + env(safe-area-inset-top,0px));transform:none;
+  top:calc(21px + env(safe-area-inset-top,0px));transform:none;
   padding:.3em .35em;mix-blend-mode:normal;
 }
-.logo-compact.nav-leaving-home{left:50%;top:50%;font-size:clamp(48px,11vw,150px);transform:translate(-50%,-50%)}
+.logo-compact.nav-leaving-home{
+  left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;
+  transition-duration:.42s;transition-timing-function:cubic-bezier(.2,.7,.25,1);
+}
 .logo-compact.logo-on-light{color:#4D4D4D}
 .logo-compact.logo-on-light .g{filter:none}
 .logo .g{display:block;height:.715em;filter:brightness(0) invert(1)}
@@ -91,9 +97,9 @@
 #top-nav a:focus-visible{outline:1px solid currentColor;outline-offset:3px}
 
 @media (max-width:600px){
-  .logo-home.open{font-size:min(var(--fs),7.2vw);transition-duration:.38s,.38s}
-  .logo-home{transition:left .58s var(--ease),top .58s var(--ease),font-size .58s var(--ease),transform .58s var(--ease)}
-  .logo-home.nav-leaving{font-size:14px}
+  .logo-home.open{font-size:min(var(--fs),7.2vw);transition-duration:.38s,.38s,.38s,.38s,.38s}
+  .logo-home{transition:left .58s var(--ease),top .58s var(--ease),font-size .58s var(--ease),letter-spacing .58s var(--ease),transform .58s var(--ease)}
+  .logo-home.nav-leaving{top:calc(19px + env(safe-area-inset-top,0px));font-size:14px}
   .logo .cs{transition:width .2s ease-out,margin .2s ease-out}
   .logo .cs>*{transition:opacity .12s linear}
   .logo .seg{transition:grid-template-columns .2s ease-out}
@@ -105,7 +111,7 @@
   .logo .sep i{transform:none;transition:opacity .12s linear}
   .logo.open .sep .dash,.logo-compact:hover .sep .dash,.logo-compact:focus-visible .sep .dash{transform:none}
   .logo.open .sep .dot,.logo-compact:hover .sep .dot,.logo-compact:focus-visible .sep .dot{transform:none;transition-delay:0s}
-  .logo-compact{--logo-size:14px}
+  .logo-compact{--logo-size:14px;top:calc(19px + env(safe-area-inset-top,0px))}
   #top-nav{top:calc(12px + env(safe-area-inset-top,0px));gap:clamp(10px,4vw,24px)}
   #top-nav a{font-size:15px;padding:10px 0}
 }

@@ -32,6 +32,7 @@
     navigationPending = true;
     logo.classList.remove('open');
     logo.classList.add(leavingHome ? 'nav-leaving' : 'nav-leaving-home');
-    window.setTimeout(() => window.location.assign(destination.href), 620);
+    logo.blur();
+    window.setTimeout(() => window.location.assign(destination.href), leavingHome ? 620 : 440);
   });
 })();
