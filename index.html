@@ -3,6 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>
+  try {
+    const returnStartedAt = Number(sessionStorage.getItem('hwf-home-return'));
+    if (returnStartedAt > 0 && Date.now() - returnStartedAt < 30000 &&
+        !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.classList.add('nav-home-return');
+    }
+    sessionStorage.removeItem('hwf-home-return');
+  } catch {}
+</script>
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#141413">
 <title>heinhtetkyaw.wooflo</title>

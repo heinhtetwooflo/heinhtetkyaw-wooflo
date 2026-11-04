@@ -28,6 +28,25 @@
   let navigationPending = false;
   const isHome = homePaths.has(window.location.pathname);
 
+  if (isHome && document.documentElement.classList.contains('nav-home-return')) {
+    const finishReveal = event => {
+      if (event.animationName !== 'nav-home-reveal') return;
+      document.body.classList.remove('nav-home-reveal');
+      document.documentElement.classList.remove('nav-home-return');
+    };
+
+    document.body.addEventListener('animationend', finishReveal);
+    const revealHome = () => {
+      if (reducedMotion.matches) {
+        document.documentElement.classList.remove('nav-home-return');
+        return;
+      }
+      document.body.classList.add('nav-home-reveal');
+    };
+    if (document.readyState === 'complete') revealHome();
+    else window.addEventListener('load', revealHome, { once: true });
+  }
+
   let pressTimer = 0;
   let pressPointerId = null;
   let pressStartX = 0;
@@ -99,7 +118,25 @@
     const headingHome = homePaths.has(destination.pathname);
     if (leavingHome === headingHome) return;
 
-    if (headingHome) return;
+    if (headingHome) {
+      if (reducedMotion.matches) return;
+      event.preventDefault();
+      if (navigationPending) return;
+
+      try {
+        window.sessionStorage.setItem('hwf-home-return', String(Date.now()));
+      } catch {
+        window.location.assign(destination.href);
+        return;
+      }
+
+      navigationPending = true;
+      logo.classList.remove('open');
+      logo.classList.add('nav-returning');
+      document.body.classList.add('nav-return-cover');
+      window.setTimeout(() => window.location.assign(destination.href), 460);
+      return;
+    }
 
     if (navigationPending) {
       event.preventDefault();

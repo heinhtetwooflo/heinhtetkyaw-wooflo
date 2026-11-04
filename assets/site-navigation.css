@@ -19,6 +19,26 @@
   top:calc(21px + env(safe-area-inset-top,0px));transform:none;
   padding:.3em .35em;mix-blend-mode:normal;
 }
+.logo-compact.nav-returning{
+  left:50%;top:50%;font-size:clamp(48px,11vw,150px);
+  padding:.4em .45em;transform:translate(-50%,-50%);
+  color:#f7f6f4;mix-blend-mode:normal;
+  transition-duration:.46s;transition-timing-function:cubic-bezier(.2,.7,.25,1);
+}
+body.nav-return-cover::after,
+html.nav-home-return body::after{
+  content:"";position:fixed;inset:0;z-index:2550;
+  background:#141413;pointer-events:none;
+}
+body.nav-return-cover::after{
+  transform:scaleY(0);transform-origin:top;
+  animation:nav-return-cover .46s cubic-bezier(.2,.7,.25,1) forwards;
+}
+@keyframes nav-return-cover{to{transform:scaleY(1)}}
+body.nav-home-reveal::after{
+  animation:nav-home-reveal .5s cubic-bezier(.2,.7,.25,1) forwards;
+}
+@keyframes nav-home-reveal{to{transform:translateY(100%)}}
 .logo-compact.logo-on-light{color:#4D4D4D}
 .logo-compact.logo-on-light .g{filter:none}
 .logo .g{display:block;height:.715em;filter:brightness(0) invert(1)}
@@ -69,6 +89,20 @@
   .logo-compact:hover .sep .dash{opacity:0;transform:translateY(.3em) scaleX(.35)}
   .logo-compact:hover .sep .dot{opacity:1;transform:none;transition-delay:.08s}
 }
+.logo.logo-compact.nav-returning{color:#f7f6f4;mix-blend-mode:normal}
+.logo.logo-compact.nav-returning .cs,.logo.logo-compact.nav-returning .seg,.logo.logo-compact.nav-returning .sep,
+.logo.logo-compact.nav-returning .cs>*,.logo.logo-compact.nav-returning .seg>span,
+.logo.logo-compact.nav-returning .sep i{transition:none!important}
+.logo.logo-compact.nav-returning .cs{width:var(--wc);margin-left:0}
+.logo.logo-compact.nav-returning .cs .g{opacity:1;filter:brightness(0) invert(1)!important}
+.logo.logo-compact.nav-returning .cs .t{opacity:0}
+.logo.logo-compact.nav-returning .cw{margin-left:-.0289em}
+.logo.logo-compact.nav-returning .cf{margin-left:-.022em}
+.logo.logo-compact.nav-returning .seg{grid-template-columns:0fr}
+.logo.logo-compact.nav-returning .seg>span{opacity:0;transform:translateX(-.12em)}
+.logo.logo-compact.nav-returning .sep{margin-left:.0553em;margin-right:0}
+.logo.logo-compact.nav-returning .sep .dash{opacity:1;transform:none}
+.logo.logo-compact.nav-returning .sep .dot{opacity:0;transform:translateY(-.28em)}
 .logo:focus-visible{outline:1px solid currentColor;outline-offset:3px}
 
 #top-nav{position:fixed;top:calc(20px + env(safe-area-inset-top,0px));left:50%;z-index:2500;display:flex;align-items:center;gap:clamp(20px,4vw,48px);transform:translateX(-50%)}
