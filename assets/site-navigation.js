@@ -15,12 +15,8 @@
     } catch {}
 
     if (returningHome && !reducedMotion.matches) {
-      logo.classList.add('nav-arrival-start');
-      window.setTimeout(() => {
-        logo.classList.remove('nav-arrival-start');
-        logo.classList.add('nav-arriving');
-        window.setTimeout(() => logo.classList.remove('nav-arriving'), 650);
-      }, 120);
+      document.body.classList.add('nav-arrival-fade');
+      window.setTimeout(() => document.body.classList.remove('nav-arrival-fade'), 360);
     }
   }
 

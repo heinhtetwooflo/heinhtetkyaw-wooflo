@@ -21,14 +21,8 @@
 }
 .logo-compact.logo-on-light{color:#4D4D4D}
 .logo-compact.logo-on-light .g{filter:none}
-.logo-home.nav-arrival-start{
-  left:calc(16px + env(safe-area-inset-left,0px));top:calc(21px + env(safe-area-inset-top,0px));
-  font-size:16px;padding:.3em .35em;transform:none;transition:none!important;
-}
-.logo-home.nav-arrival-start .cs,.logo-home.nav-arrival-start .seg,.logo-home.nav-arrival-start .sep,
-.logo-home.nav-arrival-start .cs>*,.logo-home.nav-arrival-start .seg>span,.logo-home.nav-arrival-start .sep i,
-.logo-home.nav-arriving .cs,.logo-home.nav-arriving .seg,.logo-home.nav-arriving .sep,
-.logo-home.nav-arriving .cs>*,.logo-home.nav-arriving .seg>span,.logo-home.nav-arriving .sep i{transition:none!important}
+@keyframes home-page-arrival{from{opacity:.72}to{opacity:1}}
+body.nav-arrival-fade{animation:home-page-arrival .32s ease-out both}
 .logo .g{display:block;height:.715em;filter:brightness(0) invert(1)}
 .logo .cs{display:inline-grid;align-items:baseline;width:var(--wc);transition:width .55s var(--ease),margin .5s var(--ease)}
 .logo .cs>*{grid-area:1/1;transition:opacity .3s ease}
@@ -91,7 +85,6 @@
   .logo.open .sep .dash,.logo-compact:hover .sep .dash,.logo-compact:focus-visible .sep .dash{transform:none}
   .logo.open .sep .dot,.logo-compact:hover .sep .dot,.logo-compact:focus-visible .sep .dot{transform:none;transition-delay:0s}
   .logo-compact{--logo-size:14px;top:calc(19px + env(safe-area-inset-top,0px))}
-  .logo-home.nav-arrival-start{top:calc(19px + env(safe-area-inset-top,0px));font-size:14px}
   #top-nav{top:calc(12px + env(safe-area-inset-top,0px));gap:clamp(10px,4vw,24px)}
   #top-nav a{font-size:15px;padding:10px 0}
 }
