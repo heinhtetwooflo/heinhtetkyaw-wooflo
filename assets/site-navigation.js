@@ -7,19 +7,6 @@
   let navigationPending = false;
   const isHome = homePaths.has(window.location.pathname);
 
-  if (isHome) {
-    const arrivalTime = Number(window.sessionStorage.getItem('home-logo-arrival'));
-    window.sessionStorage.removeItem('home-logo-arrival');
-    if (arrivalTime > 0 && Date.now() - arrivalTime < 30000 && !reducedMotion.matches) {
-      logo.classList.add('nav-arriving-home');
-      const startArrival = () => window.requestAnimationFrame(() => {
-        logo.classList.remove('nav-arriving-home');
-      });
-      if (document.readyState === 'complete') startArrival();
-      else window.addEventListener('load', startArrival, { once: true });
-    }
-  }
-
   document.addEventListener('click', event => {
     const link = event.target.closest('a[href]');
     if (!link || event.defaultPrevented || event.button !== 0 ||
@@ -32,13 +19,7 @@
     const leavingHome = isHome;
     const headingHome = homePaths.has(destination.pathname);
     if (leavingHome === headingHome) return;
-
-    if (headingHome) {
-      if (!reducedMotion.matches) {
-        window.sessionStorage.setItem('home-logo-arrival', String(Date.now()));
-      }
-      return;
-    }
+    if (headingHome) return;
 
     if (navigationPending) {
       event.preventDefault();
@@ -53,7 +34,7 @@
 
     navigationPending = true;
     logo.classList.remove('open');
-    logo.classList.add(headingHome ? 'nav-leaving-home' : 'nav-leaving');
+    logo.classList.add('nav-leaving');
     window.setTimeout(() => window.location.assign(destination.href), 440);
   });
 })();
