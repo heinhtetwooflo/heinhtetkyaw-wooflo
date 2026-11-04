@@ -12,7 +12,7 @@
     const currentPath = location.pathname.replace(/\/+$/, '') || '/';
     if (arrivalPath === currentPath && arrivalTime > 0 && Date.now() - arrivalTime < 30000 &&
         !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      document.documentElement.classList.add('nav-page-arrival');
+      document.documentElement.classList.add('nav-page-arrival', 'nav-transition-active');
     }
     sessionStorage.removeItem('hwf-page-arrival');
   } catch {}

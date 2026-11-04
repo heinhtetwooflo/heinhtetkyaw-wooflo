@@ -33,12 +33,14 @@
       if (event.animationName !== 'nav-page-reveal') return;
       document.documentElement.classList.remove('nav-page-revealing');
       document.documentElement.classList.remove('nav-page-arrival');
+      document.documentElement.classList.remove('nav-transition-active');
     };
 
     document.documentElement.addEventListener('animationend', finishReveal);
     const revealPage = () => {
       if (reducedMotion.matches) {
         document.documentElement.classList.remove('nav-page-arrival');
+        document.documentElement.classList.remove('nav-transition-active');
         return;
       }
       window.requestAnimationFrame(() => document.documentElement.classList.add('nav-page-revealing'));
@@ -52,12 +54,14 @@
       if (event.animationName !== 'nav-home-reveal') return;
       document.body.classList.remove('nav-home-reveal');
       document.documentElement.classList.remove('nav-home-return');
+      document.documentElement.classList.remove('nav-transition-active');
     };
 
     document.body.addEventListener('animationend', finishReveal);
     const revealHome = () => {
       if (reducedMotion.matches) {
         document.documentElement.classList.remove('nav-home-return');
+        document.documentElement.classList.remove('nav-transition-active');
         return;
       }
       document.body.classList.add('nav-home-reveal');
@@ -154,6 +158,7 @@
       }
 
       navigationPending = true;
+      document.documentElement.classList.add('nav-transition-active');
       logo.classList.remove('open');
       logo.classList.add('nav-returning');
       document.body.classList.add('nav-return-cover');
@@ -180,6 +185,7 @@
       navigationPending = true;
       const targetColor = destinationPath === '/work' ? '#ffffff' : '#141413';
       document.documentElement.style.setProperty('--nav-page-target', targetColor);
+      document.documentElement.classList.add('nav-transition-active');
       document.body.classList.add('nav-page-cover');
       window.setTimeout(() => window.location.assign(destination.href), 240);
       return;
@@ -197,8 +203,19 @@
     }
 
     navigationPending = true;
+    try {
+      window.sessionStorage.setItem('hwf-page-arrival', `${destinationPath}|${Date.now()}`);
+    } catch {
+      window.location.assign(destination.href);
+      return;
+    }
+
+    const targetColor = destinationPath === '/work' ? '#ffffff' : '#141413';
+    document.documentElement.style.setProperty('--nav-page-target', targetColor);
+    document.documentElement.classList.add('nav-transition-active');
     logo.classList.remove('open');
     logo.classList.add('nav-leaving');
+    document.body.classList.add('nav-page-cover', 'nav-home-cover');
     window.setTimeout(() => window.location.assign(destination.href), 440);
   });
 })();

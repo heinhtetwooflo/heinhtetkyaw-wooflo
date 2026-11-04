@@ -8,7 +8,7 @@
     const returnStartedAt = Number(sessionStorage.getItem('hwf-home-return'));
     if (returnStartedAt > 0 && Date.now() - returnStartedAt < 30000 &&
         !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      document.documentElement.classList.add('nav-home-return');
+      document.documentElement.classList.add('nav-home-return', 'nav-transition-active');
     }
     sessionStorage.removeItem('hwf-home-return');
   } catch {}
@@ -22,7 +22,7 @@
     const currentPath = location.pathname.replace(/\/+$/, '') || '/';
     if (arrivalPath === currentPath && arrivalTime > 0 && Date.now() - arrivalTime < 30000 &&
         !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      document.documentElement.classList.add('nav-page-arrival');
+      document.documentElement.classList.add('nav-page-arrival', 'nav-transition-active');
     }
     sessionStorage.removeItem('hwf-page-arrival');
   } catch {}
