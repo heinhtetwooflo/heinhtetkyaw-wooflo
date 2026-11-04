@@ -60,10 +60,10 @@
   #figure .face-shift,#figure .brain-shift{transform-box:fill-box;transform-origin:center;transition:transform .65s var(--spring)}
   #figure.lift-brain .brain-shift{transform:translateY(-28px) rotate(-1.5deg)}
   #figure.drop-face  .face-shift {transform:translateY(28px)}
-  #figure .brain-bob{transform-box:fill-box;transform-origin:center;animation:bob 4.2s ease-in-out infinite alternate}
+  #figure .brain-bob{transform-box:fill-box;transform-origin:center;animation:bob 3.2s cubic-bezier(.37,0,.63,1) infinite}
   @keyframes bob{
-    from{transform:translateY(-5px) rotate(-.6deg)}
-    to  {transform:translateY(-19px) rotate(.6deg)}
+    0%,100%{transform:translateY(-6px) rotate(-.1deg)}
+    40%{transform:translateY(-20px) rotate(.15deg)}
   }
 
   h1{
