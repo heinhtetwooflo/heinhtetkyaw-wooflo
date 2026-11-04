@@ -80,7 +80,11 @@
     display:block;width:min(36vw,30vh);height:auto;pointer-events:auto;cursor:pointer;-webkit-user-drag:none;
     filter:drop-shadow(0 22px 34px rgba(0,0,0,.28));
   }
-  @media (max-width:600px){#egg img{width:min(42vw,34vh)}}
+  @media (max-width:600px){
+    #figure{width:min(42vw,34vh)}
+    h1{font-size:clamp(22px,5.6vw,30px)}
+    #egg img{width:min(42vw,34vh)}
+  }
   .circle-choice{border-color:rgba(20,20,19,.52)}
   #fill-preview{border-color:rgba(20,20,19,.62);background:rgba(20,20,19,.035)}
   #cursor-mark svg{stroke:var(--ink)}
@@ -117,7 +121,7 @@
     <rect class="zone" id="zone-face"  x="-30" y="193" width="630" height="417"/>
   </svg>
 
-  <h1>under construction<br>due to procrastination</h1>
+  <h1>the tabs are open,<br>the vibes are good,<br>the page is not done</h1>
 </main>
 
 <div id="cursor-mark" aria-hidden="true"><svg viewBox="0 0 20 20">
