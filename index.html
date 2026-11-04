@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>document.documentElement.classList.add('fonts-pending')</script>
 <script>
   try {
     const returnStartedAt = Number(sessionStorage.getItem('hwf-home-return'));
@@ -32,8 +33,8 @@
 <title>heinhtetkyaw.wooflo</title>
 <meta name="description" content="Hein Htet Kyaw (wooflo). Find me on Behance, LinkedIn, X and mail.">
 <link rel="icon" type="image/png" href="/favicon.png">
-<link rel="preload" href="./assets/nhd-500.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="./assets/nhd-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/nhd-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/nhd-700.woff2" as="font" type="font/woff2" crossorigin>
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://h-wf.online/">
 <meta property="og:title" content="heinhtetkyaw.wooflo">
@@ -52,8 +53,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  @font-face{font-family:"NHD";font-weight:700;font-style:normal;font-display:swap;src:url("./assets/nhd-700.woff2") format("woff2")}
-  @font-face{font-family:"NHD";font-weight:500;font-style:normal;font-display:swap;src:url("./assets/nhd-500.woff2") format("woff2")}
+  @font-face{font-family:"NHD";font-weight:700;font-style:normal;font-display:swap;src:url("/assets/nhd-700.woff2") format("woff2")}
+  @font-face{font-family:"NHD";font-weight:500;font-style:normal;font-display:swap;src:url("/assets/nhd-500.woff2") format("woff2")}
 
   :root{
     --bg:#141413;
@@ -240,6 +241,7 @@
   #guide .ci svg.s.k{stroke-width:1}
 </style>
 <link rel="stylesheet" href="/assets/site-navigation.css">
+<script defer src="/assets/font-ready.js"></script>
 <script defer src="/assets/site-navigation.js"></script>
 
 <!-- Vercel Web Analytics Direct CDN Script -->
