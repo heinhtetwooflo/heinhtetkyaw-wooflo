@@ -21,8 +21,11 @@
 }
 .logo-compact.logo-on-light{color:#4D4D4D}
 .logo-compact.logo-on-light .g{filter:none}
-@keyframes home-page-arrival{from{opacity:.72}to{opacity:1}}
-body.nav-arrival-fade{animation:home-page-arrival .32s ease-out both}
+@keyframes home-logo-arrival{
+  from{opacity:0;transform:translate(-50%,-50%) scale(.12)}
+  to{opacity:1;transform:translate(-50%,-50%) scale(1)}
+}
+.logo-home.nav-home-arriving{animation:home-logo-arrival .62s cubic-bezier(.2,.8,.25,1) both}
 .logo .g{display:block;height:.715em;filter:brightness(0) invert(1)}
 .logo .cs{display:inline-grid;align-items:baseline;width:var(--wc);transition:width .55s var(--ease),margin .5s var(--ease)}
 .logo .cs>*{grid-area:1/1;transition:opacity .3s ease}

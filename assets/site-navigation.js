@@ -15,8 +15,8 @@
     } catch {}
 
     if (returningHome && !reducedMotion.matches) {
-      document.body.classList.add('nav-arrival-fade');
-      window.setTimeout(() => document.body.classList.remove('nav-arrival-fade'), 360);
+      logo.classList.add('nav-home-arriving');
+      window.setTimeout(() => logo.classList.remove('nav-home-arriving'), 700);
     }
   }
 
