@@ -7,6 +7,23 @@
   let navigationPending = false;
   const isHome = homePaths.has(window.location.pathname);
 
+  if (isHome) {
+    let returningHome = false;
+    try {
+      returningHome = sessionStorage.getItem('hwf-return-home') === '1';
+      sessionStorage.removeItem('hwf-return-home');
+    } catch {}
+
+    if (returningHome && !reducedMotion.matches) {
+      logo.classList.add('nav-arrival-start');
+      window.setTimeout(() => {
+        logo.classList.remove('nav-arrival-start');
+        logo.classList.add('nav-arriving');
+        window.setTimeout(() => logo.classList.remove('nav-arriving'), 650);
+      }, 120);
+    }
+  }
+
   document.addEventListener('click', event => {
     const link = event.target.closest('a[href]');
     if (!link || event.defaultPrevented || event.button !== 0 ||
@@ -21,18 +38,9 @@
     if (leavingHome === headingHome) return;
 
     if (headingHome) {
-      if (navigationPending) {
-        event.preventDefault();
-        return;
+      if (!reducedMotion.matches) {
+        try { sessionStorage.setItem('hwf-return-home', '1'); } catch {}
       }
-
-      if (reducedMotion.matches) return;
-
-      event.preventDefault();
-      navigationPending = true;
-      logo.classList.remove('open');
-      logo.classList.add('nav-returning');
-      window.setTimeout(() => window.location.assign(destination.href), 600);
       return;
     }
 
