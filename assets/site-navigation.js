@@ -5,10 +5,15 @@
   const glyphTargets = {
     ch: 'M12.9989 238.313V0H67.3276V88.6591H68.3275Q87.9925 62.6613 118.99 62.6613Q146.654 62.6613 162.486 80.4931Q178.318 98.3249 178.318 127.322V238.313H123.989V138.322Q123.989 124.323 117.157 116.157Q110.324 107.991 97.325 107.991Q83.9928 107.991 75.6602 117.99Q67.3276 127.989 67.3276 143.988V238.313Z',
     cw: 'M354.306 238.313L301.977 67.6609H357.306L375.971 138.322L383.637 171.319H384.304Q388.303 151.654 391.97 137.322L409.968 67.6609H455.964L474.629 137.322L482.629 171.652H483.295Q487.628 151.987 491.295 138.322L510.293 67.6609H563.955L511.626 238.313H460.631L440.632 160.986L433.3 130.322H432.633Q428.633 147.654 424.967 160.986L404.635 238.313Z',
-    cf: 'M648.964 238.313V102.325H626.966V67.6609H648.964V55.3286Q648.964 29.6641 662.963 15.6653Q683.295 -4.33296 735.29 0.999915V39.33Q717.959 38.6634 710.626 42.3297Q703.293 45.9961 703.293 59.3283V67.6609H735.29V102.325H703.293V238.313Z'
+    cf: 'M648.964 238.313V102.325H626.966V67.6609H648.964V55.3286Q648.964 29.6641 662.963 15.6653Q683.295 -4.33296 735.29 0.999915V39.33Q717.959 38.6634 710.626 42.3297Q703.293 45.9961 703.293 59.3283V67.6609H735.29V102.325H703.293V238.313Z',
+    dash: 'M239.817 238.313V182.318H296.812V238.313Z'
   };
-  const logoGlyphs = [...logo.querySelectorAll('.cs.ch .g path, .cs.cw .g path, .cs.cf .g path')]
-    .map(path => ({ path, target: glyphTargets[path.closest('.cs').classList.contains('ch') ? 'ch' : path.closest('.cs').classList.contains('cw') ? 'cw' : 'cf'] }))
+  const logoGlyphs = [...logo.querySelectorAll('.cs.ch .g path, .cs.cw .g path, .cs.cf .g path, .sep .dash .g path')]
+    .map(path => {
+      const slot = path.closest('.cs, .dash');
+      const name = ['ch', 'cw', 'cf', 'dash'].find(className => slot.classList.contains(className));
+      return { path, target: glyphTargets[name] };
+    })
     .filter(glyph => glyph.target);
   const hoverCapable = window.matchMedia('(hover:hover)').matches;
   const reduceLogoMotion = window.matchMedia('(prefers-reduced-motion: reduce)');

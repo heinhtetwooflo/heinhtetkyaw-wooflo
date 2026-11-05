@@ -98,12 +98,8 @@ html.nav-page-arrival .logo{view-transition-name:none}
 .sep i{grid-area:1/1;font-style:normal;transition:opacity .3s ease,transform .5s var(--ease)}
 .sep .dash{opacity:1}
 .sep .dot{opacity:0;transform:translateY(-.28em)}
-.logo.open .sep .dash,.logo-compact:focus-visible .sep .dash{opacity:0;transform:translateY(.3em) scaleX(.35)}
-.logo.open .sep .dot,.logo-compact:focus-visible .sep .dot{opacity:1;transform:none;transition-delay:.08s}
 @media (hover:hover){
   .logo-compact:hover .sep{margin-left:0;margin-right:-.07em}
-  .logo-compact:hover .sep .dash{opacity:0;transform:translateY(.3em) scaleX(.35)}
-  .logo-compact:hover .sep .dot{opacity:1;transform:none;transition-delay:.08s}
 }
 .logo.nav-collapsing .cs{width:var(--wc);margin-left:0}
 .logo.nav-collapsing .cs .g{opacity:1}
