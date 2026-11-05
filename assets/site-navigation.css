@@ -68,9 +68,9 @@ html.fonts-pending #logo,html.fonts-pending #top-nav{visibility:visible}
 @media (hover:hover){
   .logo-compact:hover .cs{width:var(--wo);margin-left:0}
 }
-.logo .ch{--wc:.6378em;--wo:.53em}
-.logo .cw{--wc:.9737em;--wo:.743em;margin-left:-.0289em}
-.logo .cf{--wc:.5508em;--wo:.309em;margin-left:-.022em}
+.logo .ch{--wc:.6378em;--wo:.57em}
+.logo .cw{--wc:.9737em;--wo:.783em;margin-left:-.0289em}
+.logo .cf{--wc:.5508em;--wo:.349em;margin-left:-.022em}
 .logo .dash{display:grid;align-items:baseline}
 .logo .dash>*{grid-area:1/1}
 .logo .dash .t{display:block;width:0;visibility:hidden;white-space:nowrap}
@@ -94,12 +94,12 @@ html.fonts-pending #logo,html.fonts-pending #top-nav{visibility:visible}
 .logo.nav-leaving{view-transition-name:none}
 html.nav-page-arrival .logo{view-transition-name:none}
 .sep{display:inline-grid;align-items:baseline;margin-left:.0553em;transition:margin .5s var(--ease)}
-.logo.open .sep,.logo-compact:focus-visible .sep{margin-left:0;margin-right:-.07em}
+.logo.open .sep,.logo-compact:focus-visible .sep{margin-left:0;margin-right:-.018em}
 .sep i{grid-area:1/1;font-style:normal;transition:opacity .3s ease,transform .5s var(--ease)}
 .sep .dash{opacity:1}
 .sep .dot{opacity:0;transform:translateY(-.28em)}
 @media (hover:hover){
-  .logo-compact:hover .sep{margin-left:0;margin-right:-.07em}
+  .logo-compact:hover .sep{margin-left:0;margin-right:-.018em}
 }
 .logo.nav-collapsing .cs{width:var(--wc);margin-left:0}
 .logo.nav-collapsing .cs .g{opacity:1}
