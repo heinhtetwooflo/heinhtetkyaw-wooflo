@@ -312,13 +312,20 @@
   var prev = row.querySelector(".prev"), next = row.querySelector(".next");
   var driveButtons = [], built = false, centered = false, cycleWidth = 0;
   var viewer = document.getElementById("media-viewer"), imageWrap = viewer.querySelector(".viewer-image-wrap"), viewerName = viewer.querySelector(".viewer-name"), thumbs = viewer.querySelector(".viewer-thumbnails");
-  var viewerIndex = 0, viewerReturnFocus = null, suppressThumbScroll = false, thumbScrollReleaseTimer = null, mediaLoadRequest = 0;
+  var viewerIndex = -1, activeThumbIndex = -1, viewerReturnFocus = null, suppressThumbScroll = false, thumbScrollReleaseTimer = null, thumbSelectionFrame = null, mediaLoadRequest = 0;
   var thumbCopies = 3, thumbMiddleCopy = 1;
   var mediaItems = files.map(function(file){ return { file:file, name:file.replace(/\.(?:png|webp|jpe?g)$/i, ""), url:src("Movies and Song/" + file) }; });
   var mediaImages = mediaItems.map(function(item){ var image = new Image(); image.className = "viewer-image"; image.alt = item.name; image.draggable = false; image.decoding = "async"; image.src = item.url; return image; });
   mediaImages.forEach(function(image){ imageWrap.appendChild(image); });
   function setMedia(index, activeThumb){
-    viewerIndex = (index + mediaItems.length) % mediaItems.length;
+    index = (index + mediaItems.length) % mediaItems.length;
+    if (activeThumb !== activeThumbIndex){
+      if (activeThumbIndex >= 0 && thumbs.children[activeThumbIndex]) thumbs.children[activeThumbIndex].setAttribute("aria-current", "false");
+      if (thumbs.children[activeThumb]) thumbs.children[activeThumb].setAttribute("aria-current", "true");
+      activeThumbIndex = activeThumb;
+    }
+    if (index === viewerIndex) return;
+    viewerIndex = index;
     var request = ++mediaLoadRequest;
     var item = mediaItems[viewerIndex], image = mediaImages[viewerIndex];
     function displayImage(){
@@ -337,7 +344,6 @@
     } else {
       image.addEventListener("load", displayWhenDecoded, {once:true});
     }
-    Array.prototype.forEach.call(thumbs.children, function(button, i){ button.setAttribute("aria-current", i === activeThumb ? "true" : "false"); });
   }
   function thumbAt(copy, index){ return thumbs.children[copy * mediaItems.length + index]; }
   function releaseThumbScroll(){
@@ -356,7 +362,7 @@
     suppressThumbScroll = true;
     thumbs.scrollTo({left:button.offsetLeft + button.offsetWidth / 2 - thumbs.clientWidth / 2, behavior:smooth ? "smooth" : "auto"});
     if (smooth) deferThumbScrollRelease();
-    else requestAnimationFrame(releaseThumbScroll);
+    else deferThumbScrollRelease();
   }
   function showMedia(index){
     var previousIndex = viewerIndex;
@@ -380,25 +386,30 @@
   }
   function openViewer(index){ viewerReturnFocus = document.activeElement; showMedia(index); viewer.classList.add("open"); viewer.setAttribute("aria-hidden","false"); document.body.style.overflow = "hidden"; viewer.querySelector(".viewer-close").focus(); }
   function closeViewer(){ if (!viewer.classList.contains("open")) return; stopViewerNavRepeat(); viewer.classList.remove("open"); viewer.setAttribute("aria-hidden","true"); document.body.style.overflow = ""; if (viewerReturnFocus) viewerReturnFocus.focus(); }
-  thumbs.addEventListener("scrollend", function(){ if (suppressThumbScroll) releaseThumbScroll(); });
+  thumbs.addEventListener("scrollend", function(){ if (suppressThumbScroll) deferThumbScrollRelease(); });
   thumbs.addEventListener("scroll", function(){
     if (!thumbs.children.length) return;
     if (suppressThumbScroll){
       if (thumbScrollReleaseTimer !== null) deferThumbScrollRelease();
       return;
     }
-    var center = thumbs.getBoundingClientRect().left + thumbs.clientWidth / 2, nearest = 0, distance = Infinity;
-    Array.prototype.forEach.call(thumbs.children, function(button, i){
-      var bounds = button.getBoundingClientRect(), delta = Math.abs(bounds.left + bounds.width / 2 - center);
-      if (delta < distance){ distance = delta; nearest = i; }
+    if (thumbSelectionFrame !== null) return;
+    thumbSelectionFrame = requestAnimationFrame(function(){
+      thumbSelectionFrame = null;
+      if (suppressThumbScroll) return;
+      var center = thumbs.getBoundingClientRect().left + thumbs.clientWidth / 2, nearest = 0, distance = Infinity;
+      Array.prototype.forEach.call(thumbs.children, function(button, i){
+        var bounds = button.getBoundingClientRect(), delta = Math.abs(bounds.left + bounds.width / 2 - center);
+        if (delta < distance){ distance = delta; nearest = i; }
+      });
+      var copy = Math.floor(nearest / mediaItems.length), index = nearest % mediaItems.length;
+      if (copy !== thumbMiddleCopy){
+        var currentThumb = thumbAt(copy, index), middleThumb = thumbAt(thumbMiddleCopy, index);
+        if (currentThumb && middleThumb) thumbs.scrollLeft += middleThumb.offsetLeft - currentThumb.offsetLeft;
+        nearest = thumbMiddleCopy * mediaItems.length + index;
+      }
+      setMedia(index, nearest);
     });
-    var copy = Math.floor(nearest / mediaItems.length), index = nearest % mediaItems.length;
-    var activeThumb = nearest;
-    if (copy !== thumbMiddleCopy){
-      activeThumb = thumbMiddleCopy * mediaItems.length + index;
-      centerThumb(thumbMiddleCopy, index, false);
-    }
-    setMedia(index, activeThumb);
   }, {passive:true});
   thumbs.addEventListener("wheel", function(e){
     if (Math.abs(e.deltaY) > Math.abs(e.deltaX)){ thumbs.scrollLeft += e.deltaY; e.preventDefault(); }
