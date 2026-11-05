@@ -71,6 +71,7 @@ html.fonts-pending #logo,html.fonts-pending #top-nav{visibility:visible}
 .logo .ch{--wc:.6378em;--wo:.53em}
 .logo .cw{--wc:.9737em;--wo:.743em;margin-left:-.0289em}
 .logo .cf{--wc:.5508em;--wo:.309em;margin-left:-.022em}
+#logo.logo-home .cs{margin-left:0}
 /* Tighten only the k/y join in the expanded compact corner logo. */
 .logo-compact .name-tail{margin-left:-.035em}
 @media (hover:hover){.logo-compact:hover{letter-spacing:-.012em}}
