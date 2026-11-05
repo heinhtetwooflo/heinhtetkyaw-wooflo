@@ -323,12 +323,14 @@
     requestAnimationFrame(function(){ suppressThumbScroll = false; });
   }
   function showMedia(index){
+    var previousIndex = viewerIndex;
     var copy = thumbMiddleCopy;
     if (index < 0) copy--;
     else if (index >= mediaItems.length) copy++;
     index = (index + mediaItems.length) % mediaItems.length;
+    var sequential = index === (previousIndex + 1) % mediaItems.length || index === (previousIndex - 1 + mediaItems.length) % mediaItems.length;
     setMedia(index, copy * mediaItems.length + index);
-    centerThumb(copy, index, true);
+    centerThumb(copy, index, sequential);
   }
   for (var copy = 0; copy < thumbCopies; copy++){
     mediaItems.forEach(function(item, index){
