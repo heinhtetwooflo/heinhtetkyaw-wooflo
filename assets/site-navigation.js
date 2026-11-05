@@ -104,8 +104,7 @@
   const syncLogoMorph = () => {
     window.requestAnimationFrame(() => {
       const forcedClosed = logo.classList.contains('nav-collapsing') || logo.classList.contains('nav-leaving') ||
-        document.documentElement.classList.contains('nav-home-arrival') ||
-        document.documentElement.classList.contains('nav-home-departing');
+        document.documentElement.classList.contains('nav-home-arrival');
       const expanded = !forcedClosed && (logo.classList.contains('open') || logo.matches(':focus-visible') ||
         (hoverCapable && logo.matches(':hover')));
       if (expanded === morphOpen) return;
@@ -181,9 +180,6 @@
       if (reducedMotion.matches) {
         root.classList.remove('nav-page-arrival', 'nav-home-arrival', 'nav-home-scaling', 'nav-home-revealing', 'nav-home-cover-complete', 'nav-transition-active');
       } else {
-        const arrivalAt = Number(root.dataset.navHomeArrivalAt) || Date.now();
-        const scaleElapsed = Math.min(620, Math.max(0, Date.now() - arrivalAt));
-        root.style.setProperty('--nav-home-scale-delay', `${-scaleElapsed}ms`);
         window.requestAnimationFrame(() => root.classList.add('nav-home-scaling'));
         whenFontsReady(() => {
           homeFontsReady = true;
@@ -209,7 +205,7 @@
   window.addEventListener('pageshow', event => {
     if (!event.persisted) return;
     navigationPending = false;
-    document.documentElement.classList.remove('nav-page-arrival', 'nav-page-revealing', 'nav-home-arrival', 'nav-home-departing', 'nav-home-scaling', 'nav-home-revealing', 'nav-home-cover-complete', 'nav-transition-active');
+    document.documentElement.classList.remove('nav-page-arrival', 'nav-page-revealing', 'nav-home-arrival', 'nav-home-scaling', 'nav-home-revealing', 'nav-home-cover-complete', 'nav-transition-active');
     document.body.classList.remove('nav-page-cover', 'nav-home-cover');
     logo.classList.remove('nav-leaving', 'nav-collapsing');
   });
@@ -291,7 +287,7 @@
 
     const root = document.documentElement;
     if (root.classList.contains('nav-page-arrival')) {
-      root.classList.remove('nav-page-arrival', 'nav-page-revealing', 'nav-home-arrival', 'nav-home-departing', 'nav-home-scaling', 'nav-home-revealing', 'nav-home-cover-complete', 'nav-transition-active');
+      root.classList.remove('nav-page-arrival', 'nav-page-revealing', 'nav-home-arrival', 'nav-home-scaling', 'nav-home-revealing', 'nav-home-cover-complete', 'nav-transition-active');
     }
 
     if (headingHome) {
@@ -311,13 +307,10 @@
 
       navigationPending = true;
       document.documentElement.style.setProperty('--nav-page-target', '#141413');
-      document.documentElement.classList.add('nav-transition-active', 'nav-home-departing');
+      document.documentElement.classList.add('nav-transition-active');
       logo.classList.remove('open');
       logo.classList.add('nav-leaving', 'nav-collapsing');
       document.body.classList.add('nav-page-cover');
-      window.requestAnimationFrame(() => {
-        try { window.sessionStorage.setItem('hwf-page-arrival', `${destinationPath}|${Date.now()}`); } catch {}
-      });
       window.setTimeout(() => window.location.assign(destination.href), 120);
       return;
     }

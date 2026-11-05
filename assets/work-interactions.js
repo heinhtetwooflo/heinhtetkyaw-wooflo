@@ -422,7 +422,7 @@
     });
   }
   logo.addEventListener('pointerenter', e => {
-    if (e.pointerType !== 'touch' && !document.documentElement.classList.contains('nav-home-departing')) {
+    if (e.pointerType !== 'touch') {
       logo.classList.add('open');
       cursorMark.classList.add('over-logo');
     }
