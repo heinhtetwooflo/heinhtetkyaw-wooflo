@@ -80,8 +80,7 @@
       }
       document.body.classList.add('nav-home-reveal');
     });
-    if (document.readyState === 'complete') revealHome();
-    else window.addEventListener('load', revealHome, { once: true });
+    revealHome();
   }
 
   let pressTimer = 0;
