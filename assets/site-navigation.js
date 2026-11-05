@@ -150,37 +150,43 @@
   };
 
   if (document.documentElement.classList.contains('nav-page-arrival')) {
+    const root = document.documentElement;
+    let homeCoverComplete = root.classList.contains('nav-home-cover-complete');
+    let homeFontsReady = false;
+    const revealHomeContent = () => {
+      if (homeCoverComplete && homeFontsReady) root.classList.add('nav-home-revealing');
+    };
+    const completeHomeCover = () => {
+      if (homeCoverComplete) return;
+      homeCoverComplete = true;
+      root.classList.add('nav-home-cover-complete');
+      revealHomeContent();
+    };
     const finishReveal = event => {
-      if (event.animationName !== 'nav-page-reveal' ||
-          !document.documentElement.classList.contains('nav-page-arrival')) return;
+      if (event.animationName === 'nav-page-cover' && root.classList.contains('nav-home-arrival')) {
+        completeHomeCover();
+        return;
+      }
+      if (event.animationName !== 'nav-page-reveal' || !root.classList.contains('nav-page-arrival')) return;
       document.documentElement.classList.remove('nav-page-revealing');
       document.documentElement.classList.remove('nav-page-arrival');
-      document.documentElement.classList.remove('nav-home-arrival', 'nav-home-scaling', 'nav-home-revealing');
+      document.documentElement.classList.remove('nav-home-arrival', 'nav-home-scaling', 'nav-home-revealing', 'nav-home-cover-complete');
       document.documentElement.classList.remove('nav-transition-active');
     };
 
     document.documentElement.addEventListener('animationend', finishReveal);
     if (document.documentElement.classList.contains('nav-home-arrival')) {
-      let homeScaleFinished = false;
-      const revealAfterScale = () => {
-        if (homeScaleFinished) return;
-        homeScaleFinished = true;
-        document.documentElement.classList.add('nav-home-revealing');
-      };
-      logo.addEventListener('transitionend', event => {
-        if (event.target === logo && event.propertyName === 'font-size') revealAfterScale();
-      });
-      const startHomeScale = () => whenFontsReady(() => {
-        if (reducedMotion.matches) {
-          document.documentElement.classList.remove('nav-page-arrival', 'nav-home-arrival', 'nav-home-scaling', 'nav-home-revealing', 'nav-transition-active');
-          return;
-        }
-        window.requestAnimationFrame(() => {
-          document.documentElement.classList.add('nav-home-scaling');
-          window.setTimeout(revealAfterScale, 750);
+      if (reducedMotion.matches) {
+        root.classList.remove('nav-page-arrival', 'nav-home-arrival', 'nav-home-scaling', 'nav-home-revealing', 'nav-home-cover-complete', 'nav-transition-active');
+      } else {
+        window.requestAnimationFrame(() => root.classList.add('nav-home-scaling'));
+        whenFontsReady(() => {
+          homeFontsReady = true;
+          revealHomeContent();
         });
-      });
-      startHomeScale();
+        const remaining = parseFloat(getComputedStyle(root).getPropertyValue('--nav-home-cover-duration')) || 0;
+        window.setTimeout(completeHomeCover, remaining + 80);
+      }
     } else {
       const revealPage = () => whenFontsReady(() => {
         if (reducedMotion.matches) {
@@ -198,7 +204,7 @@
   window.addEventListener('pageshow', event => {
     if (!event.persisted) return;
     navigationPending = false;
-    document.documentElement.classList.remove('nav-page-arrival', 'nav-page-revealing', 'nav-home-arrival', 'nav-home-scaling', 'nav-home-revealing', 'nav-transition-active');
+    document.documentElement.classList.remove('nav-page-arrival', 'nav-page-revealing', 'nav-home-arrival', 'nav-home-scaling', 'nav-home-revealing', 'nav-home-cover-complete', 'nav-transition-active');
     document.body.classList.remove('nav-page-cover', 'nav-home-cover');
     logo.classList.remove('nav-leaving', 'nav-collapsing');
   });
@@ -280,7 +286,7 @@
 
     const root = document.documentElement;
     if (root.classList.contains('nav-page-arrival')) {
-      root.classList.remove('nav-page-arrival', 'nav-page-revealing', 'nav-transition-active');
+      root.classList.remove('nav-page-arrival', 'nav-page-revealing', 'nav-home-arrival', 'nav-home-scaling', 'nav-home-revealing', 'nav-home-cover-complete', 'nav-transition-active');
     }
 
     if (headingHome) {
@@ -304,7 +310,7 @@
       logo.classList.remove('open');
       logo.classList.add('nav-leaving', 'nav-collapsing');
       document.body.classList.add('nav-page-cover');
-      window.setTimeout(() => window.location.assign(destination.href), 240);
+      window.setTimeout(() => window.location.assign(destination.href), 120);
       return;
     }
 
