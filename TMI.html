@@ -89,6 +89,8 @@
   .drive:hover,.drive:focus-visible{z-index:4}
   .drive img{max-width:100%;max-height:86%;object-fit:contain;display:block;transition:transform .45s var(--ease),filter .45s var(--ease);-webkit-user-drag:none;user-select:none}
   .drive:hover img,.drive:focus-visible img{transform:translateY(-4px) scale(1.02);filter:brightness(1.06)}
+  .drive-label{position:absolute;left:50%;bottom:3%;color:var(--ink);font-size:.8em;white-space:nowrap;opacity:0;transform:translate(-50%,4px);transition:opacity .2s ease,transform .2s var(--ease);pointer-events:none}
+  .drive:hover .drive-label,.drive:focus-visible .drive-label{opacity:.8;transform:translate(-50%,0)}
   .drive:active img{transform:scale(.98)}
 
   .folder{height:100%;min-width:0;min-height:0;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:calc(var(--pad)*.6);
@@ -96,7 +98,7 @@
   .row.open .folder{opacity:1;visibility:visible;transform:none;transition:opacity .24s ease,transform .3s var(--ease)}
 
   .arrow{position:relative;z-index:2;height:100%;min-height:52px;width:clamp(48px,4.2vw,64px);flex:none;display:grid;place-items:center;opacity:.78;touch-action:manipulation;cursor:none;transition:opacity .2s ease,transform .2s var(--ease)}
-  .arrow svg{width:58%;height:clamp(40px,8vh,72px);fill:none;stroke:var(--ink);stroke-width:1.2;stroke-linecap:square;vector-effect:non-scaling-stroke;overflow:visible;pointer-events:none;transition:transform .2s var(--ease)}
+  .arrow svg{width:58%;height:clamp(40px,8vh,72px);fill:none;stroke:var(--ink);stroke-width:1.3;stroke-linecap:square;vector-effect:non-scaling-stroke;overflow:visible;pointer-events:none;transition:transform .2s var(--ease)}
   .arrow svg *{vector-effect:non-scaling-stroke}
   .arrow:hover{opacity:1}
   .arrow.prev:hover svg{transform:translateX(-4px)}
@@ -126,7 +128,7 @@
   .viewer-image.active{opacity:1}
   .viewer-nav{height:56px;display:grid;place-items:center;opacity:.78}
   .viewer-nav:hover{opacity:1}
-  .viewer-nav svg{width:22px;height:44px;fill:none;stroke:currentColor;stroke-width:1.5}
+  .viewer-nav svg{width:22px;height:44px;fill:none;stroke:currentColor;stroke-width:1.65}
   .viewer-thumbnails{display:flex;gap:8px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:none;-ms-overflow-style:none;overscroll-behavior-x:contain;touch-action:pan-x;user-select:none}
   .viewer-thumbnails::-webkit-scrollbar{display:none}
   .viewer-thumb{width:max-content;height:60px;padding:3px 4px;flex:none;display:grid;place-items:center;opacity:.55;border:1px solid transparent}
@@ -373,7 +375,7 @@
     });
   }
   function openViewer(index){ viewerReturnFocus = document.activeElement; showMedia(index); viewer.classList.add("open"); viewer.setAttribute("aria-hidden","false"); document.body.style.overflow = "hidden"; viewer.querySelector(".viewer-close").focus(); }
-  function closeViewer(){ if (!viewer.classList.contains("open")) return; viewer.classList.remove("open"); viewer.setAttribute("aria-hidden","true"); document.body.style.overflow = ""; if (viewerReturnFocus) viewerReturnFocus.focus(); }
+  function closeViewer(){ if (!viewer.classList.contains("open")) return; stopViewerNavRepeat(); viewer.classList.remove("open"); viewer.setAttribute("aria-hidden","true"); document.body.style.overflow = ""; if (viewerReturnFocus) viewerReturnFocus.focus(); }
   thumbs.addEventListener("scrollend", function(){ if (suppressThumbScroll) releaseThumbScroll(); });
   thumbs.addEventListener("scroll", function(){
     if (!thumbs.children.length) return;
@@ -424,8 +426,34 @@
     }
     imageWheelTimer = setTimeout(function(){ imageWheel = 0; }, 180);
   }, {passive:false});
-  viewer.querySelector(".viewer-prev").addEventListener("click", function(){ showMedia(viewerIndex - 1); });
-  viewer.querySelector(".viewer-next").addEventListener("click", function(){ showMedia(viewerIndex + 1); });
+  var navRepeatDelay = null, navRepeatInterval = null;
+  function stopViewerNavRepeat(){
+    clearTimeout(navRepeatDelay);
+    clearInterval(navRepeatInterval);
+    navRepeatDelay = navRepeatInterval = null;
+  }
+  function bindViewerNav(button, direction){
+    button.addEventListener("pointerdown", function(e){
+      if (e.button !== 0 || !e.isPrimary) return;
+      e.preventDefault();
+      stopViewerNavRepeat();
+      if (button.setPointerCapture) button.setPointerCapture(e.pointerId);
+      showMedia(viewerIndex + direction);
+      navRepeatDelay = setTimeout(function(){
+        navRepeatInterval = setInterval(function(){ showMedia(viewerIndex + direction); }, 90);
+      }, 300);
+    });
+    button.addEventListener("pointerup", stopViewerNavRepeat);
+    button.addEventListener("pointercancel", stopViewerNavRepeat);
+    button.addEventListener("lostpointercapture", stopViewerNavRepeat);
+    button.addEventListener("click", function(e){
+      if (e.detail === 0) showMedia(viewerIndex + direction);
+    });
+  }
+  bindViewerNav(viewer.querySelector(".viewer-prev"), -1);
+  bindViewerNav(viewer.querySelector(".viewer-next"), 1);
+  window.addEventListener("blur", stopViewerNavRepeat);
+  document.addEventListener("visibilitychange", function(){ if (document.hidden) stopViewerNavRepeat(); });
   viewer.querySelector(".viewer-close").addEventListener("click", closeViewer);
   viewer.addEventListener("click", function(e){ if (e.target === viewer) closeViewer(); });
   document.addEventListener("keydown", function(e){ if (!viewer.classList.contains("open")) return; if (e.key === "Escape") closeViewer(); if (e.key === "ArrowLeft") showMedia(viewerIndex - 1); if (e.key === "ArrowRight") showMedia(viewerIndex + 1); });
@@ -487,7 +515,7 @@
     btn.type = "button";
     btn.setAttribute("aria-expanded", "false");
     btn.setAttribute("aria-label", d.name);
-    btn.innerHTML = '<img alt="" draggable="false" src="' + src("Drive/" + d.file) + '">';
+    btn.innerHTML = '<img alt="" draggable="false" src="' + src("Drive/" + d.file) + '"><span class="drive-label" aria-hidden="true">always on my drive</span>';
     pair.appendChild(btn);
     driveButtons.push(btn);
     btn.addEventListener("click", function(){
