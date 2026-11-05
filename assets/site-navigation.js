@@ -171,7 +171,7 @@
       }
 
       navigationPending = true;
-      document.documentElement.classList.add('nav-transition-active', 'nav-home-returning');
+      document.documentElement.classList.add('nav-transition-active');
       logo.classList.remove('open');
       logo.classList.add('nav-returning');
       document.body.classList.add('nav-return-cover');
