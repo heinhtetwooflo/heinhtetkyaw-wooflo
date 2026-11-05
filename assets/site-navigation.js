@@ -44,7 +44,8 @@
 
   if (document.documentElement.classList.contains('nav-page-arrival')) {
     const finishReveal = event => {
-      if (event.animationName !== 'nav-page-reveal') return;
+      if (event.animationName !== 'nav-page-reveal' ||
+          !document.documentElement.classList.contains('nav-page-arrival')) return;
       document.documentElement.classList.remove('nav-page-revealing');
       document.documentElement.classList.remove('nav-page-arrival');
       document.documentElement.classList.remove('nav-transition-active');
@@ -62,6 +63,14 @@
     if (document.readyState === 'complete') revealPage();
     else window.addEventListener('load', revealPage, { once: true });
   }
+
+  window.addEventListener('pageshow', event => {
+    if (!event.persisted) return;
+    navigationPending = false;
+    document.documentElement.classList.remove('nav-page-arrival', 'nav-page-revealing', 'nav-transition-active');
+    document.body.classList.remove('nav-page-cover', 'nav-home-cover');
+    logo.classList.remove('nav-leaving', 'nav-collapsing');
+  });
 
   let pressTimer = 0;
   let pressPointerId = null;
@@ -137,6 +146,11 @@
     const leavingHome = isHome;
     const headingHome = homePaths.has(destinationPath);
     if (leavingHome && headingHome) return;
+
+    const root = document.documentElement;
+    if (root.classList.contains('nav-page-arrival')) {
+      root.classList.remove('nav-page-arrival', 'nav-page-revealing', 'nav-transition-active');
+    }
 
     if (headingHome) {
       if (navigationPending) {
