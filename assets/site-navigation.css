@@ -71,6 +71,8 @@ html.fonts-pending #logo,html.fonts-pending #top-nav{visibility:visible}
 .logo .ch{--wc:.6378em;--wo:.53em}
 .logo .cw{--wc:.9737em;--wo:.743em;margin-left:-.0289em}
 .logo .cf{--wc:.5508em;--wo:.309em;margin-left:-.022em}
+/* Tighten the f against the preceding letters in the compact corner mark only. */
+.logo-compact .cf{margin-left:-.055em}
 .logo .dash{display:grid;align-items:baseline}
 .logo .dash>*{grid-area:1/1}
 .logo .dash .t{display:block;width:0;visibility:hidden;white-space:nowrap}
