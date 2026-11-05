@@ -86,8 +86,8 @@
   }
 
   h1{
-    position:absolute;left:var(--side-gutter);right:var(--side-gutter);bottom:calc(var(--page-bottom) + 48px);
-    color:#4D4D4D;font-weight:500;font-size:19px;letter-spacing:-.01em;line-height:1.25;opacity:.55;text-align:center;
+    position:absolute;left:var(--side-gutter);right:var(--side-gutter);bottom:var(--page-bottom);
+    color:#4D4D4D;font-weight:500;font-size:19px;letter-spacing:-.01em;line-height:1.25;opacity:.55;
   }
 
   /* ---------- easter egg (same as home) ---------- */
@@ -102,7 +102,7 @@
   @media (max-width:600px){
     main{padding:0 var(--side-gutter)}
     #figure{width:min(46vw,37vh)}
-    h1{left:var(--side-gutter);right:var(--side-gutter);bottom:calc(80px + env(safe-area-inset-bottom,0px));font-size:18px}
+    h1{left:var(--side-gutter);right:var(--side-gutter);bottom:calc(80px + env(safe-area-inset-bottom,0px));font-size:18px;text-align:center}
     #egg img{width:min(42vw,34vh)}
   }
   .circle-choice{border-color:rgba(20,20,19,.52)}
