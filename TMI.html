@@ -122,14 +122,14 @@
   .viewer-close:hover{opacity:1}
   .viewer-stage{position:relative;min-height:180px;height:min(58vh,620px);display:grid;grid-template-columns:48px minmax(0,1fr) 48px;align-items:center;gap:12px}
   .viewer-image-wrap{height:100%;min-height:0;display:grid;place-items:center;overflow:hidden}
-  .viewer-image{max-width:100%;max-height:100%;object-fit:contain;display:block}
+  .viewer-image{width:100%;height:100%;object-fit:contain;display:block}
   .viewer-nav{height:56px;display:grid;place-items:center;opacity:.78}
   .viewer-nav:hover{opacity:1}
   .viewer-nav svg{width:22px;height:44px;fill:none;stroke:currentColor;stroke-width:1.5}
-  .viewer-count{text-align:center;font-size:12px;opacity:.62}
-  .viewer-thumbnails{display:flex;gap:8px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:thin;scrollbar-color:rgba(247,246,244,.35) transparent}
+  .viewer-thumbnails{display:flex;gap:8px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:none;-ms-overflow-style:none;overscroll-behavior-x:contain;touch-action:pan-x}
+  .viewer-thumbnails::-webkit-scrollbar{display:none}
   .viewer-thumb{width:64px;height:48px;flex:none;display:grid;place-items:center;opacity:.55;border:1px solid transparent;overflow:hidden}
-  .viewer-thumb img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block}
+  .viewer-thumb img{width:100%;height:100%;object-fit:contain;display:block}
   .viewer-thumb[aria-current="true"]{opacity:1;border-color:var(--ink)}
   @media (max-width:600px){
     #media-viewer{padding:12px}
@@ -232,7 +232,6 @@
       <div class="viewer-image-wrap"><img class="viewer-image" alt="" draggable="false"></div>
       <button class="viewer-nav viewer-next" type="button" aria-label="Next media"><svg viewBox="0 0 40 80"><polyline points="2,2 38,40 2,78"/></svg></button>
     </div>
-    <div class="viewer-count" aria-live="polite"></div>
     <div class="viewer-thumbnails" aria-label="Media thumbnails"></div>
   </section>
 </div>
@@ -305,14 +304,13 @@
   var pair = row.querySelector(".drive-pair"), track = row.querySelector(".track");
   var prev = row.querySelector(".prev"), next = row.querySelector(".next");
   var driveButtons = [], built = false, centered = false, cycleWidth = 0;
-  var viewer = document.getElementById("media-viewer"), viewerImage = viewer.querySelector(".viewer-image"), viewerName = viewer.querySelector(".viewer-name"), viewerCount = viewer.querySelector(".viewer-count"), thumbs = viewer.querySelector(".viewer-thumbnails");
+  var viewer = document.getElementById("media-viewer"), viewerImage = viewer.querySelector(".viewer-image"), viewerName = viewer.querySelector(".viewer-name"), thumbs = viewer.querySelector(".viewer-thumbnails");
   var viewerIndex = 0, viewerReturnFocus = null;
   var mediaItems = files.map(function(file){ return { file:file, name:file.replace(/\.(?:png|webp|jpe?g)$/i, ""), url:src("Movies and Song/" + file) }; });
   function showMedia(index){
     viewerIndex = (index + mediaItems.length) % mediaItems.length;
     var item = mediaItems[viewerIndex];
     viewerImage.src = item.url; viewerImage.alt = item.name; viewerName.textContent = item.name;
-    viewerCount.textContent = (viewerIndex + 1) + " / " + mediaItems.length;
     Array.prototype.forEach.call(thumbs.children, function(button, i){ button.setAttribute("aria-current", i === viewerIndex ? "true" : "false"); if (i === viewerIndex) button.scrollIntoView({block:"nearest",inline:"nearest"}); });
   }
   function openViewer(index){ viewerReturnFocus = document.activeElement; showMedia(index); viewer.classList.add("open"); viewer.setAttribute("aria-hidden","false"); document.body.style.overflow = "hidden"; viewer.querySelector(".viewer-close").focus(); }
