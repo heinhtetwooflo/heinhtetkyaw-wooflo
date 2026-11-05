@@ -121,8 +121,9 @@
   .viewer-close{flex:none;padding:8px 10px;opacity:.8}
   .viewer-close:hover{opacity:1}
   .viewer-stage{position:relative;min-height:0;display:grid;grid-template-columns:48px minmax(0,1fr) 48px;align-items:center;gap:12px}
-  .viewer-image-wrap{height:100%;min-width:0;min-height:0;display:grid;place-items:center;overflow:hidden;touch-action:pan-y}
-  .viewer-image{width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain;display:block}
+  .viewer-image-wrap{position:relative;height:100%;min-width:0;min-height:0;display:grid;place-items:center;overflow:hidden;touch-action:pan-y}
+  .viewer-image{position:absolute;inset:0;margin:auto;width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain;display:block;opacity:0}
+  .viewer-image.active{opacity:1}
   .viewer-nav{height:56px;display:grid;place-items:center;opacity:.78}
   .viewer-nav:hover{opacity:1}
   .viewer-nav svg{width:22px;height:44px;fill:none;stroke:currentColor;stroke-width:1.5}
@@ -229,7 +230,7 @@
     <header class="viewer-heading"><div><h2 class="viewer-title">always on my drive</h2><div class="viewer-name"></div></div><button class="viewer-close" type="button" aria-label="Close gallery">Close</button></header>
     <div class="viewer-stage">
       <button class="viewer-nav viewer-prev" type="button" aria-label="Previous media"><svg viewBox="0 0 40 80"><polyline points="38,2 2,40 38,78"/></svg></button>
-      <div class="viewer-image-wrap"><img class="viewer-image" alt="" draggable="false"></div>
+      <div class="viewer-image-wrap"></div>
       <button class="viewer-nav viewer-next" type="button" aria-label="Next media"><svg viewBox="0 0 40 80"><polyline points="2,2 38,40 2,78"/></svg></button>
     </div>
     <div class="viewer-thumbnails" aria-label="Media thumbnails"></div>
@@ -304,21 +305,22 @@
   var pair = row.querySelector(".drive-pair"), track = row.querySelector(".track");
   var prev = row.querySelector(".prev"), next = row.querySelector(".next");
   var driveButtons = [], built = false, centered = false, cycleWidth = 0;
-  var viewer = document.getElementById("media-viewer"), viewerImage = viewer.querySelector(".viewer-image"), viewerName = viewer.querySelector(".viewer-name"), thumbs = viewer.querySelector(".viewer-thumbnails");
+  var viewer = document.getElementById("media-viewer"), imageWrap = viewer.querySelector(".viewer-image-wrap"), viewerName = viewer.querySelector(".viewer-name"), thumbs = viewer.querySelector(".viewer-thumbnails");
   var viewerIndex = 0, viewerReturnFocus = null, suppressThumbScroll = false, mediaLoadRequest = 0;
   var thumbCopies = 3, thumbMiddleCopy = 1;
   var mediaItems = files.map(function(file){ return { file:file, name:file.replace(/\.(?:png|webp|jpe?g)$/i, ""), url:src("Movies and Song/" + file) }; });
-  var mediaImages = mediaItems.map(function(item){ var image = new Image(); image.decoding = "async"; image.src = item.url; return image; });
+  var mediaImages = mediaItems.map(function(item){ var image = new Image(); image.className = "viewer-image"; image.alt = item.name; image.draggable = false; image.decoding = "async"; image.src = item.url; return image; });
   function setMedia(index, activeThumb){
     viewerIndex = (index + mediaItems.length) % mediaItems.length;
     var request = ++mediaLoadRequest;
-    var item = mediaItems[viewerIndex];
-    var image = mediaImages[viewerIndex];
-    viewerName.textContent = item.name;
+    var item = mediaItems[viewerIndex], image = mediaImages[viewerIndex];
     function displayImage(){
       if (request !== mediaLoadRequest) return;
-      viewerImage.src = item.url;
-      viewerImage.alt = item.name;
+      var currentImage = imageWrap.querySelector(".viewer-image.active");
+      if (currentImage) currentImage.classList.remove("active");
+      imageWrap.appendChild(image);
+      image.classList.add("active");
+      viewerName.textContent = item.name;
     }
     function displayWhenDecoded(){
       if (typeof image.decode === "function") image.decode().then(displayImage).catch(displayImage);
@@ -326,10 +328,8 @@
     }
     if (image.complete){
       if (image.naturalWidth) displayWhenDecoded();
-      else displayImage();
     } else {
       image.addEventListener("load", displayWhenDecoded, {once:true});
-      image.addEventListener("error", displayImage, {once:true});
     }
     Array.prototype.forEach.call(thumbs.children, function(button, i){ button.setAttribute("aria-current", i === activeThumb ? "true" : "false"); });
   }
@@ -384,7 +384,7 @@
   });
   window.addEventListener("pointermove", function(e){ if (thumbDown) thumbs.scrollLeft = thumbScrollLeft - (e.clientX - thumbStartX); });
   window.addEventListener("pointerup", function(){ thumbDown = false; });
-  var imageWrap = viewer.querySelector(".viewer-image-wrap"), imageSwipe = null, imageWheel = 0, imageWheelTimer = null;
+  var imageSwipe = null, imageWheel = 0, imageWheelTimer = null;
   imageWrap.addEventListener("pointerdown", function(e){
     if (e.pointerType === "mouse" && e.button !== 0) return;
     imageSwipe = {id:e.pointerId, x:e.clientX, y:e.clientY};
