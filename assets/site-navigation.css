@@ -53,8 +53,8 @@ html.nav-page-arrival .logo.logo-on-light{
 html.nav-page-arrival .logo.logo-on-light .g{filter:none!important}
 html.nav-transition-active #top-nav{mix-blend-mode:difference}
 html.nav-transition-active #top-nav a{color:#f7f6f4!important}
-html.nav-page-arrival:has(.logo-on-light) #top-nav{mix-blend-mode:normal}
-html.nav-page-arrival:has(.logo-on-light) #top-nav a{color:var(--ink)!important}
+html:has(.logo-on-light) #top-nav{mix-blend-mode:difference}
+html:has(.logo-on-light) #top-nav a{color:#f7f6f4!important}
 /* Keep the persistent controls visible while page content waits for its fonts. */
 html.fonts-pending #logo,html.fonts-pending #top-nav{visibility:visible}
 .logo-compact.logo-on-light{color:#4D4D4D}
