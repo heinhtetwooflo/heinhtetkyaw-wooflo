@@ -159,23 +159,9 @@
     if (leavingHome && headingHome) return;
 
     if (headingHome) {
-      if (reducedMotion.matches) return;
-      event.preventDefault();
-      if (navigationPending) return;
-
-      try {
-        window.sessionStorage.setItem('hwf-home-return', String(Date.now()));
-      } catch {
-        window.location.assign(destination.href);
-        return;
-      }
-
-      navigationPending = true;
-      document.documentElement.classList.add('nav-transition-active');
-      logo.classList.remove('open');
-      logo.classList.add('nav-returning');
-      document.body.classList.add('nav-return-cover');
-      window.setTimeout(() => window.location.assign(destination.href), 460);
+      // Let the browser perform a same-origin cross-document view transition.
+      // This keeps the current document alive until the home page is ready and
+      // avoids a blank/reload flash between the compact and home logo states.
       return;
     }
 
