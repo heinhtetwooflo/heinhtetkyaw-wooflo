@@ -125,12 +125,10 @@ html.nav-page-arrival .logo{view-transition-name:none}
 #top-nav a{
   position:relative;display:block;padding:6px 0;
   color:var(--ink);font-family:var(--font);font-weight:500;text-decoration:none;
-  font-size:16px;letter-spacing:-.01em;line-height:1;white-space:nowrap;
-  transition:opacity .2s ease;
+  font-size:16px;letter-spacing:-.01em;line-height:1;white-space:nowrap;font-synthesis:none;
 }
 #top-nav a::after{content:"";position:absolute;left:0;right:0;bottom:3px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease)}
 #top-nav a[aria-current="page"]::after,#top-nav a:hover::after,#top-nav a:focus-visible::after{transform:scaleX(1)}
-#top-nav a:hover{opacity:.72}
 #top-nav a:focus-visible{outline:1px solid currentColor;outline-offset:3px}
 
 @media (max-width:600px){
