@@ -343,7 +343,7 @@
       }
 
       navigationPending = true;
-      const targetColor = destinationPath === '/work' ? '#ffffff' : '#141413';
+      const targetColor = destinationPath === '/works' ? '#ffffff' : '#141413';
       document.documentElement.style.setProperty('--nav-page-target', targetColor);
       document.documentElement.classList.add('nav-transition-active');
       logo.classList.add('nav-leaving');
@@ -371,7 +371,7 @@
       return;
     }
 
-    const targetColor = destinationPath === '/work' ? '#ffffff' : '#141413';
+    const targetColor = destinationPath === '/works' ? '#ffffff' : '#141413';
     document.documentElement.style.setProperty('--nav-page-target', targetColor);
     document.documentElement.classList.add('nav-transition-active');
     logo.classList.remove('open');

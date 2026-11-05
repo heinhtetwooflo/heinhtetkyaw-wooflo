@@ -53,7 +53,7 @@
   button{font:inherit;color:inherit;background:none;border:0}
   :focus-visible{outline:1px solid var(--ink);outline-offset:4px}
 
-  #top-nav{position:fixed;top:calc(20px + env(safe-area-inset-top,0px));left:50%;z-index:2500;display:flex;gap:clamp(28px,5vw,56px);transform:translateX(-50%)}
+  #top-nav{position:fixed;top:calc(20px + env(safe-area-inset-top,0px));left:50%;z-index:2500;display:flex;gap:clamp(32px,6vw,64px);transform:translateX(-50%)}
   #top-nav a{position:relative;color:var(--ink);font-family:var(--font);font-weight:500;text-decoration:none;font-size:19px;letter-spacing:-.01em;padding:6px 0}
   #top-nav a::after{content:"";position:absolute;left:0;right:0;bottom:3px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease)}
   #top-nav a:hover::after,#top-nav a:focus-visible::after{transform:scaleX(1)}
@@ -135,7 +135,7 @@
     .arrow svg{width:55%;height:48px}
     .track{gap:10px}
     .track figure{flex-basis:clamp(84px,24vw,112px)}
-    #top-nav{top:calc(12px + env(safe-area-inset-top,0px));gap:32px}
+    #top-nav{top:calc(12px + env(safe-area-inset-top,0px));gap:clamp(28px,8vw,40px)}
     #top-nav a{font-size:18px;padding:10px 0}
   }
   @media (min-width:861px) and (max-height:650px){
@@ -161,7 +161,7 @@
 </a>
 <nav id="top-nav" aria-label="Pages">
   <a href="/TMI" aria-current="page">TMI</a>
-  <a href="/work">Works</a>
+  <a href="/works">Works</a>
 </nav>
 <main>
   <section class="top">

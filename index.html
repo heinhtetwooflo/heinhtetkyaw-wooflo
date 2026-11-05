@@ -110,7 +110,7 @@
   @media (prefers-reduced-motion:reduce){#cursor-mark.click-pulse svg{animation:none}}
 
   /* ---------- top controls ---------- */
-  #top-nav{position:fixed;top:calc(20px + env(safe-area-inset-top,0px));left:50%;z-index:2500;display:flex;gap:clamp(28px,5vw,56px);transform:translateX(-50%)}
+  #top-nav{position:fixed;top:calc(20px + env(safe-area-inset-top,0px));left:50%;z-index:2500;display:flex;gap:clamp(32px,6vw,64px);transform:translateX(-50%)}
   #top-nav a{position:relative;color:var(--ink);font-family:var(--font);font-weight:500;font-synthesis:none;text-decoration:none;font-size:19px;letter-spacing:-.01em;padding:6px 0}
   #top-nav a::after{content:"";position:absolute;left:0;right:0;bottom:3px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease)}
   #top-nav a:hover::after,#top-nav a:focus-visible::after{transform:scaleX(1)}
@@ -191,7 +191,7 @@
   html.nav-home-arrival.nav-home-cover-complete::after{transform:scaleY(1);animation:none}
   html.nav-home-arrival.nav-home-revealing::after{animation:nav-page-reveal .34s cubic-bezier(.4,0,.2,1) forwards}
   @media (max-width:600px){
-    #top-nav{top:calc(12px + env(safe-area-inset-top,0px));gap:32px}
+    #top-nav{top:calc(12px + env(safe-area-inset-top,0px));gap:clamp(28px,8vw,40px)}
     #top-nav a{font-size:18px;padding:10px 0}
     #mobile-control-group{display:contents}
     #top-controls{position:fixed;top:auto;left:50%;right:auto;bottom:calc(18px + env(safe-area-inset-bottom,0px));width:100px;height:44px;justify-content:center;gap:4px;transform:translateX(-50%)}
@@ -306,7 +306,7 @@
 
 <nav id="top-nav" aria-label="Pages">
   <a href="/TMI">TMI</a>
-  <a href="/work">Works</a>
+  <a href="/works">Works</a>
 </nav>
 
 <div id="mobile-control-group">
