@@ -6,6 +6,16 @@
 <script>document.documentElement.classList.add('fonts-pending')</script>
 <script>
   try {
+    const returnStartedAt = Number(sessionStorage.getItem('hwf-home-return'));
+    if (returnStartedAt > 0 && Date.now() - returnStartedAt < 30000 &&
+        !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.classList.add('nav-home-return', 'nav-transition-active');
+    }
+    sessionStorage.removeItem('hwf-home-return');
+  } catch {}
+</script>
+<script>
+  try {
     const pageArrival = sessionStorage.getItem('hwf-page-arrival') || '';
     const separator = pageArrival.lastIndexOf('|');
     const arrivalPath = pageArrival.slice(0, separator);
