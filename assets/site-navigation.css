@@ -57,7 +57,7 @@ html:has(.logo-on-light) #top-nav{mix-blend-mode:difference}
 html:has(.logo-on-light) #top-nav a{color:#f7f6f4!important}
 /* Keep the persistent controls visible while page content waits for its fonts. */
 html.fonts-pending #logo,html.fonts-pending #top-nav{visibility:visible}
-.logo-compact.logo-on-light{color:#4D4D4D}
+.logo-compact.logo-on-light{color:#141413}
 .logo-compact.logo-on-light .g{filter:none}
 .logo .g{display:block;height:.715em;filter:brightness(0) invert(1)}
 .logo .cs{display:inline-grid;align-items:baseline;width:var(--wc);transition:width .55s var(--ease),margin .5s var(--ease)}
