@@ -1,5 +1,16 @@
 .logo{view-transition-name:site-logo}
 @view-transition{navigation:auto}
+::view-transition-group(site-logo){animation-duration:.8s}
+::view-transition-old(root){animation:site-page-swipe-out .72s cubic-bezier(.22,.72,.2,1) both}
+::view-transition-new(root){animation:site-page-reveal .72s cubic-bezier(.22,.72,.2,1) both}
+@keyframes site-page-swipe-out{
+  to{clip-path:inset(0 0 100% 0)}
+}
+@keyframes site-page-reveal{
+  0%{clip-path:inset(0 0 100% 0);opacity:.72}
+  48%{clip-path:inset(0);opacity:.82}
+  100%{clip-path:inset(0);opacity:1}
+}
 .logo{
   position:fixed;z-index:2600;color:var(--ink);mix-blend-mode:difference;
   display:inline-flex;align-items:baseline;width:max-content;max-width:100vw;
@@ -175,6 +186,8 @@ html.fonts-pending #logo,html.fonts-pending #top-nav{visibility:hidden}
 
 @media (prefers-reduced-motion:reduce){
   .logo,.logo * ,#top-nav a{transition:none!important}
+  ::view-transition-group(site-logo){animation-duration:.01ms}
+  ::view-transition-old(root),::view-transition-new(root){animation:none!important}
   body.nav-return-cover::after,body.nav-home-reveal::after,body.nav-page-cover::after,
   html.nav-page-arrival.nav-page-revealing::after{animation:none!important}
 }
