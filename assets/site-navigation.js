@@ -58,8 +58,15 @@
 
   const pathFromPoints = points => `M${points.map(point => `${point[0].toFixed(2)} ${point[1].toFixed(2)}`).join('L')}Z`;
 
-  const morphLogoGlyphs = open => {
+  const morphLogoGlyphs = (open, instant = false) => {
     const frameId = ++morphFrame;
+    if (instant) {
+      logoGlyphs.forEach(({ path, target }) => {
+        path.dataset.closedPath ||= path.getAttribute('d');
+        path.setAttribute('d', open ? target : path.dataset.closedPath);
+      });
+      return;
+    }
     const sampleCount = 144;
     const records = logoGlyphs.map(({ path, target }) => {
       const start = path.getAttribute('d');
@@ -103,8 +110,14 @@
 
   const syncLogoMorph = () => {
     window.requestAnimationFrame(() => {
+      const root = document.documentElement;
+      if (root.classList.contains('nav-home-returning') || root.classList.contains('nav-home-arrival')) {
+        morphOpen = false;
+        morphLogoGlyphs(false, true);
+        return;
+      }
       const forcedClosed = logo.classList.contains('nav-collapsing') || logo.classList.contains('nav-leaving') ||
-        document.documentElement.classList.contains('nav-home-arrival');
+        root.classList.contains('nav-home-arrival');
       const expanded = !forcedClosed && (logo.classList.contains('open') || logo.matches(':focus-visible') ||
         (hoverCapable && logo.matches(':hover')));
       if (expanded === morphOpen) return;
@@ -171,14 +184,14 @@
       if (event.animationName !== 'nav-page-reveal' || !root.classList.contains('nav-page-arrival')) return;
       document.documentElement.classList.remove('nav-page-revealing');
       document.documentElement.classList.remove('nav-page-arrival');
-      document.documentElement.classList.remove('nav-home-arrival', 'nav-home-scaling', 'nav-home-revealing', 'nav-home-cover-complete');
+      document.documentElement.classList.remove('nav-home-arrival', 'nav-home-returning', 'nav-home-scaling', 'nav-home-revealing', 'nav-home-cover-complete');
       document.documentElement.classList.remove('nav-transition-active');
     };
 
     document.documentElement.addEventListener('animationend', finishReveal);
     if (document.documentElement.classList.contains('nav-home-arrival')) {
       if (reducedMotion.matches) {
-        root.classList.remove('nav-page-arrival', 'nav-home-arrival', 'nav-home-scaling', 'nav-home-revealing', 'nav-home-cover-complete', 'nav-transition-active');
+        root.classList.remove('nav-page-arrival', 'nav-home-arrival', 'nav-home-returning', 'nav-home-scaling', 'nav-home-revealing', 'nav-home-cover-complete', 'nav-transition-active');
       } else {
         window.requestAnimationFrame(() => root.classList.add('nav-home-scaling'));
         whenFontsReady(() => {
@@ -205,7 +218,7 @@
   window.addEventListener('pageshow', event => {
     if (!event.persisted) return;
     navigationPending = false;
-    document.documentElement.classList.remove('nav-page-arrival', 'nav-page-revealing', 'nav-home-arrival', 'nav-home-scaling', 'nav-home-revealing', 'nav-home-cover-complete', 'nav-transition-active');
+    document.documentElement.classList.remove('nav-page-arrival', 'nav-page-revealing', 'nav-home-arrival', 'nav-home-returning', 'nav-home-scaling', 'nav-home-revealing', 'nav-home-cover-complete', 'nav-transition-active');
     document.body.classList.remove('nav-page-cover', 'nav-home-cover');
     logo.classList.remove('nav-leaving', 'nav-collapsing');
   });
@@ -287,7 +300,7 @@
 
     const root = document.documentElement;
     if (root.classList.contains('nav-page-arrival')) {
-      root.classList.remove('nav-page-arrival', 'nav-page-revealing', 'nav-home-arrival', 'nav-home-scaling', 'nav-home-revealing', 'nav-home-cover-complete', 'nav-transition-active');
+      root.classList.remove('nav-page-arrival', 'nav-page-revealing', 'nav-home-arrival', 'nav-home-returning', 'nav-home-scaling', 'nav-home-revealing', 'nav-home-cover-complete', 'nav-transition-active');
     }
 
     if (headingHome) {
@@ -307,7 +320,7 @@
 
       navigationPending = true;
       document.documentElement.style.setProperty('--nav-page-target', '#141413');
-      document.documentElement.classList.add('nav-transition-active');
+      document.documentElement.classList.add('nav-transition-active', 'nav-home-returning');
       logo.classList.remove('open');
       logo.classList.add('nav-leaving', 'nav-collapsing');
       document.body.classList.add('nav-page-cover');
