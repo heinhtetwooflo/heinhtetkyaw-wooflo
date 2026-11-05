@@ -103,7 +103,8 @@
 
   const syncLogoMorph = () => {
     window.requestAnimationFrame(() => {
-      const forcedClosed = logo.classList.contains('nav-collapsing') || logo.classList.contains('nav-leaving');
+      const forcedClosed = logo.classList.contains('nav-collapsing') || logo.classList.contains('nav-leaving') ||
+        document.documentElement.classList.contains('nav-home-arrival');
       const expanded = !forcedClosed && (logo.classList.contains('open') || logo.matches(':focus-visible') ||
         (hoverCapable && logo.matches(':hover')));
       if (expanded === morphOpen) return;

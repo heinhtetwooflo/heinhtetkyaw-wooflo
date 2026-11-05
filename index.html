@@ -178,6 +178,12 @@
     --logo-size:var(--fs);left:50%;top:50%;transform:translate(-50%,-50%);
     padding:.4em .45em;
   }
+  html.nav-home-arrival.nav-home-scaling #logo .cs,
+  html.nav-home-arrival.nav-home-scaling #logo .seg,
+  html.nav-home-arrival.nav-home-scaling #logo .sep,
+  html.nav-home-arrival.nav-home-scaling #logo .cs>*,
+  html.nav-home-arrival.nav-home-scaling #logo .seg>span,
+  html.nav-home-arrival.nav-home-scaling #logo .sep i{transition:none!important}
   html.nav-home-arrival::after{
     transform:scaleY(var(--nav-home-cover-progress,1));transform-origin:top;
     animation:nav-page-cover var(--nav-home-cover-duration,0ms) cubic-bezier(.4,0,.2,1) forwards;
@@ -770,7 +776,7 @@
   /* ---------- logo expand (hover for mouse/pen) ---------- */
   const logo = document.getElementById('logo');
   logo.addEventListener('pointerenter', e => {
-    if (e.pointerType !== 'touch') {
+    if (e.pointerType !== 'touch' && !document.documentElement.classList.contains('nav-home-arrival')) {
       logo.classList.add('open');
       cursorMark.classList.add('over-logo');
     }
