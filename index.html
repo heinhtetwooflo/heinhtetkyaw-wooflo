@@ -28,8 +28,11 @@
         const progress = 3 * (1 - curve) * curve * curve + curve * curve * curve;
         const remaining = Math.max(0, 240 - elapsed);
         document.documentElement.classList.add('nav-home-arrival');
+        document.documentElement.dataset.navHomeArrivalAt = String(arrivalTime);
         document.documentElement.style.setProperty('--nav-home-cover-progress', String(progress));
         document.documentElement.style.setProperty('--nav-home-cover-duration', `${remaining}ms`);
+        document.documentElement.style.setProperty('--nav-home-scale-delay', `${-Math.min(620, Date.now() - arrivalTime)}ms`);
+        if (Date.now() - arrivalTime >= 620) document.documentElement.classList.add('nav-home-scaling');
         if (remaining === 0) document.documentElement.classList.add('nav-home-cover-complete');
       }
     }
@@ -170,9 +173,8 @@
   footer a:focus-visible{outline:none}
   html.nav-home-arrival #logo{
     --logo-size:36px;left:calc(var(--side-gutter) - .35em + env(safe-area-inset-left,0px));
-    top:calc(var(--nav-inset,20px) + env(safe-area-inset-top,0px));transform:none;
-    padding:.3em .35em;
-    transition:left .62s var(--ease),top .62s var(--ease),font-size .62s var(--ease),letter-spacing .62s var(--ease),transform .62s var(--ease),padding .62s var(--ease);
+    top:calc(var(--nav-inset,20px) + env(safe-area-inset-top,0px));transform:none;padding:.3em .35em;
+    transition:left .62s var(--ease) var(--nav-home-scale-delay,0ms),top .62s var(--ease) var(--nav-home-scale-delay,0ms),font-size .62s var(--ease) var(--nav-home-scale-delay,0ms),letter-spacing .62s var(--ease) var(--nav-home-scale-delay,0ms),transform .62s var(--ease) var(--nav-home-scale-delay,0ms),padding .62s var(--ease) var(--nav-home-scale-delay,0ms);
   }
   html.nav-home-arrival.nav-home-scaling #logo{
     --logo-size:var(--fs);left:50%;top:50%;transform:translate(-50%,-50%);
@@ -191,6 +193,9 @@
   html.nav-home-arrival.nav-home-cover-complete::after{transform:scaleY(1);animation:none}
   html.nav-home-arrival.nav-home-revealing::after{animation:nav-page-reveal .34s cubic-bezier(.4,0,.2,1) forwards}
   @media (max-width:600px){
+    html.nav-home-arrival #logo{
+      --logo-size:34px;top:calc(var(--nav-inset,12px) + var(--logo-nav-offset,0px) + env(safe-area-inset-top,0px));
+    }
     #top-nav{top:calc(12px + env(safe-area-inset-top,0px));gap:32px}
     #top-nav a{font-size:18px;padding:10px 0}
     #mobile-control-group{display:contents}
@@ -776,7 +781,8 @@
   /* ---------- logo expand (hover for mouse/pen) ---------- */
   const logo = document.getElementById('logo');
   logo.addEventListener('pointerenter', e => {
-    if (e.pointerType !== 'touch' && !document.documentElement.classList.contains('nav-home-arrival')) {
+    if (e.pointerType !== 'touch' && !document.documentElement.classList.contains('nav-home-arrival') &&
+        !document.documentElement.classList.contains('nav-home-departing')) {
       logo.classList.add('open');
       cursorMark.classList.add('over-logo');
     }
