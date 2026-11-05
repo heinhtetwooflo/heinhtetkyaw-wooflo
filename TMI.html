@@ -116,7 +116,8 @@
   .viewer-panel{position:relative;width:min(900px,92vw);max-height:min(88vh,900px);display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;gap:14px;padding:22px;background:#191918;border:1px solid rgba(247,246,244,.16);box-shadow:0 18px 70px rgba(0,0,0,.35);transform:translateY(8px);transition:transform .22s var(--ease)}
   #media-viewer.open .viewer-panel{transform:none}
   .viewer-heading{display:flex;align-items:center;gap:16px;justify-content:space-between;min-width:0}
-  .viewer-name{font-size:15px;line-height:1.35;overflow-wrap:anywhere}
+  .viewer-title{font-size:15px;line-height:1.35;font-weight:700}
+  .viewer-name{font-size:13px;line-height:1.35;overflow-wrap:anywhere;opacity:.72}
   .viewer-close{flex:none;padding:8px 10px;opacity:.8}
   .viewer-close:hover{opacity:1}
   .viewer-stage{position:relative;min-height:180px;height:min(58vh,620px);display:grid;grid-template-columns:48px minmax(0,1fr) 48px;align-items:center;gap:12px}
@@ -127,8 +128,8 @@
   .viewer-nav svg{width:22px;height:44px;fill:none;stroke:currentColor;stroke-width:1.5}
   .viewer-count{text-align:center;font-size:12px;opacity:.62}
   .viewer-thumbnails{display:flex;gap:8px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:thin;scrollbar-color:rgba(247,246,244,.35) transparent}
-  .viewer-thumb{width:64px;height:48px;flex:none;opacity:.55;border:1px solid transparent;overflow:hidden}
-  .viewer-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .viewer-thumb{width:64px;height:48px;flex:none;display:grid;place-items:center;opacity:.55;border:1px solid transparent;overflow:hidden}
+  .viewer-thumb img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block}
   .viewer-thumb[aria-current="true"]{opacity:1;border-color:var(--ink)}
   @media (max-width:600px){
     #media-viewer{padding:12px}
@@ -225,7 +226,7 @@
 
 <div id="media-viewer" aria-hidden="true">
   <section class="viewer-panel" role="dialog" aria-modal="true" aria-label="Media gallery">
-    <header class="viewer-heading"><h2 class="viewer-name"></h2><button class="viewer-close" type="button" aria-label="Close gallery">Close</button></header>
+    <header class="viewer-heading"><div><h2 class="viewer-title">always on my drive</h2><div class="viewer-name"></div></div><button class="viewer-close" type="button" aria-label="Close gallery">Close</button></header>
     <div class="viewer-stage">
       <button class="viewer-nav viewer-prev" type="button" aria-label="Previous media"><svg viewBox="0 0 40 80"><polyline points="38,2 2,40 38,78"/></svg></button>
       <div class="viewer-image-wrap"><img class="viewer-image" alt="" draggable="false"></div>
