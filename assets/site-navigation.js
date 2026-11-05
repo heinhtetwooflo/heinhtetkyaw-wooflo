@@ -12,7 +12,7 @@
     .map(path => {
       const slot = path.closest('.cs, .dash');
       const name = ['ch', 'cw', 'cf', 'dash'].find(className => slot.classList.contains(className));
-      return { path, target: glyphTargets[name] };
+      return { path, target: glyphTargets[name], original: path.getAttribute('d') };
     })
     .filter(glyph => glyph.target);
   const hoverCapable = window.matchMedia('(hover:hover)').matches;
@@ -61,17 +61,15 @@
   const morphLogoGlyphs = (open, instant = false) => {
     const frameId = ++morphFrame;
     if (instant) {
-      logoGlyphs.forEach(({ path, target }) => {
-        path.dataset.closedPath ||= path.getAttribute('d');
-        path.setAttribute('d', open ? target : path.dataset.closedPath);
+      logoGlyphs.forEach(({ path, target, original }) => {
+        path.setAttribute('d', open ? target : original);
       });
       return;
     }
     const sampleCount = 144;
-    const records = logoGlyphs.map(({ path, target }) => {
+    const records = logoGlyphs.map(({ path, target, original }) => {
       const start = path.getAttribute('d');
-      const end = open ? target : path.dataset.closedPath || start;
-      path.dataset.closedPath ||= start;
+      const end = open ? target : original;
       const from = samplePath(path, start, sampleCount);
       const to = alignPathSamples(from, samplePath(path, end, sampleCount));
       return { path, start, end, from, to };
