@@ -312,7 +312,7 @@
   var prev = row.querySelector(".prev"), next = row.querySelector(".next");
   var driveButtons = [], built = false, centered = false, cycleWidth = 0;
   var viewer = document.getElementById("media-viewer"), imageWrap = viewer.querySelector(".viewer-image-wrap"), viewerName = viewer.querySelector(".viewer-name"), thumbs = viewer.querySelector(".viewer-thumbnails");
-  var viewerIndex = -1, activeThumbIndex = -1, viewerReturnFocus = null, suppressThumbScroll = false, thumbScrollReleaseTimer = null, thumbSelectionFrame = null, mediaLoadRequest = 0;
+  var viewerIndex = -1, activeThumbIndex = -1, viewerReturnFocus = null, thumbSelectionFrame = null, mediaLoadRequest = 0;
   var thumbCopies = 3, thumbMiddleCopy = 1;
   var mediaItems = files.map(function(file){ return { file:file, name:file.replace(/\.(?:png|webp|jpe?g)$/i, ""), url:src("Movies and Song/" + file) }; });
   var mediaImages = mediaItems.map(function(item){ var image = new Image(); image.className = "viewer-image"; image.alt = item.name; image.draggable = false; image.decoding = "async"; image.src = item.url; return image; });
@@ -346,23 +346,10 @@
     }
   }
   function thumbAt(copy, index){ return thumbs.children[copy * mediaItems.length + index]; }
-  function releaseThumbScroll(){
-    clearTimeout(thumbScrollReleaseTimer);
-    thumbScrollReleaseTimer = null;
-    suppressThumbScroll = false;
-    syncThumbSelection();
-  }
-  function deferThumbScrollRelease(){
-    clearTimeout(thumbScrollReleaseTimer);
-    thumbScrollReleaseTimer = setTimeout(releaseThumbScroll, 120);
-  }
   function centerThumb(copy, index, smooth){
     var button = thumbAt(copy, index);
     if (!button) return;
-    clearTimeout(thumbScrollReleaseTimer);
-    suppressThumbScroll = true;
     thumbs.scrollTo({left:button.offsetLeft + button.offsetWidth / 2 - thumbs.clientWidth / 2, behavior:smooth ? "smooth" : "auto"});
-    deferThumbScrollRelease();
   }
   function showMedia(index){
     var previousIndex = viewerIndex;
@@ -409,11 +396,7 @@
       setMedia(index, nearest);
     });
   }
-  thumbs.addEventListener("scroll", function(){
-    if (suppressThumbScroll) deferThumbScrollRelease();
-    else syncThumbSelection();
-  }, {passive:true});
-  thumbs.addEventListener("scrollend", function(){ if (suppressThumbScroll) releaseThumbScroll(); });
+  thumbs.addEventListener("scroll", syncThumbSelection, {passive:true});
   thumbs.addEventListener("wheel", function(e){
     if (Math.abs(e.deltaY) > Math.abs(e.deltaX)){ thumbs.scrollLeft += e.deltaY; e.preventDefault(); }
   }, {passive:false});
@@ -577,7 +560,7 @@
       if (button.setPointerCapture) button.setPointerCapture(e.pointerId);
       go(direction);
       folderRepeatDelay = setTimeout(function(){
-        folderRepeatInterval = setInterval(function(){ go(direction); }, 160);
+        folderRepeatInterval = setInterval(function(){ go(direction); }, 90);
       }, 300);
     });
     button.addEventListener("pointerup", stopFolderArrowRepeat);
