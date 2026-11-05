@@ -393,8 +393,12 @@
       if (delta < distance){ distance = delta; nearest = i; }
     });
     var copy = Math.floor(nearest / mediaItems.length), index = nearest % mediaItems.length;
-    setMedia(index, nearest);
-    if (copy !== thumbMiddleCopy) centerThumb(thumbMiddleCopy, index, false);
+    var activeThumb = nearest;
+    if (copy !== thumbMiddleCopy){
+      activeThumb = thumbMiddleCopy * mediaItems.length + index;
+      centerThumb(thumbMiddleCopy, index, false);
+    }
+    setMedia(index, activeThumb);
   }, {passive:true});
   thumbs.addEventListener("wheel", function(e){
     if (Math.abs(e.deltaY) > Math.abs(e.deltaX)){ thumbs.scrollLeft += e.deltaY; e.preventDefault(); }
