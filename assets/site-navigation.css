@@ -65,12 +65,8 @@ html.fonts-pending #logo,html.fonts-pending #top-nav{visibility:visible}
 .logo .cs .g{opacity:1}
 .logo .cs .t{opacity:0}
 .logo.open .cs,.logo-compact:focus-visible .cs{width:var(--wo);margin-left:0}
-.logo.open .cs .g,.logo-compact:focus-visible .cs .g{opacity:0;transition-delay:0s}
-.logo.open .cs .t,.logo-compact:focus-visible .cs .t{opacity:1;transition-delay:.12s}
 @media (hover:hover){
   .logo-compact:hover .cs{width:var(--wo);margin-left:0}
-  .logo-compact:hover .cs .g{opacity:0;transition-delay:0s}
-  .logo-compact:hover .cs .t{opacity:1;transition-delay:.12s}
 }
 .logo .ch{--wc:.6378em;--wo:.53em}
 .logo .cw{--wc:.9737em;--wo:.743em;margin-left:-.0289em}
@@ -143,7 +139,6 @@ html.nav-page-arrival .logo{view-transition-name:none}
   .logo .seg>span{transform:none;transition:opacity .12s linear}
   .logo.open .seg:nth-of-type(2)>span,.logo.open .seg:nth-of-type(3)>span,
   .logo-compact:focus-visible .seg:nth-of-type(2)>span,.logo-compact:focus-visible .seg:nth-of-type(3)>span{transition-delay:0s}
-  @media (hover:hover){.logo-compact:hover .seg:nth-of-type(2)>span,.logo-compact:hover .seg:nth-of-type(3)>span{transition-delay:0s}}
   .logo .sep{transition:margin .2s ease-out}
   .logo .sep i{transform:none;transition:opacity .12s linear}
   .logo.open .sep .dash,.logo-compact:focus-visible .sep .dash{transform:none}

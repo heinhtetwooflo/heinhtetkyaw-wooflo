@@ -2,6 +2,121 @@
   const logo = document.getElementById('logo');
   if (!logo) return;
 
+  const glyphTargets = {
+    ch: 'M12.9989 238.313V0H67.3276V88.6591H68.3275Q87.9925 62.6613 118.99 62.6613Q146.654 62.6613 162.486 80.4931Q178.318 98.3249 178.318 127.322V238.313H123.989V138.322Q123.989 124.323 117.157 116.157Q110.324 107.991 97.325 107.991Q83.9928 107.991 75.6602 117.99Q67.3276 127.989 67.3276 143.988V238.313Z',
+    cw: 'M51.6623 238.313L-.66661 67.6609H54.662L73.3271 138.322L80.9931 171.319H81.6597Q85.6594 151.654 89.3257 137.322L107.324 67.6609H153.32L171.985 137.322L179.985 171.652H180.651Q184.984 151.987 188.651 138.322L207.649 67.6609H261.311L208.982 238.313H157.987L137.988 160.986L130.656 130.322H129.989Q125.989 147.654 122.323 160.986L101.991 238.313Z',
+    cf: 'M25.6645 238.313V102.325H3.66635V67.6609H25.6645V55.3286Q25.6645 29.6641 39.6633 15.6653Q59.9949 -4.33296 111.99 0.999915V39.33Q94.6586 38.6634 87.3259 42.3297Q79.9932 45.9961 79.9932 59.3283V67.6609H111.99V102.325H79.9932V238.313Z'
+  };
+  const logoGlyphs = [...logo.querySelectorAll('.cs.ch .g path, .cs.cw .g path, .cs.cf .g path')]
+    .map(path => ({ path, target: glyphTargets[path.closest('.cs').classList.contains('ch') ? 'ch' : path.closest('.cs').classList.contains('cw') ? 'cw' : 'cf'] }))
+    .filter(glyph => glyph.target);
+  const hoverCapable = window.matchMedia('(hover:hover)').matches;
+  const reduceLogoMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let morphFrame = 0;
+  let morphOpen = false;
+
+  const samplePath = (path, d, count) => {
+    const previous = path.getAttribute('d');
+    path.setAttribute('d', d);
+    const length = path.getTotalLength();
+    const points = Array.from({ length: count }, (_, index) => {
+      const point = path.getPointAtLength(length * index / count);
+      return [point.x, point.y];
+    });
+    path.setAttribute('d', previous);
+    return points;
+  };
+
+  const alignPathSamples = (from, to) => {
+    let bestScore = Infinity;
+    let bestOffset = 0;
+    let bestReverse = false;
+    const count = from.length;
+    for (const reverse of [false, true]) {
+      for (let offset = 0; offset < count; offset++) {
+        let score = 0;
+        for (let index = 0; index < count; index += 2) {
+          const targetIndex = (offset + (reverse ? count - index : index)) % count;
+          const dx = from[index][0] - to[targetIndex][0];
+          const dy = from[index][1] - to[targetIndex][1];
+          score += dx * dx + dy * dy;
+        }
+        if (score < bestScore) {
+          bestScore = score;
+          bestOffset = offset;
+          bestReverse = reverse;
+        }
+      }
+    }
+    return from.map((_, index) => to[(bestOffset + (bestReverse ? count - index : index)) % count]);
+  };
+
+  const pathFromPoints = points => `M${points.map(point => `${point[0].toFixed(2)} ${point[1].toFixed(2)}`).join('L')}Z`;
+
+  const morphLogoGlyphs = open => {
+    const frameId = ++morphFrame;
+    const sampleCount = 144;
+    const records = logoGlyphs.map(({ path, target }) => {
+      const start = path.getAttribute('d');
+      const end = open ? target : path.dataset.closedPath || start;
+      path.dataset.closedPath ||= start;
+      const from = samplePath(path, start, sampleCount);
+      const to = alignPathSamples(from, samplePath(path, end, sampleCount));
+      return { path, start, end, from, to };
+    });
+
+    if (reduceLogoMotion.matches) {
+      records.forEach(({ path, end }) => path.setAttribute('d', end));
+      return;
+    }
+
+    const startTime = performance.now();
+    const duration = 420;
+    const tick = now => {
+      if (frameId !== morphFrame) return;
+      const progress = Math.min(1, (now - startTime) / duration);
+      const eased = 1 - (1 - progress) ** 3;
+      records.forEach(({ path, start, end, from, to }) => {
+        if (progress === 0) {
+          path.setAttribute('d', start);
+          return;
+        }
+        if (progress === 1) {
+          path.setAttribute('d', end);
+          return;
+        }
+        const points = from.map((point, index) => [
+          point[0] + (to[index][0] - point[0]) * eased,
+          point[1] + (to[index][1] - point[1]) * eased
+        ]);
+        path.setAttribute('d', pathFromPoints(points));
+      });
+      if (progress < 1) window.requestAnimationFrame(tick);
+    };
+    window.requestAnimationFrame(tick);
+  };
+
+  const syncLogoMorph = () => {
+    window.requestAnimationFrame(() => {
+      const forcedClosed = logo.classList.contains('nav-collapsing') || logo.classList.contains('nav-leaving');
+      const expanded = !forcedClosed && (logo.classList.contains('open') || logo.matches(':focus-visible') ||
+        (hoverCapable && logo.matches(':hover')));
+      if (expanded === morphOpen) return;
+      morphOpen = expanded;
+      morphLogoGlyphs(expanded);
+    });
+  };
+
+  if (logoGlyphs.length) {
+    const logoClassObserver = new MutationObserver(syncLogoMorph);
+    logoClassObserver.observe(logo, { attributes: true, attributeFilter: ['class'] });
+    logo.addEventListener('pointerenter', syncLogoMorph);
+    logo.addEventListener('pointerleave', syncLogoMorph);
+    logo.addEventListener('focusin', syncLogoMorph);
+    logo.addEventListener('focusout', syncLogoMorph);
+    syncLogoMorph();
+  }
+
   const controlGroup = document.getElementById('mobile-control-group');
   const topControls = document.getElementById('top-controls');
   const utilityControls = document.getElementById('mobile-utility-controls');
@@ -165,7 +280,7 @@
         navigationPending = true;
         logo.classList.remove('open');
         logo.classList.add('nav-collapsing');
-        window.setTimeout(() => window.location.assign(destination.href), 360);
+        window.setTimeout(() => window.location.assign(destination.href), 440);
       }
       // The browser's cross-document transition carries the logo into home.
       return;
