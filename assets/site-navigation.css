@@ -15,13 +15,13 @@
 .logo-home{--logo-size:var(--fs);left:50%;top:50%;transform:translate(-50%,-50%)}
 .logo-home.open{font-size:min(var(--fs),10vw);letter-spacing:-.04em}
 .logo-home.nav-leaving{
-  left:calc(var(--side-gutter,28px) - .35em + env(safe-area-inset-left,0px));top:calc(21px + env(safe-area-inset-top,0px));
+  left:calc(var(--side-gutter,28px) - .35em + env(safe-area-inset-left,0px));top:calc(var(--nav-inset,20px) + env(safe-area-inset-top,0px));
   font-size:36px;padding:.3em .35em;transform:none;
   transition-duration:.42s;transition-timing-function:cubic-bezier(.2,.7,.25,1);
 }
 .logo-compact{
   --logo-size:36px;left:calc(var(--side-gutter,28px) - .35em + env(safe-area-inset-left,0px));
-  top:calc(21px + env(safe-area-inset-top,0px));transform:none;
+  top:calc(var(--nav-inset,20px) + env(safe-area-inset-top,0px));transform:none;
   padding:.3em .35em;mix-blend-mode:normal;
 }
 body.nav-page-cover::after{
@@ -120,9 +120,9 @@ html.nav-page-arrival .logo{view-transition-name:none}
 }
 .logo:focus-visible{outline:1px solid currentColor;outline-offset:3px}
 
-#top-nav{position:fixed;top:calc(20px + env(safe-area-inset-top,0px));left:50%;z-index:2500;display:flex;align-items:center;gap:clamp(20px,4vw,48px);transform:translateX(-50%)}
+#top-nav{position:fixed;top:calc(var(--nav-inset,20px) + env(safe-area-inset-top,0px));left:50%;z-index:2500;display:flex;align-items:center;gap:clamp(20px,4vw,48px);transform:translateX(-50%)}
 #top-nav a{
-  position:relative;display:block;padding:6px 0;
+  position:relative;display:block;padding:11px 0 6px;
   color:var(--ink);font-family:var(--font);font-weight:500;text-decoration:none;
   font-size:19px;letter-spacing:-.01em;line-height:1;white-space:nowrap;font-synthesis:none;
 }
@@ -131,9 +131,10 @@ html.nav-page-arrival .logo{view-transition-name:none}
 #top-nav a:focus-visible{outline:1px solid currentColor;outline-offset:3px}
 
 @media (max-width:600px){
+  :root{--nav-inset:12px}
   .logo-home.open{font-size:min(var(--fs),7.2vw);transition-duration:.38s,.38s,.38s,.38s,.38s}
   .logo-home{transition:left .58s var(--ease),top .58s var(--ease),font-size .58s var(--ease),letter-spacing .58s var(--ease),transform .58s var(--ease)}
-  .logo-home.nav-leaving{top:calc(4px + env(safe-area-inset-top,0px));font-size:34px}
+  .logo-home.nav-leaving{top:calc(var(--nav-inset) + env(safe-area-inset-top,0px));font-size:34px}
   .logo .cs{transition:width .2s ease-out,margin .2s ease-out}
   .logo .cs>*{transition:opacity .12s linear}
   .logo .seg{transition:grid-template-columns .2s ease-out}
@@ -148,8 +149,8 @@ html.nav-page-arrival .logo{view-transition-name:none}
     .logo-compact:hover .sep .dash{transform:none}
     .logo-compact:hover .sep .dot{transform:none;transition-delay:0s}
   }
-  .logo-compact{--logo-size:34px;top:calc(4px + env(safe-area-inset-top,0px))}
-  #top-nav{top:calc(12px + env(safe-area-inset-top,0px));gap:clamp(10px,4vw,24px)}
+  .logo-compact{--logo-size:34px;top:calc(var(--nav-inset) + env(safe-area-inset-top,0px))}
+  #top-nav{top:calc(var(--nav-inset) + env(safe-area-inset-top,0px));gap:clamp(10px,4vw,24px)}
   #top-nav a{font-size:18px;padding:10px 0}
 }
 

@@ -34,6 +34,7 @@
 
   :root{
     --side-gutter:clamp(28px,5vw,80px);
+    --page-bottom:clamp(24px,5vh,52px);
     --bg:#ffffff;
     --ink:#141413;
     --mute:#141413;
@@ -85,7 +86,7 @@
   }
 
   h1{
-    position:absolute;left:var(--side-gutter);right:var(--side-gutter);bottom:clamp(24px,5vh,52px);
+    position:absolute;left:var(--side-gutter);right:var(--side-gutter);bottom:var(--page-bottom);
     color:#4D4D4D;font-weight:500;font-size:19px;letter-spacing:-.01em;line-height:1.25;opacity:.55;
   }
 
@@ -101,7 +102,7 @@
   @media (max-width:600px){
     main{padding:0 var(--side-gutter)}
     #figure{width:min(46vw,37vh)}
-    h1{left:var(--side-gutter);right:var(--side-gutter);bottom:calc(28px + env(safe-area-inset-bottom,0px));font-size:18px}
+    h1{left:var(--side-gutter);right:var(--side-gutter);bottom:calc(var(--page-bottom) + env(safe-area-inset-bottom,0px));font-size:18px}
     #egg img{width:min(42vw,34vh)}
   }
   .circle-choice{border-color:rgba(20,20,19,.52)}

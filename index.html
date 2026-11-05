@@ -55,6 +55,7 @@
     --ease:cubic-bezier(.3,.7,.15,1);
     --fs:clamp(48px,11vw,150px);
     --side-gutter:clamp(28px,5vw,80px);
+    --page-bottom:clamp(24px,5vh,52px);
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
@@ -131,7 +132,7 @@
   #timer:hover,#timer:focus-visible,#options-toggle:hover,#options-toggle:focus-visible,#options-toggle[aria-expanded="true"],#clear-stickers:hover,#clear-stickers:focus-visible,#fullscreen-toggle:hover,#fullscreen-toggle:focus-visible{opacity:.9}
   /* ---------- socials ---------- */
   footer{
-    position:fixed;left:0;right:0;        bottom:calc(42px + env(safe-area-inset-bottom,0px));
+    position:fixed;left:0;right:0;        bottom:calc(var(--page-bottom) + env(safe-area-inset-bottom,0px));
     display:flex;justify-content:center;gap:clamp(36px,6vw,64px);flex-wrap:wrap;
     padding:0 var(--side-gutter);z-index:2000;
   }
