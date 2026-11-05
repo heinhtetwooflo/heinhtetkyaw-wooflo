@@ -49,7 +49,8 @@ html.nav-transition-active .logo{
 html.nav-transition-active .logo .g{filter:brightness(0) invert(1)!important}
 html.nav-transition-active #top-nav{mix-blend-mode:difference}
 html.nav-transition-active #top-nav a{color:#f7f6f4!important}
-html.fonts-pending #logo,html.fonts-pending #top-nav{visibility:hidden}
+/* Keep the persistent controls visible while page content waits for its fonts. */
+html.fonts-pending #logo,html.fonts-pending #top-nav{visibility:visible}
 .logo-compact.logo-on-light{color:#4D4D4D}
 .logo-compact.logo-on-light .g{filter:none}
 .logo .g{display:block;height:.715em;filter:brightness(0) invert(1)}
