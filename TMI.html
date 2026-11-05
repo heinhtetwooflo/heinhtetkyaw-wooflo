@@ -128,14 +128,14 @@
   .viewer-nav svg{width:22px;height:44px;fill:none;stroke:currentColor;stroke-width:1.5}
   .viewer-thumbnails{display:flex;gap:8px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:none;-ms-overflow-style:none;overscroll-behavior-x:contain;touch-action:pan-x;user-select:none}
   .viewer-thumbnails::-webkit-scrollbar{display:none}
-  .viewer-thumb{width:64px;height:64px;flex:none;display:grid;place-items:center;opacity:.55;border:1px solid transparent;overflow:hidden}
-  .viewer-thumb img{width:100%;height:100%;object-fit:contain;display:block}
+  .viewer-thumb{width:max-content;height:60px;padding:3px 4px;flex:none;display:grid;place-items:center;opacity:.55;border:1px solid transparent}
+  .viewer-thumb img{width:auto;height:auto;max-width:112px;max-height:52px;object-fit:contain;display:block}
   .viewer-thumb[aria-current="true"]{opacity:1;border-color:var(--ink)}
   @media (max-width:600px){
     #media-viewer{padding:12px}
-    .viewer-panel{width:100%;height:90vh;padding:14px;gap:10px}
-    .viewer-stage{grid-template-columns:34px minmax(0,1fr) 34px;gap:4px}
-    .viewer-thumbnails{gap:6px}.viewer-thumb{width:56px;height:56px}
+    .viewer-panel{width:100%;height:min(78vh,720px);height:min(78dvh,720px);padding:14px;gap:10px}
+    .viewer-stage{grid-template-columns:30px minmax(0,1fr) 30px;gap:16px}
+    .viewer-thumbnails{gap:6px}.viewer-thumb{height:52px;padding:3px}.viewer-thumb img{max-width:88px;max-height:44px}
   }
 
   /* ---------- cursor ---------- */
@@ -305,13 +305,32 @@
   var prev = row.querySelector(".prev"), next = row.querySelector(".next");
   var driveButtons = [], built = false, centered = false, cycleWidth = 0;
   var viewer = document.getElementById("media-viewer"), viewerImage = viewer.querySelector(".viewer-image"), viewerName = viewer.querySelector(".viewer-name"), thumbs = viewer.querySelector(".viewer-thumbnails");
-  var viewerIndex = 0, viewerReturnFocus = null, suppressThumbScroll = false;
+  var viewerIndex = 0, viewerReturnFocus = null, suppressThumbScroll = false, mediaLoadRequest = 0;
   var thumbCopies = 3, thumbMiddleCopy = 1;
   var mediaItems = files.map(function(file){ return { file:file, name:file.replace(/\.(?:png|webp|jpe?g)$/i, ""), url:src("Movies and Song/" + file) }; });
+  var mediaImages = mediaItems.map(function(item){ var image = new Image(); image.decoding = "async"; image.src = item.url; return image; });
   function setMedia(index, activeThumb){
     viewerIndex = (index + mediaItems.length) % mediaItems.length;
+    var request = ++mediaLoadRequest;
     var item = mediaItems[viewerIndex];
-    viewerImage.src = item.url; viewerImage.alt = item.name; viewerName.textContent = item.name;
+    var image = mediaImages[viewerIndex];
+    viewerName.textContent = item.name;
+    function displayImage(){
+      if (request !== mediaLoadRequest) return;
+      viewerImage.src = item.url;
+      viewerImage.alt = item.name;
+    }
+    function displayWhenDecoded(){
+      if (typeof image.decode === "function") image.decode().then(displayImage).catch(displayImage);
+      else displayImage();
+    }
+    if (image.complete){
+      if (image.naturalWidth) displayWhenDecoded();
+      else displayImage();
+    } else {
+      image.addEventListener("load", displayWhenDecoded, {once:true});
+      image.addEventListener("error", displayImage, {once:true});
+    }
     Array.prototype.forEach.call(thumbs.children, function(button, i){ button.setAttribute("aria-current", i === activeThumb ? "true" : "false"); });
   }
   function thumbAt(copy, index){ return thumbs.children[copy * mediaItems.length + index]; }
