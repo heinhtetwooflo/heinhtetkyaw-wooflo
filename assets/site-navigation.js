@@ -27,6 +27,20 @@
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let navigationPending = false;
   const isHome = homePaths.has(window.location.pathname);
+  const whenFontsReady = callback => {
+    const root = document.documentElement;
+    if (!root.classList.contains('fonts-pending')) {
+      callback();
+      return;
+    }
+
+    const observer = new MutationObserver(() => {
+      if (root.classList.contains('fonts-pending')) return;
+      observer.disconnect();
+      callback();
+    });
+    observer.observe(root, { attributes: true, attributeFilter: ['class'] });
+  };
 
   if (document.documentElement.classList.contains('nav-page-arrival')) {
     const finishReveal = event => {
@@ -37,14 +51,14 @@
     };
 
     document.documentElement.addEventListener('animationend', finishReveal);
-    const revealPage = () => {
+    const revealPage = () => whenFontsReady(() => {
       if (reducedMotion.matches) {
         document.documentElement.classList.remove('nav-page-arrival');
         document.documentElement.classList.remove('nav-transition-active');
         return;
       }
       window.requestAnimationFrame(() => document.documentElement.classList.add('nav-page-revealing'));
-    };
+    });
     if (document.readyState === 'complete') revealPage();
     else window.addEventListener('load', revealPage, { once: true });
   }
@@ -58,14 +72,14 @@
     };
 
     document.body.addEventListener('animationend', finishReveal);
-    const revealHome = () => {
+    const revealHome = () => whenFontsReady(() => {
       if (reducedMotion.matches) {
         document.documentElement.classList.remove('nav-home-return');
         document.documentElement.classList.remove('nav-transition-active');
         return;
       }
       document.body.classList.add('nav-home-reveal');
-    };
+    });
     if (document.readyState === 'complete') revealHome();
     else window.addEventListener('load', revealHome, { once: true });
   }
