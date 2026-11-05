@@ -110,6 +110,33 @@
   .track img{height:calc(100% - 2.6em);width:100%;object-fit:contain;display:block;-webkit-user-drag:none;user-select:none}
   .track figcaption{width:100%;text-align:center;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
+  /* ---------- media viewer ---------- */
+  #media-viewer{position:fixed;inset:0;z-index:3000;display:grid;place-items:center;padding:clamp(16px,4vw,52px);background:rgba(0,0,0,.48);opacity:0;visibility:hidden;transition:opacity .22s ease,visibility 0s .22s}
+  #media-viewer.open{opacity:1;visibility:visible;transition:opacity .22s ease}
+  .viewer-panel{position:relative;width:min(900px,92vw);max-height:min(88vh,900px);display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;gap:14px;padding:22px;background:#191918;border:1px solid rgba(247,246,244,.16);box-shadow:0 18px 70px rgba(0,0,0,.35);transform:translateY(8px);transition:transform .22s var(--ease)}
+  #media-viewer.open .viewer-panel{transform:none}
+  .viewer-heading{display:flex;align-items:center;gap:16px;justify-content:space-between;min-width:0}
+  .viewer-name{font-size:15px;line-height:1.35;overflow-wrap:anywhere}
+  .viewer-close{flex:none;padding:8px 10px;opacity:.8}
+  .viewer-close:hover{opacity:1}
+  .viewer-stage{position:relative;min-height:180px;height:min(58vh,620px);display:grid;grid-template-columns:48px minmax(0,1fr) 48px;align-items:center;gap:12px}
+  .viewer-image-wrap{height:100%;min-height:0;display:grid;place-items:center;overflow:hidden}
+  .viewer-image{max-width:100%;max-height:100%;object-fit:contain;display:block}
+  .viewer-nav{height:56px;display:grid;place-items:center;opacity:.78}
+  .viewer-nav:hover{opacity:1}
+  .viewer-nav svg{width:22px;height:44px;fill:none;stroke:currentColor;stroke-width:1.5}
+  .viewer-count{text-align:center;font-size:12px;opacity:.62}
+  .viewer-thumbnails{display:flex;gap:8px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:thin;scrollbar-color:rgba(247,246,244,.35) transparent}
+  .viewer-thumb{width:64px;height:48px;flex:none;opacity:.55;border:1px solid transparent;overflow:hidden}
+  .viewer-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .viewer-thumb[aria-current="true"]{opacity:1;border-color:var(--ink)}
+  @media (max-width:600px){
+    #media-viewer{padding:12px}
+    .viewer-panel{width:100%;max-height:90vh;padding:14px;gap:10px}
+    .viewer-stage{height:min(52vh,520px);grid-template-columns:34px minmax(0,1fr) 34px;gap:4px}
+    .viewer-thumbnails{gap:6px}.viewer-thumb{width:56px;height:42px}
+  }
+
   /* ---------- cursor ---------- */
   #cursor-mark{position:fixed;left:-40px;top:-40px;width:28px;height:28px;z-index:4000;pointer-events:none;opacity:0;mix-blend-mode:difference;transition:opacity .12s ease}
   #cursor-mark.visible{opacity:1}
@@ -196,6 +223,19 @@
   <path class="marks-closed" d="M4 7V4h3M13 4h3v3M16 13v3h-3M7 16H4v-3"/>
 </svg></div>
 
+<div id="media-viewer" aria-hidden="true">
+  <section class="viewer-panel" role="dialog" aria-modal="true" aria-label="Media gallery">
+    <header class="viewer-heading"><h2 class="viewer-name"></h2><button class="viewer-close" type="button" aria-label="Close gallery">Close</button></header>
+    <div class="viewer-stage">
+      <button class="viewer-nav viewer-prev" type="button" aria-label="Previous media"><svg viewBox="0 0 40 80"><polyline points="38,2 2,40 38,78"/></svg></button>
+      <div class="viewer-image-wrap"><img class="viewer-image" alt="" draggable="false"></div>
+      <button class="viewer-nav viewer-next" type="button" aria-label="Next media"><svg viewBox="0 0 40 80"><polyline points="2,2 38,40 2,78"/></svg></button>
+    </div>
+    <div class="viewer-count" aria-live="polite"></div>
+    <div class="viewer-thumbnails" aria-label="Media thumbnails"></div>
+  </section>
+</div>
+
 <script>
 (function(){
   var src = function(p){ return "./TMI/" + p.replace(/\.png$/i, ".webp").split("/").map(encodeURIComponent).join("/"); };
@@ -264,6 +304,24 @@
   var pair = row.querySelector(".drive-pair"), track = row.querySelector(".track");
   var prev = row.querySelector(".prev"), next = row.querySelector(".next");
   var driveButtons = [], built = false, centered = false, cycleWidth = 0;
+  var viewer = document.getElementById("media-viewer"), viewerImage = viewer.querySelector(".viewer-image"), viewerName = viewer.querySelector(".viewer-name"), viewerCount = viewer.querySelector(".viewer-count"), thumbs = viewer.querySelector(".viewer-thumbnails");
+  var viewerIndex = 0, viewerReturnFocus = null;
+  var mediaItems = files.map(function(file){ return { file:file, name:file.replace(/\.(?:png|webp|jpe?g)$/i, ""), url:src("Movies and Song/" + file) }; });
+  function showMedia(index){
+    viewerIndex = (index + mediaItems.length) % mediaItems.length;
+    var item = mediaItems[viewerIndex];
+    viewerImage.src = item.url; viewerImage.alt = item.name; viewerName.textContent = item.name;
+    viewerCount.textContent = (viewerIndex + 1) + " / " + mediaItems.length;
+    Array.prototype.forEach.call(thumbs.children, function(button, i){ button.setAttribute("aria-current", i === viewerIndex ? "true" : "false"); if (i === viewerIndex) button.scrollIntoView({block:"nearest",inline:"nearest"}); });
+  }
+  function openViewer(index){ viewerReturnFocus = document.activeElement; showMedia(index); viewer.classList.add("open"); viewer.setAttribute("aria-hidden","false"); document.body.style.overflow = "hidden"; viewer.querySelector(".viewer-close").focus(); }
+  function closeViewer(){ if (!viewer.classList.contains("open")) return; viewer.classList.remove("open"); viewer.setAttribute("aria-hidden","true"); document.body.style.overflow = ""; if (viewerReturnFocus) viewerReturnFocus.focus(); }
+  mediaItems.forEach(function(item, index){ var button = document.createElement("button"), image = new Image(); button.type = "button"; button.className = "viewer-thumb"; button.setAttribute("aria-label", item.name); image.src = item.url; image.alt = ""; button.appendChild(image); button.addEventListener("click", function(){ showMedia(index); }); thumbs.appendChild(button); });
+  viewer.querySelector(".viewer-prev").addEventListener("click", function(){ showMedia(viewerIndex - 1); });
+  viewer.querySelector(".viewer-next").addEventListener("click", function(){ showMedia(viewerIndex + 1); });
+  viewer.querySelector(".viewer-close").addEventListener("click", closeViewer);
+  viewer.addEventListener("click", function(e){ if (e.target === viewer) closeViewer(); });
+  document.addEventListener("keydown", function(e){ if (!viewer.classList.contains("open")) return; if (e.key === "Escape") closeViewer(); if (e.key === "ArrowLeft") showMedia(viewerIndex - 1); if (e.key === "ArrowRight") showMedia(viewerIndex + 1); });
   var AudioContextType = window.AudioContext || window.webkitAudioContext;
   var driveAudio = null;
   function playDriveSfx(){
@@ -310,6 +368,9 @@
         cap.textContent = label;
         cap.title = label;
         fig.appendChild(im); fig.appendChild(cap); track.appendChild(fig);
+        fig.tabIndex = 0; fig.setAttribute("role", "button"); fig.setAttribute("aria-label", "Open " + label);
+        fig.addEventListener("click", function(){ openViewer(files.indexOf(f)); });
+        fig.addEventListener("keydown", function(e){ if (e.key === "Enter" || e.key === " "){ e.preventDefault(); openViewer(files.indexOf(f)); } });
       });
     }
   }
