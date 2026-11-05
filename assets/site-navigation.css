@@ -73,6 +73,8 @@ html.fonts-pending #logo,html.fonts-pending #top-nav{visibility:visible}
 .logo .cf{--wc:.5508em;--wo:.309em;margin-left:-.022em}
 /* Tighten only the k/y join in the expanded compact corner logo. */
 .logo-compact .name-tail{margin-left:-.035em}
+/* The light-page wordmark needs slightly tighter optical spacing at this join. */
+.logo-compact.logo-on-light .name-tail{margin-left:-.05em}
 /* Adjust "flo" only while the compact corner wordmark is expanded; preserve H-WF. */
 .logo-compact:hover .cf,.logo-compact:focus-visible .cf{margin-left:-.075em}
 .logo-compact:hover .cf + .seg,.logo-compact:focus-visible .cf + .seg{margin-left:.005em}
