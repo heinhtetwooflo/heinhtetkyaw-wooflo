@@ -71,7 +71,7 @@
 
   /* ---------- figure ---------- */
   #figure{
-    position:absolute;left:50%;top:50%;display:block;width:min(39.4vw,32.85vh);height:auto;overflow:visible;
+    position:absolute;left:50%;top:calc(50% - 24px);display:block;width:min(39.4vw,32.85vh);height:auto;overflow:visible;
     transform:translate(-50%,-50%);
     touch-action:manipulation;cursor:pointer;
   }
@@ -101,7 +101,7 @@
   }
   @media (max-width:600px){
     main{padding:0 var(--side-gutter)}
-    #figure{width:min(46vw,37vh)}
+    #figure{top:calc(50% - 38px);width:min(46vw,37vh)}
     h1{left:var(--side-gutter);right:var(--side-gutter);bottom:calc(80px + env(safe-area-inset-bottom,0px));font-size:18px;text-align:center}
     #egg img{width:min(42vw,34vh)}
   }

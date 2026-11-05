@@ -12,7 +12,7 @@
   transition:left .58s var(--ease),top .58s var(--ease),font-size .58s var(--ease),letter-spacing .58s var(--ease),transform .58s var(--ease);
 }
 .logo>*{flex-shrink:0}
-.logo-home{--logo-size:var(--fs);left:50%;top:50%;transform:translate(-50%,-50%)}
+.logo-home{--logo-size:var(--fs);left:50%;top:calc(50% - 16px);transform:translate(-50%,-50%)}
 .logo-home.open{font-size:min(var(--fs),10vw);letter-spacing:-.04em}
 .logo-home.nav-leaving{
   left:calc(var(--side-gutter,28px) - .35em + env(safe-area-inset-left,0px));top:calc(var(--nav-inset,20px) + env(safe-area-inset-top,0px));
