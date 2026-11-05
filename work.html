@@ -45,7 +45,7 @@
   html.fonts-pending body{visibility:hidden}
   html,body{height:100%}
   body{
-    background:var(--bg);color:var(--ink);font-family:var(--font);font-weight:500;font-size:clamp(11px,1.45vh,16px);
+    background:var(--bg);color:var(--ink);font-family:var(--font);font-weight:500;font-size:clamp(13px,1.74vh,19px);
     overflow:hidden;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
     -webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;
     padding:env(safe-area-inset-top,0) env(safe-area-inset-right,0) env(safe-area-inset-bottom,0) env(safe-area-inset-left,0);
@@ -53,13 +53,13 @@
 
   /* ---------- nav (same as home) ---------- */
   #top-nav{position:fixed;top:calc(20px + env(safe-area-inset-top,0px));left:50%;z-index:2500;display:flex;gap:clamp(28px,5vw,56px);transform:translateX(-50%)}
-  #top-nav a{position:relative;font-family:var(--font);font-weight:500;text-decoration:none;font-size:16px;letter-spacing:-.01em;padding:6px 0}
+  #top-nav a{position:relative;font-family:var(--font);font-weight:500;text-decoration:none;font-size:19px;letter-spacing:-.01em;padding:6px 0}
   #top-nav a::after{content:"";position:absolute;left:0;right:0;bottom:3px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease)}
   #top-nav a:hover::after,#top-nav a:focus-visible::after{transform:scaleX(1)}
   #top-nav a:focus-visible{outline:none}
   @media (max-width:600px){
     #top-nav{top:calc(12px + env(safe-area-inset-top,0px));gap:32px}
-    #top-nav a{font-size:15px;padding:10px 0}
+    #top-nav a{font-size:18px;padding:10px 0}
   }
 
   main{
@@ -85,7 +85,7 @@
 
   h1{
     position:absolute;left:16px;right:16px;bottom:clamp(24px,5vh,52px);
-    color:#4D4D4D;font-weight:500;font-size:16px;letter-spacing:-.01em;line-height:1.25;opacity:.55;
+    color:#4D4D4D;font-weight:500;font-size:19px;letter-spacing:-.01em;line-height:1.25;opacity:.55;
   }
 
   /* ---------- easter egg (same as home) ---------- */
@@ -100,7 +100,7 @@
   @media (max-width:600px){
     main{padding:0}
     #figure{width:min(46vw,37vh)}
-    h1{left:16px;right:16px;bottom:calc(28px + env(safe-area-inset-bottom,0px));font-size:15px}
+    h1{left:16px;right:16px;bottom:calc(28px + env(safe-area-inset-bottom,0px));font-size:18px}
     #egg img{width:min(42vw,34vh)}
   }
   .circle-choice{border-color:rgba(20,20,19,.52)}

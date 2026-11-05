@@ -16,11 +16,11 @@
 .logo-home.open{font-size:min(var(--fs),10vw);letter-spacing:-.04em}
 .logo-home.nav-leaving{
   left:calc(16px + env(safe-area-inset-left,0px));top:calc(21px + env(safe-area-inset-top,0px));
-  font-size:22px;padding:.3em .35em;transform:none;
+  font-size:26px;padding:.3em .35em;transform:none;
   transition-duration:.42s;transition-timing-function:cubic-bezier(.2,.7,.25,1);
 }
 .logo-compact{
-  --logo-size:22px;left:calc(16px + env(safe-area-inset-left,0px));
+  --logo-size:26px;left:calc(16px + env(safe-area-inset-left,0px));
   top:calc(21px + env(safe-area-inset-top,0px));transform:none;
   padding:.3em .35em;mix-blend-mode:normal;
 }
@@ -122,7 +122,7 @@ html.nav-page-arrival .logo{view-transition-name:none}
 #top-nav a{
   position:relative;display:block;padding:6px 0;
   color:var(--ink);font-family:var(--font);font-weight:500;text-decoration:none;
-  font-size:16px;letter-spacing:-.01em;line-height:1;white-space:nowrap;font-synthesis:none;
+  font-size:19px;letter-spacing:-.01em;line-height:1;white-space:nowrap;font-synthesis:none;
 }
 #top-nav a::after{content:"";position:absolute;left:0;right:0;bottom:3px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease)}
 #top-nav a[aria-current="page"]::after,#top-nav a:hover::after,#top-nav a:focus-visible::after{transform:scaleX(1)}
@@ -131,7 +131,7 @@ html.nav-page-arrival .logo{view-transition-name:none}
 @media (max-width:600px){
   .logo-home.open{font-size:min(var(--fs),7.2vw);transition-duration:.38s,.38s,.38s,.38s,.38s}
   .logo-home{transition:left .58s var(--ease),top .58s var(--ease),font-size .58s var(--ease),letter-spacing .58s var(--ease),transform .58s var(--ease)}
-  .logo-home.nav-leaving{top:calc(19px + env(safe-area-inset-top,0px));font-size:18px}
+  .logo-home.nav-leaving{top:calc(19px + env(safe-area-inset-top,0px));font-size:21px}
   .logo .cs{transition:width .2s ease-out,margin .2s ease-out}
   .logo .cs>*{transition:opacity .12s linear}
   .logo .seg{transition:grid-template-columns .2s ease-out}
@@ -146,9 +146,9 @@ html.nav-page-arrival .logo{view-transition-name:none}
     .logo-compact:hover .sep .dash{transform:none}
     .logo-compact:hover .sep .dot{transform:none;transition-delay:0s}
   }
-  .logo-compact{--logo-size:18px;top:calc(19px + env(safe-area-inset-top,0px))}
+  .logo-compact{--logo-size:21px;top:calc(19px + env(safe-area-inset-top,0px))}
   #top-nav{top:calc(12px + env(safe-area-inset-top,0px));gap:clamp(10px,4vw,24px)}
-  #top-nav a{font-size:15px;padding:10px 0}
+  #top-nav a{font-size:18px;padding:10px 0}
 }
 
 @media (prefers-reduced-motion:reduce){
