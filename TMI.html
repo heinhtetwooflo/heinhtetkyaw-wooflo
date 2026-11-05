@@ -306,7 +306,7 @@
   var prev = row.querySelector(".prev"), next = row.querySelector(".next");
   var driveButtons = [], built = false, centered = false, cycleWidth = 0;
   var viewer = document.getElementById("media-viewer"), imageWrap = viewer.querySelector(".viewer-image-wrap"), viewerName = viewer.querySelector(".viewer-name"), thumbs = viewer.querySelector(".viewer-thumbnails");
-  var viewerIndex = 0, viewerReturnFocus = null, suppressThumbScroll = false, mediaLoadRequest = 0;
+  var viewerIndex = 0, viewerReturnFocus = null, suppressThumbScroll = false, thumbScrollReleaseTimer = null, mediaLoadRequest = 0;
   var thumbCopies = 3, thumbMiddleCopy = 1;
   var mediaItems = files.map(function(file){ return { file:file, name:file.replace(/\.(?:png|webp|jpe?g)$/i, ""), url:src("Movies and Song/" + file) }; });
   var mediaImages = mediaItems.map(function(item){ var image = new Image(); image.className = "viewer-image"; image.alt = item.name; image.draggable = false; image.decoding = "async"; image.src = item.url; return image; });
@@ -334,12 +334,23 @@
     Array.prototype.forEach.call(thumbs.children, function(button, i){ button.setAttribute("aria-current", i === activeThumb ? "true" : "false"); });
   }
   function thumbAt(copy, index){ return thumbs.children[copy * mediaItems.length + index]; }
+  function releaseThumbScroll(){
+    clearTimeout(thumbScrollReleaseTimer);
+    thumbScrollReleaseTimer = null;
+    suppressThumbScroll = false;
+  }
+  function deferThumbScrollRelease(){
+    clearTimeout(thumbScrollReleaseTimer);
+    thumbScrollReleaseTimer = setTimeout(releaseThumbScroll, 120);
+  }
   function centerThumb(copy, index, smooth){
     var button = thumbAt(copy, index);
     if (!button) return;
+    clearTimeout(thumbScrollReleaseTimer);
     suppressThumbScroll = true;
     thumbs.scrollTo({left:button.offsetLeft + button.offsetWidth / 2 - thumbs.clientWidth / 2, behavior:smooth ? "smooth" : "auto"});
-    requestAnimationFrame(function(){ suppressThumbScroll = false; });
+    if (smooth) deferThumbScrollRelease();
+    else requestAnimationFrame(releaseThumbScroll);
   }
   function showMedia(index){
     var previousIndex = viewerIndex;
@@ -363,8 +374,13 @@
   }
   function openViewer(index){ viewerReturnFocus = document.activeElement; showMedia(index); viewer.classList.add("open"); viewer.setAttribute("aria-hidden","false"); document.body.style.overflow = "hidden"; viewer.querySelector(".viewer-close").focus(); }
   function closeViewer(){ if (!viewer.classList.contains("open")) return; viewer.classList.remove("open"); viewer.setAttribute("aria-hidden","true"); document.body.style.overflow = ""; if (viewerReturnFocus) viewerReturnFocus.focus(); }
+  thumbs.addEventListener("scrollend", function(){ if (suppressThumbScroll) releaseThumbScroll(); });
   thumbs.addEventListener("scroll", function(){
-    if (suppressThumbScroll || !thumbs.children.length) return;
+    if (!thumbs.children.length) return;
+    if (suppressThumbScroll){
+      if (thumbScrollReleaseTimer !== null) deferThumbScrollRelease();
+      return;
+    }
     var center = thumbs.getBoundingClientRect().left + thumbs.clientWidth / 2, nearest = 0, distance = Infinity;
     Array.prototype.forEach.call(thumbs.children, function(button, i){
       var bounds = button.getBoundingClientRect(), delta = Math.abs(bounds.left + bounds.width / 2 - center);
