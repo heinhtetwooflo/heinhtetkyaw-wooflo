@@ -1,0 +1,20 @@
+{
+  "name": "heinhtetkyaw-wooflo",
+  "version": "1.0.0",
+  "description": "Hein Htet Kyaw (wooflo) portfolio website",
+  "type": "module",
+  "scripts": {
+    "dev": "npx serve .",
+    "build": "echo 'Static site - no build needed'",
+    "lint": "echo 'No linting configured'"
+  },
+  "keywords": [
+    "portfolio",
+    "website"
+  ],
+  "author": "Hein Htet Kyaw",
+  "license": "ISC",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
