@@ -16,7 +16,7 @@
 .logo-home.open{font-size:min(var(--fs),10vw);letter-spacing:-.04em}
 .logo-home.nav-leaving{
   left:calc(16px + env(safe-area-inset-left,0px));top:calc(21px + env(safe-area-inset-top,0px));
-  font-size:16px;padding:.3em .35em;transform:none;
+  font-size:22px;padding:.3em .35em;transform:none;
   transition-duration:.42s;transition-timing-function:cubic-bezier(.2,.7,.25,1);
 }
 .logo-compact{
@@ -130,7 +130,7 @@ html.fonts-pending #logo,html.fonts-pending #top-nav{visibility:visible}
 @media (max-width:600px){
   .logo-home.open{font-size:min(var(--fs),7.2vw);transition-duration:.38s,.38s,.38s,.38s,.38s}
   .logo-home{transition:left .58s var(--ease),top .58s var(--ease),font-size .58s var(--ease),letter-spacing .58s var(--ease),transform .58s var(--ease)}
-  .logo-home.nav-leaving{top:calc(19px + env(safe-area-inset-top,0px));font-size:14px}
+  .logo-home.nav-leaving{top:calc(19px + env(safe-area-inset-top,0px));font-size:18px}
   .logo .cs{transition:width .2s ease-out,margin .2s ease-out}
   .logo .cs>*{transition:opacity .12s linear}
   .logo .seg{transition:grid-template-columns .2s ease-out}
