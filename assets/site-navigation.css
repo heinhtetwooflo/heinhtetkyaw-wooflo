@@ -33,7 +33,6 @@ body.nav-page-cover::after{
   transform:scaleY(0);transform-origin:top;
   animation:nav-page-cover .24s cubic-bezier(.4,0,.2,1) forwards;
 }
-body.nav-page-cover.nav-home-cover::after{animation-duration:.42s}
 @keyframes nav-page-cover{to{transform:scaleY(1)}}
 html.nav-page-arrival::after{
   content:"";position:fixed;inset:0;z-index:2490;

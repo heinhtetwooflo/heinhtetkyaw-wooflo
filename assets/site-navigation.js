@@ -155,26 +155,50 @@
           !document.documentElement.classList.contains('nav-page-arrival')) return;
       document.documentElement.classList.remove('nav-page-revealing');
       document.documentElement.classList.remove('nav-page-arrival');
+      document.documentElement.classList.remove('nav-home-arrival', 'nav-home-scaling', 'nav-home-revealing');
       document.documentElement.classList.remove('nav-transition-active');
     };
 
     document.documentElement.addEventListener('animationend', finishReveal);
-    const revealPage = () => whenFontsReady(() => {
-      if (reducedMotion.matches) {
-        document.documentElement.classList.remove('nav-page-arrival');
-        document.documentElement.classList.remove('nav-transition-active');
-        return;
-      }
-      window.requestAnimationFrame(() => document.documentElement.classList.add('nav-page-revealing'));
-    });
-    if (document.readyState === 'complete') revealPage();
-    else window.addEventListener('load', revealPage, { once: true });
+    if (document.documentElement.classList.contains('nav-home-arrival')) {
+      let homeScaleFinished = false;
+      const revealAfterScale = () => {
+        if (homeScaleFinished) return;
+        homeScaleFinished = true;
+        document.documentElement.classList.add('nav-home-revealing');
+      };
+      logo.addEventListener('transitionend', event => {
+        if (event.target === logo && event.propertyName === 'font-size') revealAfterScale();
+      });
+      const startHomeScale = () => whenFontsReady(() => {
+        if (reducedMotion.matches) {
+          document.documentElement.classList.remove('nav-page-arrival', 'nav-home-arrival', 'nav-home-scaling', 'nav-home-revealing', 'nav-transition-active');
+          return;
+        }
+        window.requestAnimationFrame(() => {
+          document.documentElement.classList.add('nav-home-scaling');
+          window.setTimeout(revealAfterScale, 750);
+        });
+      });
+      startHomeScale();
+    } else {
+      const revealPage = () => whenFontsReady(() => {
+        if (reducedMotion.matches) {
+          document.documentElement.classList.remove('nav-page-arrival');
+          document.documentElement.classList.remove('nav-transition-active');
+          return;
+        }
+        window.requestAnimationFrame(() => document.documentElement.classList.add('nav-page-revealing'));
+      });
+      if (document.readyState === 'complete') revealPage();
+      else window.addEventListener('load', revealPage, { once: true });
+    }
   }
 
   window.addEventListener('pageshow', event => {
     if (!event.persisted) return;
     navigationPending = false;
-    document.documentElement.classList.remove('nav-page-arrival', 'nav-page-revealing', 'nav-transition-active');
+    document.documentElement.classList.remove('nav-page-arrival', 'nav-page-revealing', 'nav-home-arrival', 'nav-home-scaling', 'nav-home-revealing', 'nav-transition-active');
     document.body.classList.remove('nav-page-cover', 'nav-home-cover');
     logo.classList.remove('nav-leaving', 'nav-collapsing');
   });
@@ -266,15 +290,21 @@
       }
       if (reducedMotion.matches) return;
 
-      const logoExpanded = logo.classList.contains('open') || logo.matches(':hover, :focus-visible');
-      if (logoExpanded) {
-        event.preventDefault();
-        navigationPending = true;
-        logo.classList.remove('open');
-        logo.classList.add('nav-collapsing');
-        window.setTimeout(() => window.location.assign(destination.href), 440);
+      event.preventDefault();
+      try {
+        window.sessionStorage.setItem('hwf-page-arrival', `${destinationPath}|${Date.now()}`);
+      } catch {
+        window.location.assign(destination.href);
+        return;
       }
-      // The browser's cross-document transition carries the logo into home.
+
+      navigationPending = true;
+      document.documentElement.style.setProperty('--nav-page-target', '#141413');
+      document.documentElement.classList.add('nav-transition-active');
+      logo.classList.remove('open');
+      logo.classList.add('nav-leaving', 'nav-collapsing');
+      document.body.classList.add('nav-page-cover');
+      window.setTimeout(() => window.location.assign(destination.href), 240);
       return;
     }
 

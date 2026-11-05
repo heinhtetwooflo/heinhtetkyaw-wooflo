@@ -14,6 +14,9 @@
     if (arrivalPath === currentPath && arrivalTime > 0 && Date.now() - arrivalTime < 30000 &&
         !matchMedia('(prefers-reduced-motion: reduce)').matches) {
       document.documentElement.classList.add('nav-page-arrival', 'nav-transition-active');
+      if (currentPath === '/' || currentPath === '/index.html') {
+        document.documentElement.classList.add('nav-home-arrival');
+      }
     }
     sessionStorage.removeItem('hwf-page-arrival');
   } catch {}
@@ -150,6 +153,17 @@
   }
   footer a:hover::after,footer a:focus-visible::after{transform:scaleX(1)}
   footer a:focus-visible{outline:none}
+  html.nav-home-arrival #logo{
+    --logo-size:36px;left:calc(var(--side-gutter) - .35em + env(safe-area-inset-left,0px));
+    top:calc(var(--nav-inset,20px) + env(safe-area-inset-top,0px));transform:none;
+    padding:.3em .35em;
+    transition:left .62s var(--ease),top .62s var(--ease),font-size .62s var(--ease),letter-spacing .62s var(--ease),transform .62s var(--ease),padding .62s var(--ease);
+  }
+  html.nav-home-arrival.nav-home-scaling #logo{
+    --logo-size:var(--fs);left:50%;top:50%;transform:translate(-50%,-50%);
+    padding:.4em .45em;
+  }
+  html.nav-home-arrival.nav-home-revealing::after{animation:nav-page-reveal .34s cubic-bezier(.4,0,.2,1) forwards}
   @media (max-width:600px){
     #top-nav{top:calc(12px + env(safe-area-inset-top,0px));gap:32px}
     #top-nav a{font-size:18px;padding:10px 0}
