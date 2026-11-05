@@ -47,7 +47,7 @@
 
   /* ---------- top controls ---------- */
   #top-nav{position:fixed;top:calc(20px + env(safe-area-inset-top,0px));left:50%;z-index:2500;display:flex;gap:clamp(28px,5vw,56px);transform:translateX(-50%)}
-  #top-nav a{position:relative;color:var(--ink);font-family:"NHD",sans-serif;font-weight:500;text-decoration:none;font-size:16px;letter-spacing:-.01em;padding:6px 0}
+  #top-nav a{position:relative;color:var(--ink);font-family:var(--font);font-weight:500;text-decoration:none;font-size:16px;letter-spacing:-.01em;padding:6px 0}
   #top-nav a::after{content:"";position:absolute;left:0;right:0;bottom:3px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease)}
   #top-nav a:hover::after,#top-nav a:focus-visible::after{transform:scaleX(1)}
   #top-nav a:focus-visible{outline:none}
