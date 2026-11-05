@@ -350,6 +350,7 @@
     clearTimeout(thumbScrollReleaseTimer);
     thumbScrollReleaseTimer = null;
     suppressThumbScroll = false;
+    syncThumbSelection();
   }
   function deferThumbScrollRelease(){
     clearTimeout(thumbScrollReleaseTimer);
@@ -361,8 +362,7 @@
     clearTimeout(thumbScrollReleaseTimer);
     suppressThumbScroll = true;
     thumbs.scrollTo({left:button.offsetLeft + button.offsetWidth / 2 - thumbs.clientWidth / 2, behavior:smooth ? "smooth" : "auto"});
-    if (smooth) deferThumbScrollRelease();
-    else deferThumbScrollRelease();
+    deferThumbScrollRelease();
   }
   function showMedia(index){
     var previousIndex = viewerIndex;
@@ -386,17 +386,10 @@
   }
   function openViewer(index){ viewerReturnFocus = document.activeElement; showMedia(index); viewer.classList.add("open"); viewer.setAttribute("aria-hidden","false"); document.body.style.overflow = "hidden"; viewer.querySelector(".viewer-close").focus(); }
   function closeViewer(){ if (!viewer.classList.contains("open")) return; stopViewerNavRepeat(); viewer.classList.remove("open"); viewer.setAttribute("aria-hidden","true"); document.body.style.overflow = ""; if (viewerReturnFocus) viewerReturnFocus.focus(); }
-  thumbs.addEventListener("scrollend", function(){ if (suppressThumbScroll) deferThumbScrollRelease(); });
-  thumbs.addEventListener("scroll", function(){
-    if (!thumbs.children.length) return;
-    if (suppressThumbScroll){
-      if (thumbScrollReleaseTimer !== null) deferThumbScrollRelease();
-      return;
-    }
-    if (thumbSelectionFrame !== null) return;
+  function syncThumbSelection(){
+    if (!thumbs.children.length || thumbSelectionFrame !== null) return;
     thumbSelectionFrame = requestAnimationFrame(function(){
       thumbSelectionFrame = null;
-      if (suppressThumbScroll) return;
       var center = thumbs.getBoundingClientRect().left + thumbs.clientWidth / 2, nearest = 0, distance = Infinity;
       Array.prototype.forEach.call(thumbs.children, function(button, i){
         var bounds = button.getBoundingClientRect(), delta = Math.abs(bounds.left + bounds.width / 2 - center);
@@ -405,12 +398,22 @@
       var copy = Math.floor(nearest / mediaItems.length), index = nearest % mediaItems.length;
       if (copy !== thumbMiddleCopy){
         var currentThumb = thumbAt(copy, index), middleThumb = thumbAt(thumbMiddleCopy, index);
-        if (currentThumb && middleThumb) thumbs.scrollLeft += middleThumb.offsetLeft - currentThumb.offsetLeft;
+        if (currentThumb && middleThumb){
+          var offset = middleThumb.offsetLeft - currentThumb.offsetLeft;
+          thumbs.style.scrollBehavior = "auto";
+          thumbs.scrollLeft += offset;
+          thumbs.style.scrollBehavior = "";
+        }
         nearest = thumbMiddleCopy * mediaItems.length + index;
       }
       setMedia(index, nearest);
     });
+  }
+  thumbs.addEventListener("scroll", function(){
+    if (suppressThumbScroll) deferThumbScrollRelease();
+    else syncThumbSelection();
   }, {passive:true});
+  thumbs.addEventListener("scrollend", function(){ if (suppressThumbScroll) releaseThumbScroll(); });
   thumbs.addEventListener("wheel", function(e){
     if (Math.abs(e.deltaY) > Math.abs(e.deltaX)){ thumbs.scrollLeft += e.deltaY; e.preventDefault(); }
   }, {passive:false});
@@ -503,8 +506,8 @@
   function loopScroll(){
     measureCycle();
     if (!cycleWidth) return;
-    if (track.scrollLeft < cycleWidth) track.scrollLeft += cycleWidth;
-    else if (track.scrollLeft >= cycleWidth * 4) track.scrollLeft -= cycleWidth;
+    if (track.scrollLeft < cycleWidth) track.scrollLeft += cycleWidth * 2;
+    else if (track.scrollLeft >= cycleWidth * 4) track.scrollLeft -= cycleWidth * 2;
   }
   function edges(){
     prev.disabled = false;
@@ -555,8 +558,9 @@
   });
   function go(dir){
     measureCycle();
-    track.scrollLeft += dir * track.clientWidth * .8;
-    loopScroll();
+    var first = track.querySelector("figure");
+    var step = first ? first.getBoundingClientRect().width + parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap || 0) : 100;
+    track.scrollBy({left:dir * step, behavior:"smooth"});
     edges();
   }
   var folderRepeatDelay = null, folderRepeatInterval = null;
