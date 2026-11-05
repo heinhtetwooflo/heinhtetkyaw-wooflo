@@ -20,7 +20,7 @@
   transition-duration:.42s;transition-timing-function:cubic-bezier(.2,.7,.25,1);
 }
 .logo-compact{
-  --logo-size:16px;left:calc(16px + env(safe-area-inset-left,0px));
+  --logo-size:22px;left:calc(16px + env(safe-area-inset-left,0px));
   top:calc(21px + env(safe-area-inset-top,0px));transform:none;
   padding:.3em .35em;mix-blend-mode:normal;
 }
@@ -146,7 +146,7 @@ html.fonts-pending #logo,html.fonts-pending #top-nav{visibility:visible}
     .logo-compact:hover .sep .dash{transform:none}
     .logo-compact:hover .sep .dot{transform:none;transition-delay:0s}
   }
-  .logo-compact{--logo-size:14px;top:calc(19px + env(safe-area-inset-top,0px))}
+  .logo-compact{--logo-size:18px;top:calc(19px + env(safe-area-inset-top,0px))}
   #top-nav{top:calc(12px + env(safe-area-inset-top,0px));gap:clamp(10px,4vw,24px)}
   #top-nav a{font-size:15px;padding:10px 0}
 }
