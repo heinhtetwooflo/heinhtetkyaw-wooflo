@@ -93,21 +93,19 @@
   .drive:hover,.drive:focus-visible{z-index:4}
   .drive img{max-width:100%;max-height:86%;object-fit:contain;display:block;transition:transform .45s var(--ease),filter .45s var(--ease);-webkit-user-drag:none;user-select:none}
   .drive:hover img,.drive:focus-visible img{transform:translateY(-4px) scale(1.02);filter:brightness(1.06)}
-  .drive-label{position:absolute;left:50%;bottom:3%;color:var(--ink);font-size:.8em;white-space:nowrap;opacity:0;transform:translate(-50%,4px);transition:opacity .2s ease,transform .2s var(--ease);pointer-events:none}
-  .drive:hover .drive-label,.drive:focus-visible .drive-label{opacity:.8;transform:translate(-50%,0)}
+  .drive-label{position:absolute;left:50%;bottom:0;color:var(--ink);font-size:.8em;white-space:nowrap;opacity:0;transform:translate(-50%,2px);transition:opacity .14s ease,transform .14s ease-out;pointer-events:none}
+  .drive:hover+.drive-label,.drive:focus-visible+.drive-label{opacity:.8;transform:translate(-50%,0)}
   .drive:active img{transform:scale(.98)}
 
   .folder{height:100%;min-width:0;min-height:0;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:calc(var(--pad)*.6);
     opacity:0;visibility:hidden;transform:translateX(-8px);transition:opacity .24s ease,transform .3s var(--ease),visibility 0s .3s}
   .row.open .folder{opacity:1;visibility:visible;transform:none;transition:opacity .24s ease,transform .3s var(--ease)}
 
-  .arrow{position:relative;z-index:2;height:100%;min-height:52px;width:clamp(48px,4.2vw,64px);flex:none;display:grid;place-items:center;opacity:.78;touch-action:manipulation;cursor:none;transition:opacity .2s ease,transform .2s var(--ease)}
-  .arrow svg{width:58%;height:clamp(40px,8vh,72px);fill:none;stroke:var(--ink);stroke-width:1.3;stroke-linecap:square;vector-effect:non-scaling-stroke;overflow:visible;pointer-events:none;transition:transform .2s var(--ease)}
+  .arrow{position:relative;z-index:2;height:100%;min-height:52px;width:clamp(48px,4.2vw,64px);flex:none;display:grid;place-items:center;opacity:.78;touch-action:manipulation;cursor:none;transition:opacity .12s ease,transform .08s ease-out}
+  .arrow svg{width:58%;height:clamp(40px,8vh,72px);fill:none;stroke:var(--ink);stroke-width:1.45;stroke-linecap:square;vector-effect:non-scaling-stroke;overflow:visible;pointer-events:none}
   .arrow svg *{vector-effect:non-scaling-stroke}
   .arrow:hover{opacity:1}
-  .arrow.prev:hover svg{transform:translateX(-4px)}
-  .arrow.next:hover svg{transform:translateX(4px)}
-  .arrow:active{transform:scale(.92)}
+  .arrow:active{transform:scale(.95)}
   .arrow[disabled]{opacity:.18}
 
   .track{height:100%;display:flex;align-items:center;gap:calc(var(--pad)*.75);overflow-x:auto;overflow-y:hidden;scrollbar-width:none;overscroll-behavior:contain;touch-action:pan-x}
@@ -130,9 +128,10 @@
   .viewer-image-wrap{position:relative;height:100%;min-width:0;min-height:0;display:grid;place-items:center;overflow:hidden;touch-action:pan-y}
   .viewer-image{position:absolute;inset:0;margin:auto;width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain;display:block;opacity:0}
   .viewer-image.active{opacity:1}
-  .viewer-nav{height:56px;display:grid;place-items:center;opacity:.78}
+  .viewer-nav{height:56px;display:grid;place-items:center;opacity:.78;transition:opacity .12s ease,transform .08s ease-out}
   .viewer-nav:hover{opacity:1}
-  .viewer-nav svg{width:22px;height:44px;fill:none;stroke:currentColor;stroke-width:1.65}
+  .viewer-nav:active{transform:scale(.95)}
+  .viewer-nav svg{width:22px;height:44px;fill:none;stroke:currentColor;stroke-width:1.8}
   .viewer-thumbnails{display:flex;gap:8px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:none;-ms-overflow-style:none;overscroll-behavior-x:contain;touch-action:pan-x;user-select:none}
   .viewer-thumbnails::-webkit-scrollbar{display:none}
   .viewer-thumb{width:max-content;height:60px;padding:3px 4px;flex:none;display:grid;place-items:center;opacity:.55;border:1px solid transparent}
@@ -178,7 +177,7 @@
     main{height:auto;min-height:100%;display:block}
     .top{margin-bottom:var(--pad)}
   }
-  @media (prefers-reduced-motion:reduce){.drive img,.folder,.arrow,.arrow svg{transition:none}}
+  @media (prefers-reduced-motion:reduce){.drive img,.folder,.arrow,.viewer-nav,.arrow svg{transition:none}}
 </style>
 <link rel="stylesheet" href="/assets/site-navigation.css">
 <script defer src="/assets/site-navigation.js"></script>
@@ -519,8 +518,13 @@
     btn.type = "button";
     btn.setAttribute("aria-expanded", "false");
     btn.setAttribute("aria-label", d.name);
-    btn.innerHTML = '<img alt="" draggable="false" src="' + src("Drive/" + d.file) + '"><span class="drive-label" aria-hidden="true">always on my drive</span>';
+    btn.innerHTML = '<img alt="" draggable="false" src="' + src("Drive/" + d.file) + '">';
     pair.appendChild(btn);
+    var label = document.createElement("span");
+    label.className = "drive-label";
+    label.setAttribute("aria-hidden", "true");
+    label.textContent = "always on my drive";
+    pair.appendChild(label);
     driveButtons.push(btn);
     btn.addEventListener("click", function(){
       playDriveSfx();
@@ -539,8 +543,32 @@
     loopScroll();
     edges();
   }
-  prev.addEventListener("click", function(){ go(-1); });
-  next.addEventListener("click", function(){ go(1); });
+  var folderRepeatDelay = null, folderRepeatInterval = null;
+  function stopFolderArrowRepeat(){
+    clearTimeout(folderRepeatDelay);
+    clearInterval(folderRepeatInterval);
+    folderRepeatDelay = folderRepeatInterval = null;
+  }
+  function bindFolderArrow(button, direction){
+    button.addEventListener("pointerdown", function(e){
+      if (e.button !== 0 || !e.isPrimary) return;
+      e.preventDefault();
+      stopFolderArrowRepeat();
+      if (button.setPointerCapture) button.setPointerCapture(e.pointerId);
+      go(direction);
+      folderRepeatDelay = setTimeout(function(){
+        folderRepeatInterval = setInterval(function(){ go(direction); }, 160);
+      }, 300);
+    });
+    button.addEventListener("pointerup", stopFolderArrowRepeat);
+    button.addEventListener("pointercancel", stopFolderArrowRepeat);
+    button.addEventListener("lostpointercapture", stopFolderArrowRepeat);
+    button.addEventListener("click", function(e){ if (e.detail === 0) go(direction); });
+  }
+  bindFolderArrow(prev, -1);
+  bindFolderArrow(next, 1);
+  window.addEventListener("blur", stopFolderArrowRepeat);
+  document.addEventListener("visibilitychange", function(){ if (document.hidden) stopFolderArrowRepeat(); });
   track.addEventListener("scroll", function(){ loopScroll(); edges(); }, { passive: true });
   window.addEventListener("resize", function(){ cycleWidth = 0; measureCycle(); edges(); });
 
