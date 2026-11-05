@@ -310,6 +310,7 @@
   var thumbCopies = 3, thumbMiddleCopy = 1;
   var mediaItems = files.map(function(file){ return { file:file, name:file.replace(/\.(?:png|webp|jpe?g)$/i, ""), url:src("Movies and Song/" + file) }; });
   var mediaImages = mediaItems.map(function(item){ var image = new Image(); image.className = "viewer-image"; image.alt = item.name; image.draggable = false; image.decoding = "async"; image.src = item.url; return image; });
+  mediaImages.forEach(function(image){ imageWrap.appendChild(image); });
   function setMedia(index, activeThumb){
     viewerIndex = (index + mediaItems.length) % mediaItems.length;
     var request = ++mediaLoadRequest;
@@ -317,9 +318,8 @@
     function displayImage(){
       if (request !== mediaLoadRequest) return;
       var currentImage = imageWrap.querySelector(".viewer-image.active");
-      if (currentImage) currentImage.classList.remove("active");
-      imageWrap.appendChild(image);
       image.classList.add("active");
+      if (currentImage && currentImage !== image) currentImage.classList.remove("active");
       viewerName.textContent = item.name;
     }
     function displayWhenDecoded(){
