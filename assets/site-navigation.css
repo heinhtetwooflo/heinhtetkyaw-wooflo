@@ -5,6 +5,7 @@
   display:inline-flex;align-items:baseline;width:max-content;max-width:100vw;
   font-family:var(--font);font-weight:700;font-size:var(--logo-size,var(--fs));
   line-height:1;white-space:nowrap;text-decoration:none;
+  view-transition-name:site-logo;
   padding:.4em .45em;cursor:none;transform-origin:center;
   transition:left .58s var(--ease),top .58s var(--ease),font-size .58s var(--ease),letter-spacing .58s var(--ease),transform .58s var(--ease);
 }
@@ -44,13 +45,11 @@ body.nav-return-cover::after{
 html.nav-home-return body.nav-home-reveal::after{
   animation:nav-home-reveal .5s cubic-bezier(.2,.7,.25,1) forwards;
 }
-html.nav-home-returning .logo.nav-returning,
-html.nav-home-return #logo{view-transition-name:home-return-logo}
-html.fonts-pending.nav-home-return #logo{visibility:visible}
 ::view-transition-group(root),
 ::view-transition-old(root),
-::view-transition-new(root){animation-duration:1ms}
-::view-transition-group(home-return-logo){
+::view-transition-new(root){animation:none}
+::view-transition-group(site-logo),
+::view-transition-group(site-nav){
   animation-duration:.5s;animation-timing-function:cubic-bezier(.2,.7,.25,1)
 }
 body.nav-page-cover::after{
@@ -69,13 +68,19 @@ html.nav-page-arrival.nav-page-revealing::after{
 }
 @keyframes nav-home-reveal{to{opacity:0}}
 @keyframes nav-page-reveal{to{opacity:0}}
-html.nav-transition-active .logo{
-  color:#f7f6f4!important;mix-blend-mode:difference!important;
+@supports not (view-transition-name:site-logo){
+  html.nav-transition-active .logo{
+    color:#f7f6f4!important;mix-blend-mode:difference!important;
+  }
+  html.nav-transition-active .logo .g{filter:brightness(0) invert(1)!important}
+  html.nav-transition-active #top-nav{mix-blend-mode:difference}
+  html.nav-transition-active #top-nav a{color:#f7f6f4!important}
 }
-html.nav-transition-active .logo .g{filter:brightness(0) invert(1)!important}
-html.nav-transition-active #top-nav{mix-blend-mode:difference}
-html.nav-transition-active #top-nav a{color:#f7f6f4!important}
 html.fonts-pending #logo,html.fonts-pending #top-nav{visibility:hidden}
+html.nav-home-return #logo,
+html.nav-home-return #top-nav,
+html.nav-page-arrival #logo,
+html.nav-page-arrival #top-nav{visibility:visible}
 .logo-compact.logo-on-light{color:#4D4D4D}
 .logo-compact.logo-on-light .g{filter:none}
 .logo .g{display:block;height:.715em;filter:brightness(0) invert(1)}
@@ -143,7 +148,7 @@ html.fonts-pending #logo,html.fonts-pending #top-nav{visibility:hidden}
 .logo.logo-compact.nav-returning .sep .dot{opacity:0;transform:translateY(-.28em)}
 .logo:focus-visible{outline:1px solid currentColor;outline-offset:3px}
 
-#top-nav{position:fixed;top:calc(20px + env(safe-area-inset-top,0px));left:50%;z-index:2500;display:flex;align-items:center;gap:clamp(20px,4vw,48px);transform:translateX(-50%)}
+#top-nav{position:fixed;top:calc(20px + env(safe-area-inset-top,0px));left:50%;z-index:2500;display:flex;align-items:center;gap:clamp(20px,4vw,48px);transform:translateX(-50%);view-transition-name:site-nav}
 #top-nav a{
   position:relative;display:block;padding:6px 0;
   color:var(--ink);font-family:var(--font);font-weight:500;text-decoration:none;
