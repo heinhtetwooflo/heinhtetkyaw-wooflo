@@ -93,6 +93,8 @@ html.fonts-pending #logo,html.fonts-pending #top-nav{visibility:visible}
 }
 .logo.nav-leaving .cs,.logo.nav-leaving .seg,.logo.nav-leaving .sep,
 .logo.nav-leaving .cs>*,.logo.nav-leaving .seg>span,.logo.nav-leaving .sep i{transition:none!important}
+.logo.nav-leaving{view-transition-name:none}
+html.nav-page-arrival .logo{view-transition-name:none}
 .sep{display:inline-grid;align-items:baseline;margin-left:.0553em;transition:margin .5s var(--ease)}
 .logo.open .sep,.logo-compact:focus-visible .sep{margin-left:0;margin-right:-.07em}
 .sep i{grid-area:1/1;font-style:normal;transition:opacity .3s ease,transform .5s var(--ease)}

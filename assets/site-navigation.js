@@ -191,6 +191,7 @@
       const targetColor = destinationPath === '/work' ? '#ffffff' : '#141413';
       document.documentElement.style.setProperty('--nav-page-target', targetColor);
       document.documentElement.classList.add('nav-transition-active');
+      logo.classList.add('nav-leaving');
       document.body.classList.add('nav-page-cover');
       window.setTimeout(() => window.location.assign(destination.href), 240);
       return;
