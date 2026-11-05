@@ -122,25 +122,12 @@
     syncLogoMorph();
   }
 
-  const controlGroup = document.getElementById('mobile-control-group');
-  const topControls = document.getElementById('top-controls');
   const utilityControls = document.getElementById('mobile-utility-controls');
   const fullscreenToggle = document.getElementById('fullscreen-toggle');
   const clearStickers = document.getElementById('clear-stickers');
-  const mobileViewport = window.matchMedia('(max-width: 600px)');
 
-  if (controlGroup && topControls && utilityControls && fullscreenToggle && clearStickers) {
-    const placeUtilityControls = event => {
-      if (event.matches) {
-        utilityControls.append(fullscreenToggle, clearStickers);
-      } else {
-        controlGroup.insertBefore(fullscreenToggle, topControls);
-        controlGroup.append(clearStickers);
-      }
-    };
-
-    placeUtilityControls(mobileViewport);
-    mobileViewport.addEventListener('change', placeUtilityControls);
+  if (utilityControls && fullscreenToggle && clearStickers) {
+    utilityControls.append(fullscreenToggle, clearStickers);
   }
 
   const homePaths = new Set(['/', '/index.html']);
