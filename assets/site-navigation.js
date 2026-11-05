@@ -135,6 +135,84 @@
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let navigationPending = false;
   const isHome = homePaths.has(window.location.pathname);
+  const currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
+  const scrollDestination = isHome ? '/work' : currentPath === '/work' ? '/TMI' : null;
+  let scrollNavigationPending = false;
+  let scrollNavigationBlockedUntil = 0;
+  try {
+    scrollNavigationBlockedUntil = Number(sessionStorage.getItem('hwf-scroll-nav-blocked-until')) || 0;
+  } catch {}
+
+  const navigateFromScroll = () => {
+    if (!scrollDestination || scrollNavigationPending || Date.now() < scrollNavigationBlockedUntil) return;
+    const link = [...document.querySelectorAll('#top-nav a[href]')]
+      .find(anchor => new URL(anchor.href, window.location.href).pathname === scrollDestination);
+    if (!link) return;
+
+    scrollNavigationPending = true;
+    scrollNavigationBlockedUntil = Date.now() + 1200;
+    try {
+      sessionStorage.setItem('hwf-scroll-nav-blocked-until', String(scrollNavigationBlockedUntil));
+    } catch {}
+    link.click();
+  };
+
+  if (scrollDestination) {
+    let wheelDistance = 0;
+    let wheelResetTimer = 0;
+    document.addEventListener('wheel', event => {
+      if (event.defaultPrevented || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+      if (event.target instanceof Element && event.target.closest('a,button,input,textarea,select,[contenteditable="true"],#options-menu')) return;
+
+      const scale = event.deltaMode === WheelEvent.DOM_DELTA_LINE ? 16
+        : event.deltaMode === WheelEvent.DOM_DELTA_PAGE ? window.innerHeight : 1;
+      const distance = event.deltaY * scale;
+      wheelDistance = distance > 0 ? wheelDistance + distance : 0;
+      window.clearTimeout(wheelResetTimer);
+      wheelResetTimer = window.setTimeout(() => { wheelDistance = 0; }, 180);
+      if (wheelDistance >= 80) navigateFromScroll();
+    }, { passive: true });
+
+    let touchGesture = null;
+    document.addEventListener('pointerdown', event => {
+      if (event.pointerType !== 'touch' || event.button !== 0 || !(event.target instanceof Element)) return;
+      if (event.target.closest('a,button,input,textarea,select,[contenteditable="true"],#options-menu,#egg,#guide,.note,.track,.photo,.drive,.arrow')) return;
+      touchGesture = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, claimed: false };
+    }, true);
+
+    document.addEventListener('pointermove', event => {
+      if (!touchGesture || touchGesture.pointerId !== event.pointerId || touchGesture.claimed) return;
+      const deltaX = event.clientX - touchGesture.x;
+      const scrollDistance = touchGesture.y - event.clientY;
+      if (scrollDistance < 80 || scrollDistance <= Math.abs(deltaX) * 1.3) return;
+
+      touchGesture.claimed = true;
+      event.target.dispatchEvent(new PointerEvent('pointercancel', {
+        bubbles: true,
+        pointerId: event.pointerId,
+        pointerType: event.pointerType,
+        clientX: event.clientX,
+        clientY: event.clientY
+      }));
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }, { capture: true, passive: false });
+
+    document.addEventListener('pointerup', event => {
+      if (!touchGesture || touchGesture.pointerId !== event.pointerId) return;
+      const claimed = touchGesture.claimed;
+      touchGesture = null;
+      if (!claimed) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      navigateFromScroll();
+    }, true);
+
+    document.addEventListener('pointercancel', event => {
+      if (touchGesture?.pointerId === event.pointerId && !touchGesture.claimed) touchGesture = null;
+    }, true);
+  }
+
   const whenFontsReady = callback => {
     const root = document.documentElement;
     if (!root.classList.contains('fonts-pending')) {
