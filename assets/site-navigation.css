@@ -1,5 +1,8 @@
 .logo{view-transition-name:site-logo}
+#top-nav{view-transition-name:site-nav}
 @view-transition{navigation:auto}
+::view-transition-group(site-logo),
+::view-transition-group(site-nav){animation-duration:.62s}
 .logo{
   position:fixed;z-index:2600;color:var(--ink);mix-blend-mode:difference;
   display:inline-flex;align-items:baseline;width:max-content;max-width:100vw;
