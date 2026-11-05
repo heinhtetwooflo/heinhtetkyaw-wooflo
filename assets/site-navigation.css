@@ -15,12 +15,12 @@
 .logo-home{--logo-size:var(--fs);left:50%;top:50%;transform:translate(-50%,-50%)}
 .logo-home.open{font-size:min(var(--fs),10vw);letter-spacing:-.04em}
 .logo-home.nav-leaving{
-  left:calc(var(--side-gutter,28px) + env(safe-area-inset-left,0px));top:calc(21px + env(safe-area-inset-top,0px));
+  left:calc(var(--side-gutter,28px) - .35em + env(safe-area-inset-left,0px));top:calc(21px + env(safe-area-inset-top,0px));
   font-size:36px;padding:.3em .35em;transform:none;
   transition-duration:.42s;transition-timing-function:cubic-bezier(.2,.7,.25,1);
 }
 .logo-compact{
-  --logo-size:36px;left:calc(var(--side-gutter,28px) + env(safe-area-inset-left,0px));
+  --logo-size:36px;left:calc(var(--side-gutter,28px) - .35em + env(safe-area-inset-left,0px));
   top:calc(21px + env(safe-area-inset-top,0px));transform:none;
   padding:.3em .35em;mix-blend-mode:normal;
 }
