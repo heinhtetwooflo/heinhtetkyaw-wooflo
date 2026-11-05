@@ -48,6 +48,10 @@ html.nav-home-return body.nav-home-reveal::after{
 ::view-transition-group(root),
 ::view-transition-old(root),
 ::view-transition-new(root){animation:none}
+::view-transition-old(site-logo),
+::view-transition-new(site-logo),
+::view-transition-old(site-nav),
+::view-transition-new(site-nav){animation:none;mix-blend-mode:normal}
 ::view-transition-group(site-logo),
 ::view-transition-group(site-nav){
   animation-duration:.5s;animation-timing-function:cubic-bezier(.2,.7,.25,1)
