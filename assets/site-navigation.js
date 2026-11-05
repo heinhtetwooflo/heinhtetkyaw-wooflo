@@ -136,81 +136,147 @@
   let navigationPending = false;
   const isHome = homePaths.has(window.location.pathname);
   const currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
-  const scrollDestination = isHome ? '/work' : currentPath === '/work' ? '/TMI' : null;
+  const pagePaths = ['/', '/work', '/TMI'];
+  const currentPageIndex = pagePaths.indexOf(isHome ? '/' : currentPath);
+  const isAtScrollBoundary = (direction, scrollTop = Math.max(
+    window.scrollY || 0,
+    document.documentElement.scrollTop || 0,
+    document.body.scrollTop || 0
+  )) => {
+    if (currentPath !== '/TMI') return true;
+    const maxScroll = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight) - window.innerHeight;
+    return direction < 0 ? scrollTop <= 1 : scrollTop >= maxScroll - 1;
+  };
   let scrollNavigationPending = false;
   let scrollNavigationBlockedUntil = 0;
   try {
     scrollNavigationBlockedUntil = Number(sessionStorage.getItem('hwf-scroll-nav-blocked-until')) || 0;
   } catch {}
 
-  const navigateFromScroll = () => {
-    if (!scrollDestination || scrollNavigationPending || Date.now() < scrollNavigationBlockedUntil) return;
-    const link = [...document.querySelectorAll('#top-nav a[href]')]
-      .find(anchor => new URL(anchor.href, window.location.href).pathname === scrollDestination);
+  const navigateFromScroll = direction => {
+    const destination = pagePaths[currentPageIndex + direction];
+    if (!destination || scrollNavigationPending || Date.now() < scrollNavigationBlockedUntil) return;
+    const link = [...document.querySelectorAll('#logo[href], #top-nav a[href]')]
+      .find(anchor => {
+        const path = new URL(anchor.href, window.location.href).pathname.replace(/\/+$/, '') || '/';
+        return (path === '/index.html' ? '/' : path) === destination;
+      });
     if (!link) return;
 
     scrollNavigationPending = true;
-    scrollNavigationBlockedUntil = Date.now() + 1200;
+    scrollNavigationBlockedUntil = Date.now() + 1400;
     try {
       sessionStorage.setItem('hwf-scroll-nav-blocked-until', String(scrollNavigationBlockedUntil));
     } catch {}
     link.click();
   };
 
-  if (scrollDestination) {
+  if (currentPageIndex >= 0) {
     let wheelDistance = 0;
+    let wheelDirection = 0;
+    let wheelGestureActive = false;
+    let wheelCanNavigate = false;
     let wheelResetTimer = 0;
     document.addEventListener('wheel', event => {
       if (event.defaultPrevented || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
       if (event.target instanceof Element && event.target.closest('a,button,input,textarea,select,[contenteditable="true"],#options-menu')) return;
 
+      const direction = Math.sign(event.deltaY);
+      if (!wheelGestureActive) {
+        wheelGestureActive = true;
+        wheelCanNavigate = !!pagePaths[currentPageIndex + direction] && isAtScrollBoundary(direction);
+        wheelDirection = direction;
+      } else if (direction !== wheelDirection) {
+        wheelDistance = 0;
+        wheelDirection = direction;
+        wheelCanNavigate = !!pagePaths[currentPageIndex + direction] && isAtScrollBoundary(direction);
+      }
+
       const scale = event.deltaMode === WheelEvent.DOM_DELTA_LINE ? 16
         : event.deltaMode === WheelEvent.DOM_DELTA_PAGE ? window.innerHeight : 1;
-      const distance = event.deltaY * scale;
-      wheelDistance = distance > 0 ? wheelDistance + distance : 0;
       window.clearTimeout(wheelResetTimer);
-      wheelResetTimer = window.setTimeout(() => { wheelDistance = 0; }, 180);
-      if (wheelDistance >= 80) navigateFromScroll();
-    }, { passive: true });
+      wheelResetTimer = window.setTimeout(() => {
+        if (wheelCanNavigate && wheelDistance >= 40) navigateFromScroll(wheelDirection);
+        wheelDistance = 0;
+        wheelDirection = 0;
+        wheelGestureActive = false;
+        wheelCanNavigate = false;
+      }, 120);
+      if (!wheelCanNavigate) return;
 
-    let touchGesture = null;
+      event.preventDefault();
+      wheelDistance += Math.abs(event.deltaY * scale);
+    }, { passive: false });
+
+    let activeTouchPointerId = null;
     document.addEventListener('pointerdown', event => {
-      if (event.pointerType !== 'touch' || event.button !== 0 || !(event.target instanceof Element)) return;
+      if (event.pointerType === 'touch') activeTouchPointerId = event.pointerId;
+    }, true);
+    const clearActiveTouchPointer = event => {
+      if (event.pointerId === activeTouchPointerId) activeTouchPointerId = null;
+    };
+    document.addEventListener('pointerup', clearActiveTouchPointer, true);
+    document.addEventListener('pointercancel', clearActiveTouchPointer, true);
+    let touchGesture = null;
+    document.addEventListener('touchstart', event => {
+      if (event.touches.length !== 1 || !(event.target instanceof Element)) {
+        touchGesture = null;
+        return;
+      }
+      touchGesture = null;
       if (event.target.closest('a,button,input,textarea,select,[contenteditable="true"],#options-menu,#egg,#guide,.note,.track,.photo,.drive,.arrow')) return;
-      touchGesture = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, claimed: false };
+      const touch = event.touches[0];
+      touchGesture = {
+        identifier: touch.identifier,
+        pointerId: activeTouchPointerId,
+        x: touch.clientX,
+        y: touch.clientY,
+        scrollTop: Math.max(window.scrollY || 0, document.documentElement.scrollTop || 0, document.body.scrollTop || 0),
+        direction: 0,
+        claimed: false
+      };
     }, true);
 
-    document.addEventListener('pointermove', event => {
-      if (!touchGesture || touchGesture.pointerId !== event.pointerId || touchGesture.claimed) return;
-      const deltaX = event.clientX - touchGesture.x;
-      const scrollDistance = touchGesture.y - event.clientY;
-      if (scrollDistance < 80 || scrollDistance <= Math.abs(deltaX) * 1.3) return;
+    document.addEventListener('touchmove', event => {
+      if (!touchGesture || event.touches.length !== 1) return;
+      if (touchGesture.claimed) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        return;
+      }
+      const touch = [...event.touches].find(item => item.identifier === touchGesture.identifier);
+      if (!touch) return;
+      const deltaX = touch.clientX - touchGesture.x;
+      const deltaY = touchGesture.y - touch.clientY;
+      if (Math.abs(deltaY) < 40 || Math.abs(deltaY) <= Math.abs(deltaX) * 1.2) return;
 
+      const direction = Math.sign(deltaY);
+      if (!pagePaths[currentPageIndex + direction] || !isAtScrollBoundary(direction, touchGesture.scrollTop)) return;
+      touchGesture.direction = direction;
       touchGesture.claimed = true;
-      event.target.dispatchEvent(new PointerEvent('pointercancel', {
-        bubbles: true,
-        pointerId: event.pointerId,
-        pointerType: event.pointerType,
-        clientX: event.clientX,
-        clientY: event.clientY
-      }));
+      if (touchGesture.pointerId !== null) {
+        document.dispatchEvent(new PointerEvent('pointercancel', {
+          bubbles: true,
+          pointerId: touchGesture.pointerId,
+          pointerType: 'touch',
+          clientX: touch.clientX,
+          clientY: touch.clientY
+        }));
+      }
       event.preventDefault();
       event.stopImmediatePropagation();
     }, { capture: true, passive: false });
 
-    document.addEventListener('pointerup', event => {
-      if (!touchGesture || touchGesture.pointerId !== event.pointerId) return;
-      const claimed = touchGesture.claimed;
+    document.addEventListener('touchend', event => {
+      if (!touchGesture) return;
+      const ended = [...event.changedTouches].some(touch => touch.identifier === touchGesture.identifier);
+      if (!ended) return;
+      const { direction } = touchGesture;
       touchGesture = null;
-      if (!claimed) return;
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      navigateFromScroll();
+      if (direction) navigateFromScroll(direction);
     }, true);
 
-    document.addEventListener('pointercancel', event => {
-      if (touchGesture?.pointerId === event.pointerId && !touchGesture.claimed) touchGesture = null;
-    }, true);
+    document.addEventListener('touchcancel', () => { touchGesture = null; }, true);
   }
 
   const whenFontsReady = callback => {
