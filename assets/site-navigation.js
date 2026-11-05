@@ -139,7 +139,21 @@
     if (leavingHome && headingHome) return;
 
     if (headingHome) {
-      // Let the browser carry the shared logo and nav into the home document.
+      if (navigationPending) {
+        event.preventDefault();
+        return;
+      }
+      if (reducedMotion.matches) return;
+
+      const logoExpanded = logo.classList.contains('open') || logo.matches(':hover, :focus-visible');
+      if (logoExpanded) {
+        event.preventDefault();
+        navigationPending = true;
+        logo.classList.remove('open');
+        logo.classList.add('nav-collapsing');
+        window.setTimeout(() => window.location.assign(destination.href), 360);
+      }
+      // The browser's cross-document transition carries the logo into home.
       return;
     }
 

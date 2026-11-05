@@ -1,8 +1,8 @@
 .logo{view-transition-name:site-logo}
-#top-nav{view-transition-name:site-nav}
 @view-transition{navigation:auto}
-::view-transition-group(site-logo),
-::view-transition-group(site-nav){animation-duration:.62s}
+::view-transition-group(site-logo){animation-duration:.62s}
+::view-transition-old(root),
+::view-transition-new(root){animation:none}
 .logo{
   position:fixed;z-index:2600;color:var(--ink);mix-blend-mode:difference;
   display:inline-flex;align-items:baseline;width:max-content;max-width:100vw;
@@ -99,6 +99,18 @@ html.fonts-pending #logo,html.fonts-pending #top-nav{visibility:hidden}
   .logo-compact:hover .sep{margin-left:0;margin-right:-.07em}
   .logo-compact:hover .sep .dash{opacity:0;transform:translateY(.3em) scaleX(.35)}
   .logo-compact:hover .sep .dot{opacity:1;transform:none;transition-delay:.08s}
+}
+.logo.nav-collapsing .cs{width:var(--wc);margin-left:0}
+.logo.nav-collapsing .cs .g{opacity:1}
+.logo.nav-collapsing .cs .t{opacity:0}
+.logo.nav-collapsing .seg{grid-template-columns:0fr}
+.logo.nav-collapsing .seg>span{opacity:0;transform:translateX(-.12em)}
+.logo.nav-collapsing .sep{margin-left:.0553em;margin-right:0}
+.logo.nav-collapsing .sep .dash{opacity:1;transform:none}
+.logo.nav-collapsing .sep .dot{opacity:0;transform:translateY(-.28em)}
+.logo.nav-collapsing .cs,.logo.nav-collapsing .seg,.logo.nav-collapsing .sep,
+.logo.nav-collapsing .cs>*,.logo.nav-collapsing .seg>span,.logo.nav-collapsing .sep i{
+  transition-duration:.28s;transition-delay:0s!important;
 }
 .logo:focus-visible{outline:1px solid currentColor;outline-offset:3px}
 
