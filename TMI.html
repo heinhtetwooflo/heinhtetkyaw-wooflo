@@ -630,7 +630,7 @@
 
   /* wheel scrolls the folder sideways */
   track.addEventListener("wheel", function(e){
-    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)){ track.scrollLeft += e.deltaY; e.preventDefault(); }
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)){ track.scrollBy({left:e.deltaY, behavior:"smooth"}); e.preventDefault(); }
   }, { passive: false });
 
   /* drag to scroll with a mouse */
