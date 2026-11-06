@@ -164,9 +164,9 @@
     .row{grid-template-columns:minmax(0,1fr);height:auto;min-height:0;gap:8px;margin-bottom:20px}
     .drive-pair{height:124px}
     .drive{height:100%}
-    .folder{height:156px;max-height:0;overflow:hidden;grid-template-columns:38px minmax(0,1fr) 38px;gap:0;transition:max-height .25s ease,opacity .2s ease,transform .25s var(--ease),visibility 0s .25s}
+    .folder{height:156px;max-height:0;overflow:hidden;grid-template-columns:44px minmax(0,1fr) 44px;gap:0;transition:max-height .25s ease,opacity .2s ease,transform .25s var(--ease),visibility 0s .25s}
     .row.open .folder{max-height:156px;transition:max-height .25s ease,opacity .2s ease,transform .25s var(--ease)}
-    .arrow{width:38px;min-height:48px}
+    .arrow{width:44px;min-height:48px}
     .arrow svg{width:55%;height:48px}
     .track{gap:14px}
     .track figure{flex-basis:clamp(84px,24vw,112px)}
@@ -596,7 +596,8 @@
     measureCycle();
     var first = track.querySelector("figure");
     var step = first ? first.getBoundingClientRect().width + parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap || 0) : 100;
-    track.scrollBy({left:dir * step, behavior:"smooth"});
+    track.scrollLeft += dir * step;
+    loopScroll();
     edges();
   }
   var folderRepeatDelay = null, folderRepeatInterval = null;
@@ -613,8 +614,8 @@
       if (button.setPointerCapture) button.setPointerCapture(e.pointerId);
       go(direction);
       folderRepeatDelay = setTimeout(function(){
-        folderRepeatInterval = setInterval(function(){ go(direction); }, 90);
-      }, 300);
+        folderRepeatInterval = setInterval(function(){ go(direction); }, 150);
+      }, 350);
     });
     button.addEventListener("pointerup", stopFolderArrowRepeat);
     button.addEventListener("pointercancel", stopFolderArrowRepeat);
@@ -630,7 +631,7 @@
 
   /* wheel scrolls the folder sideways */
   track.addEventListener("wheel", function(e){
-    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)){ track.scrollBy({left:e.deltaY, behavior:"smooth"}); e.preventDefault(); }
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)){ track.scrollLeft += e.deltaY; e.preventDefault(); }
   }, { passive: false });
 
   /* drag to scroll with a mouse */
