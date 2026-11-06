@@ -162,7 +162,7 @@ html.nav-page-arrival .logo{view-transition-name:none}
     transition:left .42s cubic-bezier(.2,.7,.25,1),transform .42s cubic-bezier(.2,.7,.25,1);
   }
   @keyframes nav-home-return{from{left:calc(100% - var(--side-gutter,28px) - env(safe-area-inset-right,0px));transform:translateX(-100%)}to{left:50%;transform:translateX(-50%)}}
-  html.nav-home-arrival.nav-home-scaling #top-nav{animation:nav-home-return .42s cubic-bezier(.2,.7,.25,1) .08s both}
+  html.nav-home-arrival #top-nav{animation:nav-home-return .42s cubic-bezier(.2,.7,.25,1) .08s both}
 }
 
 @media (prefers-reduced-motion:reduce){
