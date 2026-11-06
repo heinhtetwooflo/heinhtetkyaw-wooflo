@@ -163,10 +163,13 @@ html.nav-page-arrival .logo{view-transition-name:none}
     transform:translateX(-100%);
     transition:left .42s cubic-bezier(.2,.7,.25,1),transform .42s cubic-bezier(.2,.7,.25,1);
   }
+  @keyframes nav-home-return{from{left:calc(100% - var(--side-gutter,28px) - env(safe-area-inset-right,0px));transform:translateX(-100%)}to{left:50%;transform:translateX(-50%)}}
+  html.nav-home-arrival #top-nav{animation:nav-home-return .3s cubic-bezier(.2,.7,.25,1) both}
 }
 
 @media (prefers-reduced-motion:reduce){
   .logo,.logo * ,#top-nav a{transition:none!important}
+  html.nav-home-arrival #top-nav{animation:none!important}
   ::view-transition-group(site-nav){animation:none!important}
   body.nav-page-cover::after,
   html.nav-page-arrival.nav-page-revealing::after{animation:none!important}
