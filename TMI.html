@@ -372,20 +372,60 @@
     if (index < 0) copy--;
     else if (index >= mediaItems.length) copy++;
     index = (index + mediaItems.length) % mediaItems.length;
-    copy = Math.max(0, Math.min(thumbCopies - 1, copy));
+    if (copy < 0){
+      prependThumbCopy();
+      copy++;
+    }
+    while (copy >= thumbCopies) appendThumbCopy();
     var sequential = index === (previousIndex + 1) % mediaItems.length || index === (previousIndex - 1 + mediaItems.length) % mediaItems.length;
     setMedia(index, copy * mediaItems.length + index);
     centerThumb(copy, index, sequential);
   }
-  for (let copy = 0; copy < thumbCopies; copy++){
+  function createThumbCopy(){
+    var copy = document.createDocumentFragment();
     mediaItems.forEach(function(item, index){
       var button = document.createElement("button"), image = new Image();
       button.type = "button"; button.className = "viewer-thumb"; button.setAttribute("aria-label", item.name);
       button.setAttribute("aria-current", "false");
       image.src = item.url; image.alt = ""; button.appendChild(image);
-      button.addEventListener("click", function(){ showMedia(index, copy); });
-      thumbs.appendChild(button);
+      button.addEventListener("click", function(){
+        var position = Array.prototype.indexOf.call(thumbs.children, button);
+        showMedia(index, Math.floor(position / mediaItems.length));
+      });
+      copy.appendChild(button);
     });
+    return copy;
+  }
+  function appendThumbCopy(){
+    thumbs.appendChild(createThumbCopy());
+    thumbCopies++;
+  }
+  function prependThumbCopy(){
+    var anchor = thumbs.firstElementChild, anchorDistance = Infinity;
+    var viewportCenter = thumbs.getBoundingClientRect().left + thumbs.clientWidth / 2;
+    Array.prototype.forEach.call(thumbs.children, function(button){
+      var bounds = button.getBoundingClientRect(), distance = Math.abs(bounds.left + bounds.width / 2 - viewportCenter);
+      if (distance < anchorDistance){ anchor = button; anchorDistance = distance; }
+    });
+    var anchorLeft = anchor.getBoundingClientRect().left;
+    var oldScrollBehavior = thumbs.style.scrollBehavior, oldOverflowAnchor = thumbs.style.overflowAnchor;
+    thumbs.style.scrollBehavior = "auto";
+    thumbs.style.overflowAnchor = "none";
+    thumbs.insertBefore(createThumbCopy(), thumbs.firstElementChild);
+    thumbs.scrollLeft += anchor.getBoundingClientRect().left - anchorLeft;
+    thumbs.style.scrollBehavior = oldScrollBehavior;
+    thumbs.style.overflowAnchor = oldOverflowAnchor;
+    thumbCopies++;
+    thumbMiddleCopy++;
+    if (activeThumbIndex >= 0) activeThumbIndex += mediaItems.length;
+  }
+  function extendThumbs(){
+    var cycleWidth = thumbAt(1, 0).offsetLeft - thumbAt(0, 0).offsetLeft;
+    if (thumbs.scrollLeft < cycleWidth) prependThumbCopy();
+    else if (thumbs.scrollWidth - thumbs.clientWidth - thumbs.scrollLeft < cycleWidth) appendThumbCopy();
+  }
+  for (let copy = 0; copy < thumbCopies; copy++){
+    thumbs.appendChild(createThumbCopy());
   }
   function openViewer(index){ viewerReturnFocus = document.activeElement; showMedia(index); viewer.classList.add("open"); viewer.setAttribute("aria-hidden","false"); document.body.style.overflow = "hidden"; viewer.querySelector(".viewer-close").focus(); }
   function closeViewer(){ if (!viewer.classList.contains("open")) return; stopViewerNavRepeat(); viewer.classList.remove("open"); viewer.setAttribute("aria-hidden","true"); document.body.style.overflow = ""; if (viewerReturnFocus) viewerReturnFocus.focus(); }
@@ -399,20 +439,11 @@
         if (delta < distance){ distance = delta; nearest = i; }
       });
       var copy = Math.floor(nearest / mediaItems.length), index = nearest % mediaItems.length;
-      if (copy === 0 || copy === thumbCopies - 1){
-        var currentThumb = thumbAt(copy, index), middleThumb = thumbAt(thumbMiddleCopy, index);
-        if (currentThumb && middleThumb){
-          var offset = middleThumb.offsetLeft - currentThumb.offsetLeft;
-          thumbs.style.scrollBehavior = "auto";
-          thumbs.scrollLeft += offset;
-          thumbs.style.scrollBehavior = "";
-        }
-        nearest = thumbMiddleCopy * mediaItems.length + index;
-      }
       setMedia(index, nearest);
     });
   }
   thumbs.addEventListener("scroll", function(){
+    extendThumbs();
     if (suppressThumbSelection) deferThumbScrollRelease();
     else syncThumbSelection();
   }, {passive:true});
