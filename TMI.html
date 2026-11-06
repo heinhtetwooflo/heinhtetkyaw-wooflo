@@ -313,7 +313,7 @@
   var driveButtons = [], built = false, centered = false, cycleWidth = 0;
   var viewer = document.getElementById("media-viewer"), imageWrap = viewer.querySelector(".viewer-image-wrap"), viewerName = viewer.querySelector(".viewer-name"), thumbs = viewer.querySelector(".viewer-thumbnails");
   var viewerIndex = -1, activeThumbIndex = -1, viewerReturnFocus = null, thumbSelectionFrame = null, thumbScrollReleaseTimer = null, suppressThumbSelection = false, mediaLoadRequest = 0;
-  var thumbCopies = 3, thumbMiddleCopy = 1;
+  var thumbCopies = 5, thumbMiddleCopy = 2;
   var mediaItems = files.map(function(file){ return { file:file, name:file.replace(/\.(?:png|webp|jpe?g)$/i, ""), url:src("Movies and Song/" + file) }; });
   var mediaImages = mediaItems.map(function(item){ var image = new Image(); image.className = "viewer-image"; image.alt = item.name; image.draggable = false; image.decoding = "async"; image.src = item.url; return image; });
   mediaImages.forEach(function(image){ imageWrap.appendChild(image); });
@@ -366,23 +366,24 @@
     }
     thumbs.scrollTo({left:button.offsetLeft + button.offsetWidth / 2 - thumbs.clientWidth / 2, behavior:smooth ? "smooth" : "auto"});
   }
-  function showMedia(index){
+  function showMedia(index, targetCopy){
     var previousIndex = viewerIndex;
-    var copy = thumbMiddleCopy;
+    var copy = typeof targetCopy === "number" ? targetCopy : (activeThumbIndex >= 0 ? Math.floor(activeThumbIndex / mediaItems.length) : thumbMiddleCopy);
     if (index < 0) copy--;
     else if (index >= mediaItems.length) copy++;
     index = (index + mediaItems.length) % mediaItems.length;
+    copy = Math.max(0, Math.min(thumbCopies - 1, copy));
     var sequential = index === (previousIndex + 1) % mediaItems.length || index === (previousIndex - 1 + mediaItems.length) % mediaItems.length;
     setMedia(index, copy * mediaItems.length + index);
     centerThumb(copy, index, sequential);
   }
-  for (var copy = 0; copy < thumbCopies; copy++){
+  for (let copy = 0; copy < thumbCopies; copy++){
     mediaItems.forEach(function(item, index){
       var button = document.createElement("button"), image = new Image();
       button.type = "button"; button.className = "viewer-thumb"; button.setAttribute("aria-label", item.name);
       button.setAttribute("aria-current", "false");
       image.src = item.url; image.alt = ""; button.appendChild(image);
-      button.addEventListener("click", function(){ showMedia(index); });
+      button.addEventListener("click", function(){ showMedia(index, copy); });
       thumbs.appendChild(button);
     });
   }
@@ -398,7 +399,7 @@
         if (delta < distance){ distance = delta; nearest = i; }
       });
       var copy = Math.floor(nearest / mediaItems.length), index = nearest % mediaItems.length;
-      if (copy !== thumbMiddleCopy){
+      if (copy === 0 || copy === thumbCopies - 1){
         var currentThumb = thumbAt(copy, index), middleThumb = thumbAt(thumbMiddleCopy, index);
         if (currentThumb && middleThumb){
           var offset = middleThumb.offsetLeft - currentThumb.offsetLeft;
