@@ -122,7 +122,9 @@
     h1{left:var(--side-gutter);right:var(--side-gutter);bottom:calc(80px + env(safe-area-inset-bottom,0px));font-size:18px;text-align:center}
     #egg img{width:min(42vw,34vh)}
   }
-  .circle-choice{border-color:rgba(20,20,19,.52)}
+  .circle-choice{color:#4D4D4D;border-color:rgba(77,77,77,.52)}
+  .circle-choice:hover{border-color:#4D4D4D}
+  .circle-choice[aria-checked="true"]{background:#4D4D4D;border-color:#4D4D4D;color:#fff}
   #fill-preview{border-color:rgba(20,20,19,.62);background:rgba(20,20,19,.035)}
   #cursor-mark svg{stroke:var(--ink)}
   #cursor-mark.over-logo{opacity:0}
