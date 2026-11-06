@@ -47,7 +47,7 @@
     --ease:cubic-bezier(.3,.7,.15,1);
     --spring:cubic-bezier(.2,1.35,.35,1);
     --brain-float-rest:-8px;
-    --brain-float-peak:-36px;
+    --brain-float-peak:-28px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html.fonts-pending body{visibility:hidden}
@@ -85,7 +85,7 @@
   #figure .face-shift,#figure .brain-shift{transform-box:fill-box;transform-origin:center;transition:transform .65s var(--spring)}
   #figure.lift-brain .brain-shift{transform:translateY(-28px) rotate(-1.5deg)}
   #figure.drop-face  .face-shift {transform:translateY(28px)}
-  #figure .brain-bob{transform-box:fill-box;transform-origin:center;animation:bob 4.8s cubic-bezier(.37,0,.63,1) infinite}
+  #figure .brain-bob{transform-box:fill-box;transform-origin:center;animation:bob 3.8s cubic-bezier(.37,0,.63,1) infinite}
   @keyframes bob{
     0%,100%{transform:translateY(var(--brain-float-rest)) rotate(-.1deg)}
     50%{transform:translateY(var(--brain-float-peak)) rotate(.2deg)}
@@ -108,7 +108,7 @@
   @media (max-width:600px){
     :root{
       --brain-float-rest:-10px;
-      --brain-float-peak:-48px;
+      --brain-float-peak:-36px;
     }
     main{padding:0 var(--side-gutter)}
     #figure{top:calc(50% - 38px);width:min(46vw,37vh)}
