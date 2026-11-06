@@ -141,7 +141,7 @@
   @media (max-width:600px){
     #media-viewer{padding:12px}
     .viewer-panel{width:100%;height:min(78vh,720px);height:min(78dvh,720px);padding:14px;gap:10px}
-    .viewer-stage{grid-template-columns:30px minmax(0,1fr) 30px;gap:16px}
+    .viewer-stage{grid-template-columns:44px minmax(0,1fr) 44px;gap:8px}
     .viewer-thumbnails{gap:6px}.viewer-thumb{height:52px;padding:3px}.viewer-thumb img{max-width:88px;max-height:44px}
   }
 
@@ -360,11 +360,13 @@
   function centerThumb(copy, index, smooth){
     var button = thumbAt(copy, index);
     if (!button) return;
+    var thumbBounds = button.getBoundingClientRect(), trackBounds = thumbs.getBoundingClientRect();
+    var left = thumbs.scrollLeft + thumbBounds.left + thumbBounds.width / 2 - (trackBounds.left + thumbs.clientWidth / 2);
     if (smooth){
       suppressThumbSelection = true;
       deferThumbScrollRelease();
     }
-    thumbs.scrollTo({left:button.offsetLeft + button.offsetWidth / 2 - thumbs.clientWidth / 2, behavior:smooth ? "smooth" : "auto"});
+    thumbs.scrollTo({left:left, behavior:smooth ? "smooth" : "auto"});
   }
   function showMedia(index, targetCopy){
     var previousIndex = viewerIndex;
@@ -495,6 +497,7 @@
       stopViewerNavRepeat();
       if (button.setPointerCapture) button.setPointerCapture(e.pointerId);
       showMedia(viewerIndex + direction);
+      if (e.pointerType !== "mouse") return;
       navRepeatDelay = setTimeout(function(){
         navRepeatInterval = setInterval(function(){ showMedia(viewerIndex + direction); }, 90);
       }, 300);
