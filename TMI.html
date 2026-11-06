@@ -497,7 +497,6 @@
       stopViewerNavRepeat();
       if (button.setPointerCapture) button.setPointerCapture(e.pointerId);
       showMedia(viewerIndex + direction);
-      if (e.pointerType !== "mouse") return;
       navRepeatDelay = setTimeout(function(){
         navRepeatInterval = setInterval(function(){ showMedia(viewerIndex + direction); }, 90);
       }, 300);
