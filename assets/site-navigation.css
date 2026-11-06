@@ -1,13 +1,9 @@
 .logo{view-transition-name:site-logo}
-#top-nav{view-transition-name:site-nav}
 :root{--home-logo-top:calc(50% - 16px)}
 @view-transition{navigation:auto}
 ::view-transition-group(site-logo){animation-duration:.62s}
-::view-transition-group(site-nav){animation-duration:.42s;animation-timing-function:cubic-bezier(.2,.7,.25,1)}
 ::view-transition-old(root),
 ::view-transition-new(root){animation:none}
-::view-transition-old(site-nav),
-::view-transition-new(site-nav){animation:none}
 .logo{
   position:fixed;z-index:2600;color:var(--ink);mix-blend-mode:difference;
   display:inline-flex;align-items:baseline;width:max-content;max-width:100vw;
@@ -172,7 +168,6 @@ html.nav-page-arrival .logo{view-transition-name:none}
 @media (prefers-reduced-motion:reduce){
   .logo,.logo * ,#top-nav a{transition:none!important}
   html.nav-home-arrival #top-nav{animation:none!important}
-  ::view-transition-group(site-nav){animation:none!important}
   body.nav-page-cover::after,
   html.nav-page-arrival.nav-page-revealing::after{animation:none!important}
 }
