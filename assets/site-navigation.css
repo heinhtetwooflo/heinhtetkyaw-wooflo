@@ -153,7 +153,7 @@ html.nav-page-arrival .logo{view-transition-name:none}
     .logo-compact:hover .sep .dot{transform:none;transition-delay:0s}
   }
   .logo-compact{--logo-size:34px;top:calc(var(--nav-inset) + var(--logo-nav-offset) + env(safe-area-inset-top,0px))}
-  #top-nav{top:calc(var(--nav-inset) + env(safe-area-inset-top,0px));gap:clamp(28px,8vw,40px)}
+  #top-nav{top:calc(var(--nav-inset) + env(safe-area-inset-top,0px));left:calc(var(--side-gutter,28px) + env(safe-area-inset-left,0px));gap:clamp(24px,6vw,32px);transform:none}
   #top-nav a{font-size:18px;padding:10px 0}
 }
 
