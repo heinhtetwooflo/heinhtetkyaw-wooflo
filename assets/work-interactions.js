@@ -145,9 +145,10 @@
 
   const DTMF_LOW = [697, 697, 697, 770, 770, 770, 852, 852, 852, 941, 941, 941];
   const DTMF_HIGH = [1209, 1336, 1477, 1209, 1336, 1477, 1209, 1336, 1477, 1209, 1336, 1477];
+  const DIAL_DEMO = [4, 4, 4, 10, 0, 1, 2, 3];
 
   // B: telephone keypad tones use the standard dual-frequency DTMF pairs.
-  function phoneTone(key, { vol = .1, dur = .12, pan = 0, delay = 0, force = false } = {}) {
+  function phoneTone(key, { vol = .18, dur = .12, pan = 0, delay = 0, force = false } = {}) {
     if (!ctx || muted || (voices > 14 && !force)) return;
     voices++;
     const t = ctx.currentTime + delay;
@@ -164,7 +165,7 @@
     amp.connect(send); send.connect(echoSend);
     row.start(t); column.start(t); row.stop(t + dur + .02); column.stop(t + dur + .02);
     row.onended = () => { voices--; try { send.disconnect(); amp.disconnect(); } catch (_) {} };
-    tickClick(t, vol * .2, pan);
+    tickClick(t, vol * .5, pan);
   }
 
   // C: warm wooden marimba pluck. Sine body + a quickly-fading bar overtone (~4x) + a soft mallet "tok".
@@ -202,11 +203,10 @@
 
   function phoneBurst(x, y) {
     if (!ctx || muted) return;
-    const p = panFromX(x), sequence = [1, 4, 7, 5, 0, 2, 8, 6];
-    const count = lowPower ? 4 : sequence.length;
+    const p = panFromX(x), count = lowPower ? 4 : DIAL_DEMO.length;
     for (let i = 0; i < count; i++) {
-      phoneTone(sequence[i], {
-        vol: .1, dur: .085, pan: clamp(p + (i % 2 ? .12 : -.12), -1, 1), delay: i * .12
+      phoneTone(DIAL_DEMO[i], {
+        vol: .18, dur: .1, pan: clamp(p + (i % 2 ? .12 : -.12), -1, 1), delay: i * .16
       });
     }
   }
@@ -217,14 +217,14 @@
       if (now - lastDraw < 40) return; lastDraw = now;
       const degree = degreeOverride === null ? degFromY(y) : degreeOverride;
       const f = freqFromDeg(degree) * 2, p = panFromX(x);
-      if (phoneSfx) phoneTone(degree, { vol: .1, dur: .12, pan: p });
+      if (phoneSfx) phoneTone(degree, { vol: .18, dur: .12, pan: p });
       else if (nostalgiaSfx) woodTone(f, { vol: .17, dur: .26, pan: p });
       else ping(f, { vol: .18, dur: .12, pan: p, ratio: 2, index: 1.6, send: .3 });
     },
     tap(x, y, extra = 0) {
       const p = panFromX(x);
       const f = freqFromDeg(clamp(degFromY(y) + 3 + extra * 2, 0, DEGREES + 8));
-      if (phoneSfx) phoneTone(degFromY(y) + 3 + extra * 2, { vol: .14, dur: .13, pan: p });
+      if (phoneSfx) phoneTone(degFromY(y) + 3 + extra * 2, { vol: .22, dur: .13, pan: p });
       else if (nostalgiaSfx) {
         woodTone(f * 2, { vol: .22, dur: .3, pan: p });
         woodTone(f * 3, { vol: .13, dur: .24, pan: p, delay: .05, tok: false });
@@ -237,20 +237,20 @@
     peel(n, force = false) {
       const now = performance.now();
       if (now - lastPeelSnd < 35 && !n.moved && !force) return; lastPeelSnd = now;
-      if (phoneSfx) phoneTone(n.deg, { vol: .06, dur: .08, pan: panFromX(n.x), force: force || n.moved });
+      if (phoneSfx) phoneTone(n.deg, { vol: .07, dur: .08, pan: panFromX(n.x), force: force || n.moved });
       else if (nostalgiaSfx) woodTone(freqFromDeg(n.deg) * 2, { vol: .07, dur: .14, pan: panFromX(n.x), send: .1, tok: false, force: force || n.moved });
       else ping(freqFromDeg(n.deg) * 2, { vol: .07, dur: .08, pan: panFromX(n.x), ratio: 2, index: 1, click: false, send: .15, lp: 5000, force: force || n.moved });
     },
     // picking a sticker up lifts a fifth above its note; dropping it settles back onto the note
     pickup(n) {
       const f = freqFromDeg(n.deg) * 2, p = panFromX(n.x);
-      if (phoneSfx) phoneTone(n.deg + 4, { vol: .08, dur: .09, pan: p, force: true });
+      if (phoneSfx) phoneTone(n.deg + 4, { vol: .12, dur: .09, pan: p, force: true });
       else if (nostalgiaSfx) woodTone(f * 1.5, { vol: .09, dur: .1, pan: p, send: .1, tok: false, force: true });
       else ping(f * 1.5, { vol: .09, dur: .08, pan: p, ratio: 2, index: 1, send: .15, force: true });
     },
     drop(n) {
       const f = freqFromDeg(n.deg) * 2, p = panFromX(n.x);
-      if (phoneSfx) phoneTone(n.deg, { vol: .1, dur: .11, pan: p, force: true });
+      if (phoneSfx) phoneTone(n.deg, { vol: .16, dur: .11, pan: p, force: true });
       else if (nostalgiaSfx) woodTone(f, { vol: .12, dur: .18, pan: p, send: .15, force: true });
       else { thock(p, .1); ping(f, { vol: .1, dur: .11, pan: p, ratio: 2, index: 1.2, send: .2, force: true }); }
     },
@@ -283,7 +283,7 @@
       const now = performance.now();
       if (now - lastClack < 35) return; lastClack = now;
       const f = freqFromDeg(n.deg) * 2, p = panFromX(n.x), v = .05 + .08 * clamp(strength, 0, 1);
-      if (phoneSfx) phoneTone(n.deg, { vol: v, dur: .07, pan: p });
+      if (phoneSfx) phoneTone(n.deg, { vol: v * 1.4, dur: .07, pan: p });
       else if (nostalgiaSfx) woodTone(f * 1.5, { vol: v * 1.2, dur: .08, pan: p, send: .08 });
       else ping(f * 1.5, { vol: v * 1.4, dur: .06, pan: p, ratio: 2, index: .6, send: .1 });
     },
@@ -371,7 +371,7 @@
       phoneSfx = nextMode === 'phone';
       nostalgiaSfx = nextMode === 'wood';
       document.querySelectorAll('.sound-choice').forEach(option => option.setAttribute('aria-checked', String(option === choice)));
-      if (phoneSfx) phoneTone(4, { vol: .15, dur: .18 });
+      if (phoneSfx) phoneBurst(innerWidth / 2, innerHeight / 2);
       else if (nostalgiaSfx) woodTone(660, { vol: .17, dur: .26 });
       else ping(880, { vol: .12, dur: .18, ratio: 2.4, index: 1.8 });
     });
