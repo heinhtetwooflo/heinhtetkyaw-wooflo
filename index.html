@@ -319,7 +319,7 @@
   <button id="timer" type="button" aria-label="Start the looping 30-second countdown and timed pop-up" aria-pressed="false">30:000:00</button>
   <button id="options-toggle" type="button" aria-label="Open sound and sticker settings" aria-expanded="false" aria-controls="options-menu"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path class="dropdown-caret" d="M4 7h12l-6 6z"/></svg></button>
   <div id="options-menu" aria-hidden="true">
-    <div class="option-row"><button id="screen-saver-toggle" class="circle-choice" type="button" role="switch" aria-checked="false" aria-label="Start screen saver" title="Start screen saver"><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path class="saver-play" d="M3 1.5 10 6l-7 4.5z"/><path class="saver-stop" d="M3 3h6v6H3z"/></svg></button><button id="ice-toggle" class="circle-choice" type="button" role="switch" aria-checked="false" aria-label="Ice hockey mode: sliding pucks" title="Ice hockey mode"><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><ellipse cx="6" cy="4.6" rx="4.6" ry="2"/><path d="M1.4 4.6v2.8c0 1.1 2 2 4.6 2s4.6-.9 4.6-2V4.6"/></svg></button><div id="sound-options" class="choice-group" role="radiogroup" aria-label="Sound effect set"><button class="circle-choice sound-choice" type="button" role="radio" data-mode="glassy" aria-checked="true" aria-label="A: glass sound set">A</button><button class="circle-choice sound-choice" type="button" role="radio" data-mode="alien" aria-checked="false" aria-label="B: alien sound set">B</button><button class="circle-choice sound-choice" type="button" role="radio" data-mode="wood" aria-checked="false" aria-label="C: wooden marimba sound set">C</button></div></div>
+    <div class="option-row"><button id="screen-saver-toggle" class="circle-choice" type="button" role="switch" aria-checked="false" aria-label="Start screen saver" title="Start screen saver"><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path class="saver-play" d="M3 1.5 10 6l-7 4.5z"/><path class="saver-stop" d="M3 3h6v6H3z"/></svg></button><button id="ice-toggle" class="circle-choice" type="button" role="switch" aria-checked="false" aria-label="Ice hockey mode: sliding pucks" title="Ice hockey mode"><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><ellipse cx="6" cy="4.6" rx="4.6" ry="2"/><path d="M1.4 4.6v2.8c0 1.1 2 2 4.6 2s4.6-.9 4.6-2V4.6"/></svg></button><div id="sound-options" class="choice-group" role="radiogroup" aria-label="Sound effect set"><button class="circle-choice sound-choice" type="button" role="radio" data-mode="glassy" aria-checked="true" aria-label="A: glass sound set">A</button><button class="circle-choice sound-choice" type="button" role="radio" data-mode="phone" aria-checked="false" aria-label="B: telephone dial sound set">B</button><button class="circle-choice sound-choice" type="button" role="radio" data-mode="wood" aria-checked="false" aria-label="C: wooden marimba sound set">C</button></div></div>
     <div class="option-row"><div id="sticker-size-control" class="choice-group" role="radiogroup" data-level="0" aria-label="Sticker scale"><button class="circle-choice size-choice" type="button" role="radio" data-scale-level="0" aria-checked="true" aria-label="Small">S</button><button class="circle-choice size-choice" type="button" role="radio" data-scale-level="1" aria-checked="false" aria-label="Medium">M</button><button class="circle-choice size-choice" type="button" role="radio" data-scale-level="2" aria-checked="false" aria-label="Large">L</button><button class="circle-choice size-choice" type="button" role="radio" data-scale-level="3" aria-checked="false" aria-label="Extra large">XL</button></div></div>
     <div class="option-row" id="mobile-utility-controls"></div>
   </div>
@@ -388,13 +388,12 @@
   const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
 
   /* =========================================================
-     SOUND — little Y2K sci-fi synth. Pitch follows height on
-     screen (quantised to a pentatonic scale), so drawing,
-     tapping and even the notes peeling away play tunes.
+     SOUND — three synthesized palettes. The active set colors
+     drawing, tapping and even the notes peeling away.
      ========================================================= */
   const AC = window.AudioContext || window.webkitAudioContext;
   let ctx = null, master = null, echoSend = null, noiseBuf = null;
-  let muted = false, alienSfx = false, nostalgiaSfx = false, voices = 0, lastDraw = 0, lastPeelSnd = 0, lastClack = 0, lastGlide = 0;
+  let muted = false, phoneSfx = false, nostalgiaSfx = false, voices = 0, lastDraw = 0, lastPeelSnd = 0, lastClack = 0, lastGlide = 0;
   const SCALE = [0, 2, 4, 7, 9];            // major pentatonic, floaty
   const DEGREES = 15;                        // three octaves
 
@@ -517,37 +516,32 @@
     o.connect(g); g.connect(master); o.start(t); o.stop(t + .3);
   }
 
-  // sharper alien palette: clipped FM chirps, metallic noise ticks and a tight spectral snap
-  function alienZap(freq, { vol = .08, dur = .09, pan = 0, bend = 1.8, delay = 0, force = false } = {}) {
+  const DTMF_LOW = [697, 697, 697, 770, 770, 770, 852, 852, 852, 941, 941, 941];
+  const DTMF_HIGH = [1209, 1336, 1477, 1209, 1336, 1477, 1209, 1336, 1477, 1209, 1336, 1477];
+
+  // B: telephone keypad tones use the standard dual-frequency DTMF pairs.
+  function phoneTone(key, { vol = .1, dur = .12, pan = 0, delay = 0, force = false } = {}) {
     if (!ctx || muted || (voices > 14 && !force)) return;
     voices++;
     const t = ctx.currentTime + delay;
-    const carrier = ctx.createOscillator(), mod = ctx.createOscillator();
-    const modGain = ctx.createGain(), amp = ctx.createGain(), filter = ctx.createBiquadFilter();
-    carrier.type = 'sawtooth'; mod.type = 'square';
-    carrier.frequency.setValueAtTime(freq * bend, t);
-    carrier.frequency.exponentialRampToValueAtTime(Math.max(90, freq * .72), t + dur);
-    mod.frequency.setValueAtTime(freq * 2.7, t);
-    mod.frequency.exponentialRampToValueAtTime(freq * .45, t + dur * .65);
-    modGain.gain.setValueAtTime(freq * 1.2, t);
-    modGain.gain.exponentialRampToValueAtTime(freq * .03, t + dur * .6);
+    const i = ((Math.round(key) % 12) + 12) % 12;
+    const row = ctx.createOscillator(), column = ctx.createOscillator(), amp = ctx.createGain();
+    const send = ctx.createGain();
+    row.type = 'sine'; column.type = 'sine';
+    row.frequency.value = DTMF_LOW[i]; column.frequency.value = DTMF_HIGH[i];
     amp.gain.setValueAtTime(.0001, t);
-    amp.gain.exponentialRampToValueAtTime(Math.min(vol * 2.2, .32), t + .001);
+    amp.gain.exponentialRampToValueAtTime(vol, t + .004);
     amp.gain.exponentialRampToValueAtTime(.0001, t + dur);
-    filter.type = 'bandpass'; filter.Q.value = 7;
-    filter.frequency.setValueAtTime(Math.min(12000, freq * 5), t);
-    filter.frequency.exponentialRampToValueAtTime(Math.max(500, freq * 1.3), t + dur);
-    mod.connect(modGain); modGain.connect(carrier.frequency); carrier.connect(amp); amp.connect(filter);
-    filter.connect(outNode(pan));
-    amp.connect(outNode(pan));
-    const send = ctx.createGain(); send.gain.value = .12; filter.connect(send); send.connect(echoSend);
-    carrier.start(t); mod.start(t); carrier.stop(t + dur + .02); mod.stop(t + dur + .02);
-    carrier.onended = () => { voices--; try { send.disconnect(); filter.disconnect(); } catch (_) {} };
-    tickClick(t, vol * .8, pan);
+    send.gain.value = .08;
+    row.connect(amp); column.connect(amp); amp.connect(outNode(pan));
+    amp.connect(send); send.connect(echoSend);
+    row.start(t); column.start(t); row.stop(t + dur + .02); column.stop(t + dur + .02);
+    row.onended = () => { voices--; try { send.disconnect(); amp.disconnect(); } catch (_) {} };
+    tickClick(t, vol * .2, pan);
   }
 
   // C: warm wooden marimba pluck. Sine body + a quickly-fading bar overtone (~4x) + a soft mallet "tok".
-  // Round and acoustic, so it sits apart from A's glassy FM pings and B's harsh saw/square zaps.
+  // Round and acoustic, so it sits apart from A's glassy pings and B's telephone tones.
   function woodTone(freq, { vol = .15, dur = .22, pan = 0, delay = 0, send = .2, tok = true, force = false } = {}) {
     if (!ctx || muted || (voices > 14 && !force)) return;
     voices++;
@@ -579,19 +573,13 @@
     body.onended = () => { voices--; try { sg.disconnect(); lp.disconnect(); } catch (_) {} };
   }
 
-  function alienBurst(x, y) {
+  function phoneBurst(x, y) {
     if (!ctx || muted) return;
-    const p = panFromX(x), base = freqFromDeg(degFromY(y) + 7) * 2;
-    // a short descending impact followed by irregular, high metallic fragments
-    impact();
-    alienZap(110, { vol: .2, dur: .24, pan: p, bend: 2.8 });
-    sweep(.3, .09);
-    const fragments = lowPower ? 4 : 8;
-    for (let i = 0; i < fragments; i++) {
-      alienZap(base * (1 + i * .19 + Math.random() * .2), {
-        vol: .09, dur: .1 + Math.random() * .05,
-        pan: clamp(p + rand(-.55, .55), -1, 1), bend: 1.3 + Math.random() * 1.2,
-        delay: .025 + i * .035
+    const p = panFromX(x), sequence = [1, 4, 7, 5, 0, 2, 8, 6];
+    const count = lowPower ? 4 : sequence.length;
+    for (let i = 0; i < count; i++) {
+      phoneTone(sequence[i], {
+        vol: .1, dur: .085, pan: clamp(p + (i % 2 ? .12 : -.12), -1, 1), delay: i * .12
       });
     }
   }
@@ -602,14 +590,14 @@
       if (now - lastDraw < 40) return; lastDraw = now;
       const degree = degreeOverride === null ? degFromY(y) : degreeOverride;
       const f = freqFromDeg(degree) * 2, p = panFromX(x);
-      if (alienSfx) alienZap(f * 1.4, { vol: .09, dur: .11, pan: p, bend: 2.2 });
+      if (phoneSfx) phoneTone(degree, { vol: .1, dur: .12, pan: p });
       else if (nostalgiaSfx) woodTone(f, { vol: .17, dur: .26, pan: p });
       else ping(f, { vol: .18, dur: .12, pan: p, ratio: 2, index: 1.6, send: .3 });
     },
     tap(x, y, extra = 0) {
       const p = panFromX(x);
       const f = freqFromDeg(clamp(degFromY(y) + 3 + extra * 2, 0, DEGREES + 8));
-      if (alienSfx) alienZap(f * 3.2, { vol: .14, dur: .12, pan: p, bend: 2.5 });
+      if (phoneSfx) phoneTone(degFromY(y) + 3 + extra * 2, { vol: .14, dur: .13, pan: p });
       else if (nostalgiaSfx) {
         woodTone(f * 2, { vol: .22, dur: .3, pan: p });
         woodTone(f * 3, { vol: .13, dur: .24, pan: p, delay: .05, tok: false });
@@ -622,20 +610,20 @@
     peel(n, force = false) {
       const now = performance.now();
       if (now - lastPeelSnd < 35 && !n.moved && !force) return; lastPeelSnd = now;
-      if (alienSfx) alienZap(freqFromDeg(n.deg) * 2.5, { vol: .045, dur: .075, pan: panFromX(n.x), bend: .75, force: force || n.moved });
+      if (phoneSfx) phoneTone(n.deg, { vol: .06, dur: .08, pan: panFromX(n.x), force: force || n.moved });
       else if (nostalgiaSfx) woodTone(freqFromDeg(n.deg) * 2, { vol: .07, dur: .14, pan: panFromX(n.x), send: .1, tok: false, force: force || n.moved });
       else ping(freqFromDeg(n.deg) * 2, { vol: .07, dur: .08, pan: panFromX(n.x), ratio: 2, index: 1, click: false, send: .15, lp: 5000, force: force || n.moved });
     },
     // picking a sticker up lifts a fifth above its note; dropping it settles back onto the note
     pickup(n) {
       const f = freqFromDeg(n.deg) * 2, p = panFromX(n.x);
-      if (alienSfx) alienZap(f * 1.5, { vol: .06, dur: .06, pan: p, bend: 1.2, force: true });
+      if (phoneSfx) phoneTone(n.deg + 4, { vol: .08, dur: .09, pan: p, force: true });
       else if (nostalgiaSfx) woodTone(f * 1.5, { vol: .09, dur: .1, pan: p, send: .1, tok: false, force: true });
       else ping(f * 1.5, { vol: .09, dur: .08, pan: p, ratio: 2, index: 1, send: .15, force: true });
     },
     drop(n) {
       const f = freqFromDeg(n.deg) * 2, p = panFromX(n.x);
-      if (alienSfx) alienZap(f, { vol: .07, dur: .09, pan: p, bend: 2.4, force: true });
+      if (phoneSfx) phoneTone(n.deg, { vol: .1, dur: .11, pan: p, force: true });
       else if (nostalgiaSfx) woodTone(f, { vol: .12, dur: .18, pan: p, send: .15, force: true });
       else { thock(p, .1); ping(f, { vol: .1, dur: .11, pan: p, ratio: 2, index: 1.2, send: .2, force: true }); }
     },
@@ -646,16 +634,16 @@
       n._gi = (n._gi || 0) + 1;
       const deg = clamp(n.deg + [0, 2, 1, 3][n._gi % 4], 0, DEGREES + 4);
       const f = freqFromDeg(deg) * 2, p = panFromX(n.x), v = .03 + .04 * clamp(speed, 0, 1);
-      if (alienSfx) alienZap(f * 1.2, { vol: v * .6, dur: .06, pan: p, bend: .9 });
+      if (phoneSfx) phoneTone(n.deg + n._gi, { vol: v, dur: .08, pan: p });
       else if (nostalgiaSfx) woodTone(f, { vol: v * 1.4, dur: .12, pan: p, send: .12, tok: false });
       else ping(f, { vol: v * 1.6, dur: .08, pan: p, ratio: 2, index: .8, click: false, send: .2, lp: 6000 });
     },
     // tapping the egg: a shell cracks (three uneven snaps), then a little pop in the active set's voice
     crack() {
+      if (phoneSfx) { phoneTone(9, { vol: .12, dur: .16, force: true }); return; }
       snap(0, 3600, .22, .02); snap(.04, 2600, .17, .022); snap(.075, 4300, .11, .016);
       const f = freqFromDeg(9) * 2;
-      if (alienSfx) alienZap(f * 1.5, { vol: .07, dur: .16, bend: 2.6, delay: .09, force: true });
-      else if (nostalgiaSfx) {
+      if (nostalgiaSfx) {
         woodTone(f, { vol: .14, dur: .2, delay: .09, force: true });
         woodTone(f * 1.5, { vol: .1, dur: .2, delay: .14, tok: false, force: true });
       } else {
@@ -668,13 +656,13 @@
       const now = performance.now();
       if (now - lastClack < 35) return; lastClack = now;
       const f = freqFromDeg(n.deg) * 2, p = panFromX(n.x), v = .05 + .08 * clamp(strength, 0, 1);
-      if (alienSfx) alienZap(f * 1.5, { vol: v * .8, dur: .045, pan: p, bend: 1.3 });
+      if (phoneSfx) phoneTone(n.deg, { vol: v, dur: .07, pan: p });
       else if (nostalgiaSfx) woodTone(f * 1.5, { vol: v * 1.2, dur: .08, pan: p, send: .08 });
       else ping(f * 1.5, { vol: v * 1.4, dur: .06, pan: p, ratio: 2, index: .6, send: .1 });
     },
     burst(x, y) {
       const p = panFromX(x);
-      if (alienSfx) { alienBurst(x, y); return; }
+      if (phoneSfx) { phoneBurst(x, y); return; }
       if (nostalgiaSfx) {
         // soft low thump, then a rolling marimba run climbing up the scale
         impact(.3);
@@ -700,18 +688,17 @@
   function startCharge() {
     if (!ctx || muted) return () => {};
     const t = ctx.currentTime;
-    if (alienSfx) {
-      const osc = ctx.createOscillator(), filter = ctx.createBiquadFilter(), gain = ctx.createGain();
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(180, t); osc.frequency.exponentialRampToValueAtTime(5200, t + .48);
-      filter.type = 'bandpass'; filter.Q.value = 11;
-      filter.frequency.setValueAtTime(420, t); filter.frequency.exponentialRampToValueAtTime(7800, t + .48);
-      gain.gain.setValueAtTime(.0001, t); gain.gain.exponentialRampToValueAtTime(.035, t + .04);
-      osc.connect(filter); filter.connect(gain); gain.connect(master); osc.start(t);
+    if (phoneSfx) {
+      const low = ctx.createOscillator(), high = ctx.createOscillator(), gain = ctx.createGain();
+      low.type = 'sine'; high.type = 'sine';
+      low.frequency.value = 350; high.frequency.value = 440;
+      gain.gain.setValueAtTime(.0001, t); gain.gain.exponentialRampToValueAtTime(.025, t + .08);
+      low.connect(gain); high.connect(gain); gain.connect(master);
+      low.start(t); high.start(t);
       return () => {
         const n = ctx.currentTime;
         try { gain.gain.cancelScheduledValues(n); gain.gain.setValueAtTime(Math.max(gain.gain.value, .0001), n);
-              gain.gain.exponentialRampToValueAtTime(.0001, n + .04); osc.stop(n + .06); } catch (_) {}
+              gain.gain.exponentialRampToValueAtTime(.0001, n + .04); low.stop(n + .06); high.stop(n + .06); } catch (_) {}
       };
     }
     if (nostalgiaSfx) {
@@ -752,12 +739,12 @@
   document.querySelectorAll('.sound-choice').forEach(choice => {
     choice.addEventListener('click', () => {
       const nextMode = choice.dataset.mode;
-      if ((nextMode === 'alien' && alienSfx) || (nextMode === 'wood' && nostalgiaSfx) || (nextMode === 'glassy' && !alienSfx && !nostalgiaSfx)) return;
+      if ((nextMode === 'phone' && phoneSfx) || (nextMode === 'wood' && nostalgiaSfx) || (nextMode === 'glassy' && !phoneSfx && !nostalgiaSfx)) return;
       ensureAudio();
-      alienSfx = nextMode === 'alien';
+      phoneSfx = nextMode === 'phone';
       nostalgiaSfx = nextMode === 'wood';
       document.querySelectorAll('.sound-choice').forEach(option => option.setAttribute('aria-checked', String(option === choice)));
-      if (alienSfx) alienZap(520, { vol: .18, dur: .2, bend: 2.7 });
+      if (phoneSfx) phoneTone(4, { vol: .15, dur: .18 });
       else if (nostalgiaSfx) woodTone(660, { vol: .17, dur: .26 });
       else ping(880, { vol: .12, dur: .18, ratio: 2.4, index: 1.8 });
     });
@@ -944,7 +931,7 @@
       note.dur = 260;
       peel(note, true);
     }
-    alienSfx = false;
+    phoneSfx = false;
     nostalgiaSfx = false;
     document.querySelectorAll('.sound-choice').forEach(option => option.setAttribute('aria-checked', String(option.dataset.mode === 'glassy')));
     pucks.clear();                   // hockey mode stays on until the toggle is clicked again
