@@ -527,18 +527,25 @@
     const t = ctx.currentTime + delay;
     const i = ((Math.round(key) % 12) + 12) % 12;
     const row = ctx.createOscillator(), column = ctx.createOscillator(), amp = ctx.createGain();
+    const bite = ctx.createOscillator(), biteGain = ctx.createGain();
     const send = ctx.createGain();
-    row.type = 'sine'; column.type = 'sine';
+    row.type = 'sine'; column.type = 'sine'; bite.type = 'square';
     row.frequency.value = DTMF_LOW[i]; column.frequency.value = DTMF_HIGH[i];
+    bite.frequency.value = DTMF_HIGH[i] * 2;
+    // A restrained upper partial gives the keypad a punchier, vintage electronic edge.
+    biteGain.gain.value = .11;
     amp.gain.setValueAtTime(.0001, t);
-    amp.gain.exponentialRampToValueAtTime(vol, t + .004);
+    const level = Math.min(.34, vol * 1.45);
+    amp.gain.exponentialRampToValueAtTime(level, t + .003);
     amp.gain.exponentialRampToValueAtTime(.0001, t + dur);
     send.gain.value = .08;
     row.connect(amp); column.connect(amp); amp.connect(outNode(pan));
+    bite.connect(biteGain); biteGain.connect(amp);
     amp.connect(send); send.connect(echoSend);
-    row.start(t); column.start(t); row.stop(t + dur + .02); column.stop(t + dur + .02);
-    row.onended = () => { voices--; try { send.disconnect(); amp.disconnect(); } catch (_) {} };
-    tickClick(t, vol * .5, pan);
+    row.start(t); column.start(t); bite.start(t);
+    row.stop(t + dur + .02); column.stop(t + dur + .02); bite.stop(t + dur + .02);
+    row.onended = () => { voices--; try { send.disconnect(); amp.disconnect(); biteGain.disconnect(); } catch (_) {} };
+    tickClick(t, Math.min(.18, level * .65), pan);
   }
 
   // C: warm wooden marimba pluck. Sine body + a quickly-fading bar overtone (~4x) + a soft mallet "tok".
