@@ -529,14 +529,14 @@
     const row = ctx.createOscillator(), column = ctx.createOscillator(), amp = ctx.createGain();
     const bite = ctx.createOscillator(), biteGain = ctx.createGain();
     const send = ctx.createGain();
-    row.type = 'sine'; column.type = 'sine'; bite.type = 'square';
+    row.type = 'sine'; column.type = 'sine'; bite.type = 'sine';
     row.frequency.value = DTMF_LOW[i]; column.frequency.value = DTMF_HIGH[i];
     bite.frequency.value = DTMF_HIGH[i] * 2;
-    // A restrained upper partial gives the keypad a punchier, vintage electronic edge.
-    biteGain.gain.value = .11;
+    // Keep the standard DTMF pair dominant, with a light speaker-like upper partial.
+    biteGain.gain.value = .2;
     amp.gain.setValueAtTime(.0001, t);
-    const level = Math.min(.34, vol * 1.45);
-    amp.gain.exponentialRampToValueAtTime(level, t + .003);
+    const level = Math.min(.32, vol * 1.65);
+    amp.gain.exponentialRampToValueAtTime(level, t + .002);
     amp.gain.exponentialRampToValueAtTime(.0001, t + dur);
     send.gain.value = .08;
     row.connect(amp); column.connect(amp); amp.connect(outNode(pan));
@@ -545,7 +545,7 @@
     row.start(t); column.start(t); bite.start(t);
     row.stop(t + dur + .02); column.stop(t + dur + .02); bite.stop(t + dur + .02);
     row.onended = () => { voices--; try { send.disconnect(); amp.disconnect(); biteGain.disconnect(); } catch (_) {} };
-    tickClick(t, Math.min(.18, level * .65), pan);
+    tickClick(t, Math.min(.2, level * .8), pan);
   }
 
   // C: warm wooden marimba pluck. Sine body + a quickly-fading bar overtone (~4x) + a soft mallet "tok".
@@ -586,7 +586,7 @@
     const p = panFromX(x), count = lowPower ? 4 : DIAL_DEMO.length;
     for (let i = 0; i < count; i++) {
       phoneTone(DIAL_DEMO[i], {
-        vol: .18, dur: .1, pan: clamp(p + (i % 2 ? .12 : -.12), -1, 1), delay: i * .16
+        vol: .2, dur: .12, pan: clamp(p + (i % 2 ? .12 : -.12), -1, 1), delay: i * .16
       });
     }
   }
@@ -647,7 +647,13 @@
     },
     // tapping the egg: a shell cracks (three uneven snaps), then a little pop in the active set's voice
     crack() {
-      if (phoneSfx) { phoneTone(9, { vol: .12, dur: .16, force: true }); return; }
+      if (phoneSfx) {
+        // A quick three-key chirp makes the impact read like a little keypad sequence.
+        phoneTone(9, { vol: .16, dur: .09, force: true });
+        phoneTone(5, { vol: .16, dur: .09, delay: .075, force: true });
+        phoneTone(2, { vol: .18, dur: .14, delay: .15, force: true });
+        return;
+      }
       snap(0, 3600, .22, .02); snap(.04, 2600, .17, .022); snap(.075, 4300, .11, .016);
       const f = freqFromDeg(9) * 2;
       if (nostalgiaSfx) {
@@ -699,7 +705,7 @@
       const low = ctx.createOscillator(), high = ctx.createOscillator(), gain = ctx.createGain();
       low.type = 'sine'; high.type = 'sine';
       low.frequency.value = 350; high.frequency.value = 440;
-      gain.gain.setValueAtTime(.0001, t); gain.gain.exponentialRampToValueAtTime(.025, t + .08);
+      gain.gain.setValueAtTime(.0001, t); gain.gain.exponentialRampToValueAtTime(.04, t + .08);
       low.connect(gain); high.connect(gain); gain.connect(master);
       low.start(t); high.start(t);
       return () => {
