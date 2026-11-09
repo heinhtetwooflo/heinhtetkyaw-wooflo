@@ -312,7 +312,7 @@
       try {
         window.sessionStorage.setItem('hwf-page-arrival', `${destinationPath}|${Date.now()}`);
       } catch {
-        window.location.replace(destination.href);
+        window.location.assign(destination.href);
         return;
       }
 
@@ -322,13 +322,13 @@
       logo.classList.remove('open');
       logo.classList.add('nav-leaving', 'nav-collapsing');
       document.body.classList.add('nav-page-cover');
-      window.setTimeout(() => window.location.replace(destination.href), 120);
+      window.setTimeout(() => window.location.assign(destination.href), 120);
       return;
     }
 
     if (!leavingHome) {
       if (reducedMotion.matches) {
-        window.location.replace(destination.href);
+        window.location.assign(destination.href);
         return;
       }
 
@@ -338,7 +338,7 @@
       try {
         window.sessionStorage.setItem('hwf-page-arrival', `${destinationPath}|${Date.now()}`);
       } catch {
-        window.location.replace(destination.href);
+        window.location.assign(destination.href);
         return;
       }
 
@@ -348,7 +348,7 @@
       document.documentElement.classList.add('nav-transition-active');
       logo.classList.add('nav-leaving');
       document.body.classList.add('nav-page-cover');
-      window.setTimeout(() => window.location.replace(destination.href), 240);
+      window.setTimeout(() => window.location.assign(destination.href), 240);
       return;
     }
 
@@ -359,7 +359,7 @@
 
     event.preventDefault();
     if (reducedMotion.matches) {
-      window.location.replace(destination.href);
+      window.location.assign(destination.href);
       return;
     }
 
@@ -367,7 +367,7 @@
     try {
       window.sessionStorage.setItem('hwf-page-arrival', `${destinationPath}|${Date.now()}`);
     } catch {
-      window.location.replace(destination.href);
+      window.location.assign(destination.href);
       return;
     }
 
@@ -377,6 +377,6 @@
     logo.classList.remove('open');
     logo.classList.add('nav-leaving');
     document.body.classList.add('nav-page-cover', 'nav-home-cover');
-    window.setTimeout(() => window.location.replace(destination.href), 440);
+    window.setTimeout(() => window.location.assign(destination.href), 440);
   });
 })();
