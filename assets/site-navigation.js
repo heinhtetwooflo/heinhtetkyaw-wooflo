@@ -146,6 +146,33 @@
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let navigationPending = false;
   const isHome = homePaths.has(window.location.pathname);
+  const historyState = window.history.state || {};
+  let navigationDepth = Number.isInteger(historyState.hwfDepth) ? historyState.hwfDepth : 0;
+  try {
+    const pendingHistory = window.sessionStorage.getItem('hwf-history-next') || '';
+    const [pendingPath, pendingDepth] = pendingHistory.split('|');
+    const currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
+    if (pendingPath === currentPath && Number.isInteger(Number(pendingDepth))) navigationDepth = Number(pendingDepth);
+    window.sessionStorage.removeItem('hwf-history-next');
+  } catch {}
+  window.history.replaceState({ ...historyState, hwfDepth: navigationDepth }, '', window.location.href);
+  if (isHome && !historyState.hwfHomeGuard) {
+    window.history.pushState({ hwfHomeGuard: true, hwfDepth: navigationDepth }, '', window.location.href);
+  }
+  window.addEventListener('popstate', event => {
+    if (!isHome || event.state?.hwfHomeGuard) return;
+    navigationDepth = Number.isInteger(event.state?.hwfDepth) ? event.state.hwfDepth : navigationDepth;
+    window.history.go(-(navigationDepth + 1));
+  });
+  const prepareInternalNavigation = destinationPath => {
+    try {
+      window.sessionStorage.setItem('hwf-history-next', `${destinationPath}|${navigationDepth + 1}`);
+    } catch {}
+  };
+  const navigateInternally = (destination, destinationPath) => {
+    prepareInternalNavigation(destinationPath);
+    window.location.assign(destination.href);
+  };
   const whenFontsReady = callback => {
     const root = document.documentElement;
     if (!root.classList.contains('fonts-pending')) {
@@ -312,7 +339,7 @@
       try {
         window.sessionStorage.setItem('hwf-page-arrival', `${destinationPath}|${Date.now()}`);
       } catch {
-        window.location.assign(destination.href);
+        navigateInternally(destination, destinationPath);
         return;
       }
 
@@ -322,13 +349,13 @@
       logo.classList.remove('open');
       logo.classList.add('nav-leaving', 'nav-collapsing');
       document.body.classList.add('nav-page-cover');
-      window.setTimeout(() => window.location.assign(destination.href), 120);
+      window.setTimeout(() => navigateInternally(destination, destinationPath), 120);
       return;
     }
 
     if (!leavingHome) {
       if (reducedMotion.matches) {
-        window.location.assign(destination.href);
+        navigateInternally(destination, destinationPath);
         return;
       }
 
@@ -338,7 +365,7 @@
       try {
         window.sessionStorage.setItem('hwf-page-arrival', `${destinationPath}|${Date.now()}`);
       } catch {
-        window.location.assign(destination.href);
+        navigateInternally(destination, destinationPath);
         return;
       }
 
@@ -348,7 +375,7 @@
       document.documentElement.classList.add('nav-transition-active');
       logo.classList.add('nav-leaving');
       document.body.classList.add('nav-page-cover');
-      window.setTimeout(() => window.location.assign(destination.href), 240);
+      window.setTimeout(() => navigateInternally(destination, destinationPath), 240);
       return;
     }
 
@@ -359,7 +386,7 @@
 
     event.preventDefault();
     if (reducedMotion.matches) {
-      window.location.assign(destination.href);
+      navigateInternally(destination, destinationPath);
       return;
     }
 
@@ -367,7 +394,7 @@
     try {
       window.sessionStorage.setItem('hwf-page-arrival', `${destinationPath}|${Date.now()}`);
     } catch {
-      window.location.assign(destination.href);
+      navigateInternally(destination, destinationPath);
       return;
     }
 
@@ -377,6 +404,6 @@
     logo.classList.remove('open');
     logo.classList.add('nav-leaving');
     document.body.classList.add('nav-page-cover', 'nav-home-cover');
-    window.setTimeout(() => window.location.assign(destination.href), 440);
+    window.setTimeout(() => navigateInternally(destination, destinationPath), 440);
   });
 })();
