@@ -40,6 +40,7 @@
   main{margin:0}
   .page-section{position:relative;width:100%;height:100vh;height:100svh;min-height:100svh;overflow:hidden}
   .page-section iframe{display:block;width:100%;height:100%;border:0}
+  .page-section-expanded{height:auto;overflow:visible}
   #home{background:#141413}
   #works{background:#fff}
   #tmi{background:#141413}
@@ -83,7 +84,11 @@
   const navLinks = [...document.querySelectorAll('#top-nav a')];
   const logo = document.getElementById('logo');
 
-  const updateLogo = () => logo.classList.toggle('logo-scrolled', window.scrollY > 48);
+  const updateLogo = () => {
+    const scrolled = window.scrollY > 48;
+    logo.classList.toggle('logo-scrolled', scrolled);
+    document.getElementById('top-nav').classList.toggle('mobile-scrolled', scrolled);
+  };
   window.addEventListener('scroll', updateLogo, { passive: true });
   updateLogo();
 
@@ -106,6 +111,34 @@
       const embeddedStyles = frameDocument.createElement('style');
       embeddedStyles.textContent = '#logo,#top-nav{display:none!important}';
       frameDocument.head.append(embeddedStyles);
+      const section = frame.closest('.page-section');
+      const isTmi = section.id === 'tmi';
+      const tmiFlowLayout = window.matchMedia('(max-width:860px), (min-width:861px) and (max-height:650px)');
+      let tmiResizeObserver;
+      const syncTmiFrameHeight = () => {
+        if (!isTmi) return;
+        const naturalFlow = tmiFlowLayout.matches &&
+          getComputedStyle(frameDocument.body).overflowY === 'auto';
+        section.classList.toggle('page-section-expanded', naturalFlow);
+        if (!naturalFlow) {
+          frame.style.height = '';
+          return;
+        }
+        const contentHeight = Math.max(
+          frameDocument.documentElement.scrollHeight,
+          frameDocument.body.scrollHeight,
+          frameDocument.querySelector('main').scrollHeight
+        );
+        frame.style.height = `${Math.max(window.innerHeight, contentHeight)}px`;
+      };
+      if (isTmi) {
+        syncTmiFrameHeight();
+        tmiResizeObserver = new ResizeObserver(syncTmiFrameHeight);
+        tmiResizeObserver.observe(frameDocument.querySelector('main'));
+        frameDocument.defaultView.addEventListener('resize', syncTmiFrameHeight);
+        window.addEventListener('resize', syncTmiFrameHeight);
+        tmiFlowLayout.addEventListener('change', syncTmiFrameHeight);
+      }
 
       const canScrollFrame = (deltaY, touchTarget) => {
         for (let element = touchTarget; element && element !== frameDocument.documentElement; element = element.parentElement) {

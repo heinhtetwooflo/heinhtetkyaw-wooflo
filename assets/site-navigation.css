@@ -156,6 +156,11 @@ html.nav-page-arrival .logo{view-transition-name:none}
   #top-nav{top:calc(var(--nav-inset) + env(safe-area-inset-top,0px));gap:clamp(28px,8vw,40px)}
   #top-nav a{font-size:18px;padding:10px 0}
   html:has(.logo-compact) #top-nav{left:auto;right:calc(var(--side-gutter,28px) + env(safe-area-inset-right,0px));transform:none}
+  #top-nav.mobile-scrolled{
+    left:calc(100% - var(--side-gutter,28px) - env(safe-area-inset-right,0px));
+    transform:translateX(-100%);
+    transition:left .42s cubic-bezier(.2,.7,.25,1),transform .42s cubic-bezier(.2,.7,.25,1);
+  }
   html.nav-transition-active:has(.logo-home.nav-leaving) #top-nav{
     left:calc(100% - var(--side-gutter,28px) - env(safe-area-inset-right,0px));
     transform:translateX(-100%);
