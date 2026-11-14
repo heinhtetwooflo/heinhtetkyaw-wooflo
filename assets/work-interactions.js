@@ -389,14 +389,13 @@
       else ping(880, { vol: .12, dur: .18, ratio: 2.4, index: 1.8 });
     });
   });
-  const optionsToggle = document.getElementById('options-toggle');
+  const timerControl = document.getElementById('timer');
   const optionsMenu = document.getElementById('options-menu');
   function setOptionsOpen(open) {
     optionsMenu.classList.toggle('open', open);
     optionsMenu.setAttribute('aria-hidden', String(!open));
-    optionsToggle.setAttribute('aria-expanded', String(open));
+    timerControl.setAttribute('aria-expanded', String(open));
   }
-  optionsToggle.addEventListener('click', () => setOptionsOpen(optionsToggle.getAttribute('aria-expanded') !== 'true'));
   document.addEventListener('pointerdown', e => {
     if (!e.target.closest('#top-controls')) setOptionsOpen(false);
   });
@@ -857,6 +856,46 @@
   const TIMER_MS = 30000;
   let timerStarted = 0;
   let timerPaused = true, timerPausedAt = 0;
+  let timerPressTimer = 0, timerPressPointerId = null, timerPressX = 0, timerPressY = 0;
+  let suppressTimerClick = false, suppressTimerClickTimer = 0;
+  timerDisplay.addEventListener('pointerdown', event => {
+    if (event.button !== 0 || !event.isPrimary) return;
+    clearTimeout(timerPressTimer);
+    timerPressPointerId = event.pointerId;
+    timerPressX = event.clientX;
+    timerPressY = event.clientY;
+    timerPressTimer = window.setTimeout(() => {
+      timerPressTimer = 0;
+      suppressTimerClick = true;
+      setOptionsOpen(true);
+    }, 550);
+  });
+  window.addEventListener('pointermove', event => {
+    if (event.pointerId !== timerPressPointerId || !timerPressTimer) return;
+    if (Math.hypot(event.clientX - timerPressX, event.clientY - timerPressY) > 10) {
+      clearTimeout(timerPressTimer);
+      timerPressTimer = 0;
+    }
+  }, { passive: true });
+  const finishTimerPress = event => {
+    if (event.pointerId !== timerPressPointerId) return;
+    clearTimeout(timerPressTimer);
+    timerPressTimer = 0;
+    timerPressPointerId = null;
+    if (suppressTimerClick) {
+      clearTimeout(suppressTimerClickTimer);
+      suppressTimerClickTimer = window.setTimeout(() => { suppressTimerClick = false; }, 500);
+    }
+  };
+  window.addEventListener('pointerup', finishTimerPress);
+  window.addEventListener('pointercancel', finishTimerPress);
+  timerDisplay.addEventListener('click', event => {
+    if (!suppressTimerClick) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    suppressTimerClick = false;
+    clearTimeout(suppressTimerClickTimer);
+  }, true);
   function updateTimer(now) {
     if (timerPaused) return;
     let remaining = TIMER_MS - (now - timerStarted);
@@ -877,12 +916,12 @@
       if (timerStarted === 0) timerStarted = now;
       else timerStarted += now - timerPausedAt;
       timerPaused = false; timerPausedAt = 0;
-      timerDisplay.setAttribute('aria-label', 'Pause the 30-second countdown and timed pop-up');
+      timerDisplay.setAttribute('aria-label', 'Pause the 30-second countdown and timed pop-up. Press and hold for settings.');
       timerDisplay.setAttribute('aria-pressed', 'false');
       requestAnimationFrame(updateTimer);
     } else {
       timerPaused = true; timerPausedAt = performance.now();
-      timerDisplay.setAttribute('aria-label', 'Resume the 30-second countdown and timed pop-up');
+      timerDisplay.setAttribute('aria-label', 'Resume the 30-second countdown and timed pop-up. Press and hold for settings.');
       timerDisplay.setAttribute('aria-pressed', 'true');
     }
   });

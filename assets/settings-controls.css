@@ -1,8 +1,4 @@
-#options-toggle{display:inline-flex;vertical-align:middle;align-items:center;justify-content:center;width:28px;height:28px;margin:-8px 0 -8px 7px;padding:4px;color:var(--mute);background:none;border:0;opacity:.28;cursor:pointer;transition:opacity .2s ease}
-#options-toggle:hover,#options-toggle[aria-expanded="true"]{opacity:.9}
-#options-toggle:focus-visible{outline:none}
-#options-toggle svg{display:block;width:12px;height:12px;overflow:visible}
-#options-toggle .dropdown-caret{fill:currentColor;stroke:none}
+#timer[aria-expanded="true"]{opacity:.9}
 #options-menu{position:absolute;top:auto;bottom:calc(100% + 12px);left:0;display:none;min-width:120px;flex-direction:column;align-items:center;gap:7px;padding:0;color:var(--ink);background:none;border:0}
 #options-menu.open{display:flex}
 .option-row{display:flex;align-items:center;justify-content:center;gap:8px;min-height:28px}
@@ -22,7 +18,6 @@
 #options-menu #clear-stickers:hover,#options-menu #clear-stickers:focus-visible,#options-menu #fullscreen-toggle:hover,#options-menu #fullscreen-toggle:focus-visible{opacity:.9}
 
 @media (max-width:600px){
-  #options-toggle{width:36px;height:44px;margin:0;padding:0;flex:none}
   #options-menu{top:auto;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%)}
   #sticker-size-control{width:120px;height:32px}
 }
