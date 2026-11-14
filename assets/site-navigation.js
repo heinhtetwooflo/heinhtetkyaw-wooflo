@@ -134,16 +134,6 @@
     syncLogoMorph();
   }
 
-  if (logo.classList.contains('logo-home')) {
-    logo.addEventListener('pointerenter', event => {
-      if (event.pointerType === 'touch' || document.documentElement.classList.contains('nav-home-arrival')) return;
-      logo.classList.add('open');
-    });
-    logo.addEventListener('pointerleave', event => {
-      if (event.pointerType !== 'touch') logo.classList.remove('open');
-    });
-  }
-
   const utilityControls = document.getElementById('mobile-utility-controls');
   const fullscreenToggle = document.getElementById('fullscreen-toggle');
   const clearStickers = document.getElementById('clear-stickers');

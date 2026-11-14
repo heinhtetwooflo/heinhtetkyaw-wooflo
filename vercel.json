@@ -1,24 +1,9 @@
 {
-  "cleanUrls": false,
+  "cleanUrls": true,
   "redirects": [
     {
       "source": "/work",
-      "destination": "/#works",
-      "permanent": true
-    },
-    {
-      "source": "/works",
-      "destination": "/#works",
-      "permanent": true
-    },
-    {
-      "source": "/TMI",
-      "destination": "/#tmi",
-      "permanent": true
-    },
-    {
-      "source": "/home-content",
-      "destination": "/",
+      "destination": "/works",
       "permanent": true
     }
   ]
