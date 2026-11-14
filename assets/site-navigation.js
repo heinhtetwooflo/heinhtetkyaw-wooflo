@@ -115,7 +115,6 @@
         return;
       }
       const forcedClosed = logo.classList.contains('nav-collapsing') || logo.classList.contains('nav-leaving') ||
-        logo.classList.contains('logo-scrolled') ||
         root.classList.contains('nav-home-arrival');
       const expanded = !forcedClosed && (logo.classList.contains('open') || logo.matches(':focus-visible') ||
         (hoverCapable && logo.matches(':hover')));
@@ -147,7 +146,6 @@
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let navigationPending = false;
   const isHome = homePaths.has(window.location.pathname);
-  const isScrollPortfolio = Boolean(document.querySelector('.page-section'));
   const historyState = window.history.state || {};
   let navigationDepth = Number.isInteger(historyState.hwfDepth) ? historyState.hwfDepth : 0;
   try {
@@ -158,11 +156,11 @@
     window.sessionStorage.removeItem('hwf-history-next');
   } catch {}
   window.history.replaceState({ ...historyState, hwfDepth: navigationDepth }, '', window.location.href);
-  if (isHome && !isScrollPortfolio && !historyState.hwfHomeGuard) {
+  if (isHome && !historyState.hwfHomeGuard) {
     window.history.pushState({ hwfHomeGuard: true, hwfDepth: navigationDepth }, '', window.location.href);
   }
   window.addEventListener('popstate', event => {
-    if (!isHome || isScrollPortfolio || event.state?.hwfHomeGuard) return;
+    if (!isHome || event.state?.hwfHomeGuard) return;
     navigationDepth = Number.isInteger(event.state?.hwfDepth) ? event.state.hwfDepth : navigationDepth;
     window.history.go(-(navigationDepth + 1));
   });
