@@ -3,7 +3,22 @@
   "redirects": [
     {
       "source": "/work",
-      "destination": "/works",
+      "destination": "/#works",
+      "permanent": true
+    },
+    {
+      "source": "/works",
+      "destination": "/#works",
+      "permanent": true
+    },
+    {
+      "source": "/TMI",
+      "destination": "/#tmi",
+      "permanent": true
+    },
+    {
+      "source": "/home-content",
+      "destination": "/",
       "permanent": true
     }
   ]
