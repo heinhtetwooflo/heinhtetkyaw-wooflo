@@ -108,11 +108,11 @@
     frame.addEventListener('load', () => {
       const frameDocument = frame.contentDocument;
       if (!frameDocument) return;
-      const embeddedStyles = frameDocument.createElement('style');
-      embeddedStyles.textContent = '#logo,#top-nav{display:none!important}';
-      frameDocument.head.append(embeddedStyles);
       const section = frame.closest('.page-section');
       const isTmi = section.id === 'tmi';
+      const embeddedStyles = frameDocument.createElement('style');
+      embeddedStyles.textContent = `#logo,#top-nav{display:none!important}${isTmi ? '@media(max-width:860px){body{overflow-x:hidden;overflow-y:auto}}' : ''}`;
+      frameDocument.head.append(embeddedStyles);
       const tmiFlowLayout = window.matchMedia('(max-width:860px), (min-width:861px) and (max-height:650px)');
       let tmiResizeObserver;
       const syncTmiFrameHeight = () => {
