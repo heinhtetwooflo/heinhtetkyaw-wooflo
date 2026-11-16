@@ -88,6 +88,10 @@
   .bio{min-height:0;align-self:start;line-height:1.4}
   .bio p+p,.bio h1+p{margin-top:.7em}
   .bio h1{font-size:inherit;font-weight:700}
+  .bio-link{position:relative;color:inherit;font:inherit;text-decoration:none}
+  .bio-link::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease)}
+  .bio-link:hover::after,.bio-link:focus-visible::after{transform:scaleX(1)}
+  .bio-link:focus-visible{outline:none}
   .brand-preview{white-space:normal}
   .brand-name{white-space:nowrap}
   .brand-card{display:inline-flex;align-items:center;vertical-align:middle;width:max-content;max-width:0;height:0;margin-left:0;overflow:hidden;opacity:0;visibility:hidden;transition:max-width .2s ease,height .2s ease,margin-left .2s ease,opacity .16s ease,visibility 0s .16s;pointer-events:none}
@@ -261,7 +265,7 @@
     <div class="bio">
       <h1>This is Hein Htet Kyaw    a.k.a    Woo Flo</h1>
       <p>Being the son of a furniture designer, he was exposed to MS Paint from childhood, drawing random earth and planets, Power Rangers helmets and, ofc, simple brown chairs. With a new tablet shared with his sibling, he got his first taste of mobile apps, sticking to PicsArt, PixelLab and KineMaster before moving on to professional tools. His first Photoshop version was CS6, which he played around with after finishing high school. He then started basic drawing classes and design courses, both local and international, via online learning thanks to COVID.</p>
-      <p>His first type crushes were Devil Breeze and ITC Avant Garde, rooted in the late-2010s <span class="brand-preview"><span class="brand-name">Imagine Dragons</span><span class="brand-card"><img class="brand-logo-imagine" src="./TMI/Logos/Imagine_Dragon.png" alt="Imagine Dragons logo" draggable="false"></span></span> wordmark.</p>
+      <p>His first type crushes were <a class="bio-link" href="https://fontsinuse.com/typefaces/43300/devil-breeze" target="_blank" rel="noopener">Devil Breeze</a> and <a class="bio-link" href="https://lubalin100.com/day-57/" target="_blank" rel="noopener">ITC Avant Garde</a>, rooted in the late-2010s <span class="brand-preview"><span class="brand-name">Imagine Dragons</span><span class="brand-card"><img class="brand-logo-imagine" src="./TMI/Logos/Imagine_Dragon.png" alt="Imagine Dragons logo" draggable="false"></span></span> wordmark.</p>
       <p>He loves playing around with typography and layouts but is still struggling while dancing with colors.</p>
       <p>Currently in a walk-around-and-find-out state, rooted in design and its intersection with tech, business and art.</p>
       <p>If you are reading this in 2026 or 2027, he’s pretty sure to be working his ass off in the final year of his B.Sc (Hons), with one capstone and assignments in line, while working for a <span class="brand-preview">non-profit, youth-led organization<span class="brand-card"><img class="brand-logo-allyours" src="./TMI/Logos/allyours.svg" alt="Allyours logo" draggable="false"></span></span> focused on art and design and helping out here and there at an <span class="brand-preview">F&amp;B tech startup<span class="brand-card"><img src="./TMI/Logos/orderflow.svg" alt="Orderflow logo" draggable="false"></span></span>. But if you are reading this from way beyond 2027, you are probably witnessing him learning and designing things he loves.</p>
