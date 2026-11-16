@@ -117,11 +117,24 @@
     22%{opacity:.9}
     100%{opacity:0;transform:translateX(55%) skewX(-18deg)}
   }
-  .spell-word{display:inline-grid;grid-template-areas:"word";vertical-align:baseline;white-space:nowrap}
-  .spell-word span{grid-area:word;transition:opacity .2s ease,transform .32s var(--ease)}
-  .spell-correct{opacity:0;transform:translateY(.18em)}
-  .attention-fact:hover .spell-wrong,.attention-fact:focus .spell-wrong{opacity:0;transform:translateY(-.18em)}
-  .attention-fact:hover .spell-correct,.attention-fact:focus .spell-correct{opacity:1;transform:none}
+  .spell-word{position:relative;display:inline-grid;grid-template-areas:"word";vertical-align:baseline;white-space:nowrap}
+  .spell-layout{grid-area:word;white-space:nowrap}
+  .spell-word.is-ready .spell-wrong{clip-path:inset(0 calc(100% - var(--spell-wrong-suffix-start)) 0 0)}
+  .spell-word.is-ready .spell-correct{clip-path:inset(0 calc(100% - var(--spell-correct-suffix-start)) 0 0)}
+  .spell-correct{opacity:0}
+  .spell-moving{
+    position:absolute;z-index:1;left:0;top:0;font:inherit;line-height:inherit;white-space:pre;
+    transform:translate(var(--spell-start-x,0px),var(--spell-start-y,0px));transition:transform .38s var(--ease);
+  }
+  .spell-word:not(.is-ready) .spell-moving{display:none}
+  .attention-fact:hover .spell-wrong,.attention-fact:focus .spell-wrong{opacity:0}
+  .attention-fact:hover .spell-correct,.attention-fact:focus .spell-correct{opacity:1}
+  .attention-fact:hover .spell-moving-g,.attention-fact:focus .spell-moving-g{
+    transform:translate(var(--spell-g-end-x,0px),var(--spell-g-end-y,0px))
+  }
+  .attention-fact:hover .spell-moving-n,.attention-fact:focus .spell-moving-n{
+    transform:translate(var(--spell-n-end-x,0px),var(--spell-n-end-y,0px))
+  }
 
   /* ---------- drives ---------- */
   .drives{display:grid;gap:var(--pad)}
@@ -226,7 +239,7 @@
     .top{margin-bottom:var(--pad)}
   }
   @media (prefers-reduced-motion:reduce){
-    .drive img,.folder,.arrow,.viewer-nav,.arrow svg,.viewer-image,.fact-preview-image,.spell-word span{transition:none}
+    .drive img,.folder,.arrow,.viewer-nav,.arrow svg,.viewer-image,.fact-preview-image,.spell-moving{transition:none}
     .facts .chrome-ray:hover::before,.facts .chrome-ray:focus::before{animation:none;opacity:.5;transform:none}
   }
 </style>
@@ -276,7 +289,7 @@
       </li>
       <li class="chrome-ray" tabindex="0">Chrome and glow fetish</li>
       <li class="attention-fact" tabindex="0" aria-label="Attention to details (spellign not included)">
-        Attention to details (<span class="spell-word" aria-hidden="true"><span class="spell-wrong">spellign</span><span class="spell-correct">spelling</span></span> not included)
+        Attention to details (<span class="spell-word" aria-hidden="true"><span class="spell-layout spell-wrong">spellign</span><span class="spell-layout spell-correct">spelling</span><span class="spell-moving spell-moving-g">g</span><span class="spell-moving spell-moving-n">n</span></span> not included)
       </li>
     </ul>
   </section>
@@ -320,6 +333,38 @@
     fact.addEventListener("pointerenter", loadPreview);
     fact.addEventListener("focus", loadPreview);
   });
+
+  var spellWord = document.querySelector(".spell-word");
+  function spellCharacterRect(layout, index){
+    var range = document.createRange(), text = layout.firstChild;
+    range.setStart(text, index);
+    range.setEnd(text, index + 1);
+    return range.getBoundingClientRect();
+  }
+  function measureSpellSwap(){
+    var wrong = spellWord.querySelector(".spell-wrong"), correct = spellWord.querySelector(".spell-correct");
+    var wordRect = spellWord.getBoundingClientRect();
+    var wrongG = spellCharacterRect(wrong, 6), wrongN = spellCharacterRect(wrong, 7);
+    var correctN = spellCharacterRect(correct, 6), correctG = spellCharacterRect(correct, 7);
+    spellWord.style.setProperty("--spell-wrong-suffix-start", (wrongG.left - wordRect.left) + "px");
+    spellWord.style.setProperty("--spell-correct-suffix-start", (correctN.left - wordRect.left) + "px");
+    var movingG = spellWord.querySelector(".spell-moving-g"), movingN = spellWord.querySelector(".spell-moving-n");
+    movingG.style.setProperty("--spell-start-x", (wrongG.left - wordRect.left) + "px");
+    movingG.style.setProperty("--spell-start-y", (wrongG.top - wordRect.top) + "px");
+    movingG.style.setProperty("--spell-g-end-x", (correctG.left - wordRect.left) + "px");
+    movingG.style.setProperty("--spell-g-end-y", (correctG.top - wordRect.top) + "px");
+    movingN.style.setProperty("--spell-start-x", (wrongN.left - wordRect.left) + "px");
+    movingN.style.setProperty("--spell-start-y", (wrongN.top - wordRect.top) + "px");
+    movingN.style.setProperty("--spell-n-end-x", (correctN.left - wordRect.left) + "px");
+    movingN.style.setProperty("--spell-n-end-y", (correctN.top - wordRect.top) + "px");
+    spellWord.classList.add("is-ready");
+  }
+  if (document.fonts) {
+    document.fonts.addEventListener("loadingdone", measureSpellSwap);
+    document.fonts.addEventListener("loadingerror", measureSpellSwap);
+  }
+  requestAnimationFrame(measureSpellSwap);
+  window.addEventListener("resize", measureSpellSwap);
 
   /* ---------- profile: fixed main image; on hover the others flip too fast to focus on ---------- */
   var photo = document.getElementById("photo"), flip = document.getElementById("flip");
