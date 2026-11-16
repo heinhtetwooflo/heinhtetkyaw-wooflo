@@ -126,8 +126,7 @@
   .spell-word{position:relative;display:inline-block;vertical-align:baseline;white-space:nowrap}
   .spell-letter{position:relative;left:0;transition:left .38s var(--ease)}
   .spell-measure{position:absolute;left:0;top:0;visibility:hidden;white-space:nowrap;pointer-events:none}
-  .attention-fact:hover .spell-letter-g,.attention-fact:focus .spell-letter-g{left:var(--spell-g-shift,0px)}
-  .attention-fact:hover .spell-letter-n,.attention-fact:focus .spell-letter-n{left:var(--spell-n-shift,0px)}
+  .attention-fact:hover .spell-letter,.attention-fact:focus .spell-letter{left:var(--spell-shift,0px)}
 
   /* ---------- drives ---------- */
   .drives{display:grid;gap:var(--pad)}
@@ -281,8 +280,8 @@
         <span>Browser tabs hoarder</span><img class="fact-preview-image" alt="" aria-hidden="true" draggable="false">
       </li>
       <li class="chrome-ray" tabindex="0">Chrome and glow fetish</li>
-      <li class="attention-fact" tabindex="0" aria-label="Attention to details (spellign not included)">
-        Attention to details (<span class="spell-word" aria-hidden="true">spelli<span class="spell-letter spell-letter-g">g</span><span class="spell-letter spell-letter-n">n</span><span class="spell-measure">spelling</span></span> not included)
+      <li class="attention-fact" tabindex="0" aria-label="Attention to details (spelling not included)">
+        Attention to details (<span class="spell-word" aria-hidden="true">spelli<span class="spell-letter" data-target-index="7">g</span><span class="spell-letter" data-target-index="6">n</span><span class="spell-measure">spelling</span></span> not <span class="spell-word" aria-hidden="true">inc<span class="spell-letter" data-target-index="4">u</span><span class="spell-letter" data-target-index="3">l</span>ded<span class="spell-measure">included</span></span>)
       </li>
     </ul>
   </section>
@@ -327,7 +326,7 @@
     fact.addEventListener("focus", loadPreview);
   });
 
-  var spellWord = document.querySelector(".spell-word");
+  var spellWords = document.querySelectorAll(".spell-word");
   function spellCharacterRect(layout, index){
     var range = document.createRange(), text = layout.firstChild;
     range.setStart(text, index);
@@ -335,14 +334,15 @@
     return range.getBoundingClientRect();
   }
   function measureSpellSwap(){
-    var measure = spellWord.querySelector(".spell-measure");
-    var movingG = spellWord.querySelector(".spell-letter-g"), movingN = spellWord.querySelector(".spell-letter-n");
-    var wrongG = spellCharacterRect(movingG, 0), wrongN = spellCharacterRect(movingN, 0);
-    var correctN = spellCharacterRect(measure, 6), correctG = spellCharacterRect(measure, 7);
-    var currentGShift = parseFloat(getComputedStyle(movingG).left) || 0;
-    var currentNShift = parseFloat(getComputedStyle(movingN).left) || 0;
-    movingG.style.setProperty("--spell-g-shift", (correctG.left - wrongG.left + currentGShift) + "px");
-    movingN.style.setProperty("--spell-n-shift", (correctN.left - wrongN.left + currentNShift) + "px");
+    spellWords.forEach(function(spellWord){
+      var measure = spellWord.querySelector(".spell-measure");
+      spellWord.querySelectorAll(".spell-letter").forEach(function(letter){
+        var wrong = spellCharacterRect(letter, 0);
+        var correct = spellCharacterRect(measure, Number(letter.dataset.targetIndex));
+        var currentShift = parseFloat(getComputedStyle(letter).left) || 0;
+        letter.style.setProperty("--spell-shift", (correct.left - wrong.left + currentShift) + "px");
+      });
+    });
   }
   if (document.fonts) {
     document.fonts.addEventListener("loadingdone", measureSpellSwap);
