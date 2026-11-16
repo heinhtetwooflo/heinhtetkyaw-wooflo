@@ -302,9 +302,14 @@
 <script>
   (() => {
     const loader = document.getElementById('page-loader');
+    const minimumDisplayMs = 1800;
+    const startedAt = performance.now();
     const hideLoader = () => {
-      loader.classList.add('is-hidden');
-      window.setTimeout(() => loader.remove(), 400);
+      const delay = Math.max(0, minimumDisplayMs - (performance.now() - startedAt));
+      window.setTimeout(() => {
+        loader.classList.add('is-hidden');
+        window.setTimeout(() => loader.remove(), 400);
+      }, delay);
     };
     if (document.readyState === 'complete') hideLoader();
     else window.addEventListener('load', hideLoader, { once: true });
