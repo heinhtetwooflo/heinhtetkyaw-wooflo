@@ -97,12 +97,12 @@
   .facts li{position:relative;isolation:isolate;width:fit-content;max-width:100%}
   .facts li:focus-visible{outline:1px solid var(--ink);outline-offset:3px}
   .fact-preview-image{
-    position:absolute;z-index:8;top:50%;right:calc(100% + 14px);width:clamp(100px,11vw,152px);height:clamp(78px,15vh,128px);
-    padding:7px;object-fit:contain;background:#1b1b1a;border:1px solid rgba(247,246,244,.18);box-shadow:0 12px 36px rgba(0,0,0,.4);
-    opacity:0;visibility:hidden;transform:translate(8px,-50%) scale(.98);transition:opacity .18s ease,transform .24s var(--ease),visibility 0s .24s;pointer-events:none;
+    position:absolute;z-index:8;top:50%;right:calc(100% + 14px);width:auto;height:auto;max-width:clamp(100px,11vw,152px);max-height:clamp(78px,15vh,128px);
+    object-fit:contain;opacity:0;visibility:hidden;transform:translate(8px,-50%);
+    transition:opacity .18s ease,transform .24s var(--ease),visibility 0s .24s;pointer-events:none;
   }
   .fact-hover:hover .fact-preview-image,.fact-hover:focus .fact-preview-image{
-    opacity:1;visibility:visible;transform:translate(0,-50%) scale(1);transition-delay:0s;
+    opacity:1;visibility:visible;transform:translate(0,-50%);transition-delay:0s;
   }
   .facts .chrome-ray{text-shadow:0 0 0 transparent}
   .facts .chrome-ray::before{
@@ -111,19 +111,17 @@
     transform:translateX(-55%) skewX(-18deg);
   }
   .facts .chrome-ray:hover,.facts .chrome-ray:focus{text-shadow:0 0 10px rgba(181,222,255,.62)}
-  .facts .chrome-ray:hover::before,.facts .chrome-ray:focus::before{animation:fact-chrome-ray .9s var(--ease) both}
+  .facts .chrome-ray:hover::before,.facts .chrome-ray:focus::before{animation:fact-chrome-ray .9s var(--ease) infinite}
   @keyframes fact-chrome-ray{
     0%{opacity:0;transform:translateX(-55%) skewX(-18deg)}
     22%{opacity:.9}
     100%{opacity:0;transform:translateX(55%) skewX(-18deg)}
   }
-  .spell-word{white-space:nowrap}
-  .spell-swap{display:inline-grid;grid-template-columns:.6em .6em;vertical-align:baseline}
-  .spell-swap span{grid-row:1;text-align:center;transition:transform .48s var(--ease)}
-  .spell-swap .swap-g{grid-column:1}
-  .spell-swap .swap-n{grid-column:2}
-  .attention-fact:hover .swap-g,.attention-fact:focus .swap-g{transform:translateX(100%)}
-  .attention-fact:hover .swap-n,.attention-fact:focus .swap-n{transform:translateX(-100%)}
+  .spell-word{display:inline-grid;grid-template-areas:"word";vertical-align:baseline;white-space:nowrap}
+  .spell-word span{grid-area:word;transition:opacity .2s ease,transform .32s var(--ease)}
+  .spell-correct{opacity:0;transform:translateY(.18em)}
+  .attention-fact:hover .spell-wrong,.attention-fact:focus .spell-wrong{opacity:0;transform:translateY(-.18em)}
+  .attention-fact:hover .spell-correct,.attention-fact:focus .spell-correct{opacity:1;transform:none}
 
   /* ---------- drives ---------- */
   .drives{display:grid;gap:var(--pad)}
@@ -203,12 +201,11 @@
     .photo{height:auto;width:min(52vw,220px);min-width:0}
     .facts{align-self:start;justify-self:start}
     .fact-preview-image{
-      position:static;display:block;width:0;height:0;margin:0;padding:0;border:0;box-shadow:none;
-      opacity:0;visibility:hidden;transform:none;transition:width .2s ease,height .2s ease,opacity .18s ease,margin .2s ease,visibility 0s .2s;
+      position:static;display:block;width:auto;height:auto;max-width:0;max-height:0;margin:0;
+      opacity:0;visibility:hidden;transform:none;transition:max-width .2s ease,max-height .2s ease,opacity .18s ease,margin .2s ease,visibility 0s .2s;
     }
     .fact-hover:hover .fact-preview-image,.fact-hover:focus .fact-preview-image{
-      width:min(152px,42vw);height:min(112px,22vh);margin-top:8px;padding:7px;
-      background:#1b1b1a;border:1px solid rgba(247,246,244,.18);box-shadow:0 12px 36px rgba(0,0,0,.4);
+      max-width:min(152px,42vw);max-height:min(112px,22vh);margin-top:8px;
       opacity:1;visibility:visible;transition-delay:0s;
     }
     .row{grid-template-columns:minmax(0,1fr);height:auto;min-height:0;gap:8px;margin-bottom:20px}
@@ -229,7 +226,7 @@
     .top{margin-bottom:var(--pad)}
   }
   @media (prefers-reduced-motion:reduce){
-    .drive img,.folder,.arrow,.viewer-nav,.arrow svg,.viewer-image,.fact-preview-image,.spell-swap span{transition:none}
+    .drive img,.folder,.arrow,.viewer-nav,.arrow svg,.viewer-image,.fact-preview-image,.spell-word span{transition:none}
     .facts .chrome-ray:hover::before,.facts .chrome-ray:focus::before{animation:none;opacity:.5;transform:none}
   }
 </style>
@@ -274,12 +271,12 @@
       <li class="fact-hover" data-preview="./TMI/Funfacts/Avocado.gif" tabindex="0">
         <span>Top-tier avocado enjoyer</span><img class="fact-preview-image" alt="" aria-hidden="true" draggable="false">
       </li>
-      <li class="fact-hover chrome-ray" data-preview="./TMI/Funfacts/BrowserTabs.png" tabindex="0">
+      <li class="fact-hover" data-preview="./TMI/Funfacts/BrowserTabs.png" tabindex="0">
         <span>Browser tabs hoarder</span><img class="fact-preview-image" alt="" aria-hidden="true" draggable="false">
       </li>
       <li class="chrome-ray" tabindex="0">Chrome and glow fetish</li>
       <li class="attention-fact" tabindex="0" aria-label="Attention to details (spellign not included)">
-        Attention to details (<span class="spell-word" aria-hidden="true">spell i<span class="spell-swap"><span class="swap-g">g</span><span class="swap-n">n</span></span></span> not included)
+        Attention to details (<span class="spell-word" aria-hidden="true"><span class="spell-wrong">spellign</span><span class="spell-correct">spelling</span></span> not included)
       </li>
     </ul>
   </section>
