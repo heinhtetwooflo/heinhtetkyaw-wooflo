@@ -113,16 +113,16 @@
   }
   .facts .chrome-ray{text-shadow:0 0 0 transparent}
   .facts .chrome-ray::before{
-    content:"";position:absolute;z-index:-1;inset:-.2em -.75em;pointer-events:none;opacity:0;filter:blur(5px);
+    content:"";position:absolute;z-index:-1;inset:-1.5em -1.5em;pointer-events:none;opacity:0;filter:blur(5px);
     background:linear-gradient(108deg,transparent 28%,rgba(196,230,255,.12) 40%,rgba(255,255,255,.9) 49%,rgba(158,212,255,.58) 54%,rgba(211,167,255,.2) 62%,transparent 73%);
-    transform:translateX(-55%) skewX(-18deg);
+    transform:translateX(-50%) skewX(-18deg);
   }
   .facts .chrome-ray:hover,.facts .chrome-ray:focus{text-shadow:0 0 10px rgba(181,222,255,.62)}
   .facts .chrome-ray:hover::before,.facts .chrome-ray:focus::before{animation:fact-chrome-ray .9s var(--ease) infinite}
   @keyframes fact-chrome-ray{
-    0%{opacity:0;transform:translateX(-55%) skewX(-18deg)}
+    0%{opacity:0;transform:translateX(-50%) skewX(-18deg)}
     22%{opacity:.9}
-    100%{opacity:0;transform:translateX(55%) skewX(-18deg)}
+    100%{opacity:0;transform:translateX(50%) skewX(-18deg)}
   }
   .spell-word{position:relative;display:inline-block;vertical-align:baseline;white-space:nowrap}
   .spell-letter{position:relative;left:0;transition:left .38s var(--ease)}
@@ -207,6 +207,7 @@
     .top{display:flex;flex-direction:column;gap:20px;margin-bottom:44px}
     .photo{height:auto;width:min(52vw,220px);min-width:0}
     .facts{align-self:start;justify-self:start}
+    .facts .chrome-ray::before{inset:-1.5em -.5em}
     .fact-preview-image{
       position:static;display:block;width:auto;height:auto;max-width:0;max-height:0;margin:0;
       opacity:0;visibility:hidden;transform:none;transition:max-width .2s ease,max-height .2s ease,opacity .18s ease,margin .2s ease,visibility 0s .2s;
